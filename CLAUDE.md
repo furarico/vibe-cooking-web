@@ -43,6 +43,54 @@
 - `GET /recipes` - 全レシピを取得（フィルタリング・ページネーションなし）
 - `GET /recipes/{id}` - IDで特定のレシピを取得
 
+### クライアントサイドアーキテクチャ
+
+**レイヤードアーキテクチャ**
+
+プロジェクトは以下の5層構造で構成されます：
+
+```
+UI Layer (Presentation)
+    ↓
+Presenter Layer
+    ↓
+Service Layer
+    ↓
+Repository Layer
+    ↓
+External API / Data Source
+```
+
+#### 1. UI Layer（UIレイヤー）
+- **責務**: ユーザーインターフェースの描画とユーザーインタラクション
+- **技術**: React Components, Next.js Pages, Tailwind CSS
+- **場所**: `src/app/`, `src/components/`
+- **特徴**: プレゼンテーション専用、ビジネスロジックは含まない
+
+#### 2. Presenter Layer（プレゼンターレイヤー）
+- **責務**: UIの状態管理、イベントハンドリング、サービス層との橋渡し
+- **技術**: React Hooks, Custom Hooks
+- **場所**: `src/presenters/`
+- **特徴**: UIとビジネスロジックの分離、テスタブルな状態管理
+
+#### 3. Service Layer（サービスレイヤー）
+- **責務**: ビジネスロジック、データ変換、複数リポジトリの組み合わせ
+- **場所**: `src/services/`
+- **特徴**: ドメイン固有のロジック、トランザクション管理
+
+#### 4. Repository Layer（リポジトリレイヤー）
+- **責務**: データアクセスの抽象化、APIクライアントの管理
+- **場所**: `src/repositories/`
+- **特徴**: データソースの詳細を隠蔽、型安全なデータアクセス
+
+#### 5. DI Container（依存性注入コンテナ）
+- **責務**: 各レイヤー間の依存関係管理、インスタンス生成
+- **場所**: `src/di/`
+- **特徴**: 疎結合、テスタビリティの向上
+
+### サーバサイドアーキテクチャ
+
+
 ### コアデータモデル
 
 **Recipeスキーマ**: 基本情報（id、title、description）、時間（prepTime、cookTime、servings）、コンテンツ配列（ingredients、instructions）、メタデータ（tags、imageUrl、timestamps）を含みます。
