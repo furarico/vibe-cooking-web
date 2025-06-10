@@ -2,25 +2,27 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useDI } from '@/di/providers';
-import { EnrichedRecipe } from '@/services/recipe/RecipeService';
+import { Recipe } from '@/lib/api';
 
 export interface RecipePresenterState {
-  recipes: EnrichedRecipe[];
-  filteredRecipes: EnrichedRecipe[];
-  selectedRecipe: EnrichedRecipe | null;
+  recipes: Recipe[];
+  filteredRecipes: Recipe[];
+  selectedRecipe: Recipe | null;
   loading: boolean;
   error: string | null;
   searchQuery: string;
-  difficultyFilter: 'all' | 'easy' | 'medium' | 'hard';
+  servingsFilter: number;
+  maxTimeFilter: number;
   showDialog: boolean;
 }
 
 export interface RecipePresenterActions {
   fetchRecipes: () => Promise<void>;
-  selectRecipe: (recipe: EnrichedRecipe) => void;
+  selectRecipe: (recipe: Recipe) => void;
   closeDialog: () => void;
   setSearchQuery: (query: string) => void;
-  setDifficultyFilter: (filter: 'all' | 'easy' | 'medium' | 'hard') => void;
+  setServingsFilter: (servings: number) => void;
+  setMaxTimeFilter: (maxTime: number) => void;
   refreshRecipes: () => Promise<void>;
 }
 
@@ -34,7 +36,8 @@ export const useRecipePresenter = (): RecipePresenterState & RecipePresenterActi
     loading: false,
     error: null,
     searchQuery: '',
-    difficultyFilter: 'all',
+    servingsFilter: 1,
+    maxTimeFilter: 180, // 3時間
     showDialog: false
   });
 
@@ -60,7 +63,7 @@ export const useRecipePresenter = (): RecipePresenterState & RecipePresenterActi
   }, [recipeService]);
 
   // レシピ選択
-  const selectRecipe = useCallback((recipe: EnrichedRecipe) => {
+  const selectRecipe = useCallback((recipe: Recipe) => {
     setState(prev => ({
       ...prev,
       selectedRecipe: recipe,
@@ -82,9 +85,14 @@ export const useRecipePresenter = (): RecipePresenterState & RecipePresenterActi
     setState(prev => ({ ...prev, searchQuery: query }));
   }, []);
 
-  // 難易度フィルター設定
-  const setDifficultyFilter = useCallback((filter: 'all' | 'easy' | 'medium' | 'hard') => {
-    setState(prev => ({ ...prev, difficultyFilter: filter }));
+  // 人数フィルター設定
+  const setServingsFilter = useCallback((servings: number) => {
+    setState(prev => ({ ...prev, servingsFilter: servings }));
+  }, []);
+
+  // 最大時間フィルター設定
+  const setMaxTimeFilter = useCallback((maxTime: number) => {
+    setState(prev => ({ ...prev, maxTimeFilter: maxTime }));
   }, []);
 
   // リフレッシュ
@@ -101,13 +109,18 @@ export const useRecipePresenter = (): RecipePresenterState & RecipePresenterActi
       filtered = recipeService.searchRecipes(filtered, state.searchQuery);
     }
 
-    // 難易度フィルター
-    if (state.difficultyFilter !== 'all') {
-      filtered = recipeService.filterByDifficulty(filtered, state.difficultyFilter);
+    // 人数フィルター
+    if (state.servingsFilter > 1) {
+      filtered = recipeService.filterByServings(filtered, state.servingsFilter);
+    }
+
+    // 時間フィルター
+    if (state.maxTimeFilter < 180) {
+      filtered = recipeService.filterByMaxTime(filtered, state.maxTimeFilter);
     }
 
     setState(prev => ({ ...prev, filteredRecipes: filtered }));
-  }, [state.recipes, state.searchQuery, state.difficultyFilter, recipeService]);
+  }, [state.recipes, state.searchQuery, state.servingsFilter, state.maxTimeFilter, recipeService]);
 
   // 初回データ取得
   useEffect(() => {
@@ -120,7 +133,8 @@ export const useRecipePresenter = (): RecipePresenterState & RecipePresenterActi
     selectRecipe,
     closeDialog,
     setSearchQuery,
-    setDifficultyFilter,
+    setServingsFilter,
+    setMaxTimeFilter,
     refreshRecipes
   };
 };

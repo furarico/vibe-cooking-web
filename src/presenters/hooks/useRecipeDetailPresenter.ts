@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useDI } from '@/di/providers';
-import { EnrichedRecipe } from '@/services/recipe/RecipeService';
+import { Recipe } from '@/lib/api';
 
 export interface RecipeDetailPresenterState {
-  recipe: EnrichedRecipe | null;
+  recipe: Recipe | null;
   loading: boolean;
   error: string | null;
   currentStep: number;
