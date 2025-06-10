@@ -21,7 +21,8 @@ export interface RecipeDetailPresenterActions {
   markCompleted: () => void;
 }
 
-export const useRecipeDetailPresenter = (): RecipeDetailPresenterState & RecipeDetailPresenterActions => {
+export const useRecipeDetailPresenter = (): RecipeDetailPresenterState &
+  RecipeDetailPresenterActions => {
   const { recipeService } = useDI();
 
   const [state, setState] = useState<RecipeDetailPresenterState>({
@@ -29,40 +30,46 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenterState & RecipeD
     loading: false,
     error: null,
     currentStep: 0,
-    isCompleted: false
+    isCompleted: false,
   });
 
   // レシピ詳細取得
-  const fetchRecipe = useCallback(async (id: string) => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
+  const fetchRecipe = useCallback(
+    async (id: string) => {
+      setState(prev => ({ ...prev, loading: true, error: null }));
 
-    try {
-      const recipe = await recipeService.getRecipeById(id);
+      try {
+        const recipe = await recipeService.getRecipeById(id);
 
-      if (!recipe) {
+        if (!recipe) {
+          setState(prev => ({
+            ...prev,
+            error: 'レシピが見つかりませんでした',
+            loading: false,
+          }));
+          return;
+        }
+
         setState(prev => ({
           ...prev,
-          error: 'レシピが見つかりませんでした',
-          loading: false
+          recipe,
+          loading: false,
+          currentStep: 0,
+          isCompleted: false,
         }));
-        return;
+      } catch (error) {
+        setState(prev => ({
+          ...prev,
+          error:
+            error instanceof Error
+              ? error.message
+              : '不明なエラーが発生しました',
+          loading: false,
+        }));
       }
-
-      setState(prev => ({
-        ...prev,
-        recipe,
-        loading: false,
-        currentStep: 0,
-        isCompleted: false
-      }));
-    } catch (error) {
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error.message : '不明なエラーが発生しました',
-        loading: false
-      }));
-    }
-  }, [recipeService]);
+    },
+    [recipeService]
+  );
 
   // 現在のステップ設定
   const setCurrentStep = useCallback((step: number) => {
@@ -75,7 +82,7 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenterState & RecipeD
       return {
         ...prev,
         currentStep: newStep,
-        isCompleted: newStep === maxStep
+        isCompleted: newStep === maxStep,
       };
     });
   }, []);
@@ -91,7 +98,7 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenterState & RecipeD
       return {
         ...prev,
         currentStep: newStep,
-        isCompleted: newStep === maxStep
+        isCompleted: newStep === maxStep,
       };
     });
   }, []);
@@ -101,7 +108,7 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenterState & RecipeD
     setState(prev => ({
       ...prev,
       currentStep: Math.max(prev.currentStep - 1, 0),
-      isCompleted: false
+      isCompleted: false,
     }));
   }, []);
 
@@ -110,7 +117,7 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenterState & RecipeD
     setState(prev => ({
       ...prev,
       currentStep: 0,
-      isCompleted: false
+      isCompleted: false,
     }));
   }, []);
 
@@ -118,7 +125,7 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenterState & RecipeD
   const markCompleted = useCallback(() => {
     setState(prev => ({
       ...prev,
-      isCompleted: true
+      isCompleted: true,
     }));
   }, []);
 
@@ -129,6 +136,6 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenterState & RecipeD
     nextStep,
     prevStep,
     resetProgress,
-    markCompleted
+    markCompleted,
   };
 };

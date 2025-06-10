@@ -17,7 +17,7 @@ paths:
       summary: レシピ一覧取得
       description: 全てのレシピ一覧を取得
       responses:
-        "200":
+        '200':
           description: 成功
           content:
             application/json:
@@ -27,7 +27,7 @@ paths:
                   recipes:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Recipe"
+                      $ref: '#/components/schemas/Recipe'
 
   /recipes/{id}:
     get:
@@ -41,13 +41,13 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: 成功
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Recipe"
-        "404":
+                $ref: '#/components/schemas/Recipe'
+        '404':
           description: レシピが見つかりません
 
 components:
@@ -73,11 +73,11 @@ components:
         ingredients:
           type: array
           items:
-            $ref: "#/components/schemas/Ingredient"
+            $ref: '#/components/schemas/Ingredient'
         instructions:
           type: array
           items:
-            $ref: "#/components/schemas/Instruction"
+            $ref: '#/components/schemas/Instruction'
         imageUrl:
           type: string
           format: uri

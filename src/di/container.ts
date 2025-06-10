@@ -17,6 +17,6 @@ export const createDIContainer = (): DIContainer => {
   const recipeService = new RecipeService(recipeRepository);
 
   return {
-    recipeService
+    recipeService,
   };
 };

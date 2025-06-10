@@ -14,10 +14,11 @@ export class RecipeService {
 
   searchRecipes(recipes: Recipe[], query: string): Recipe[] {
     const lowercaseQuery = query.toLowerCase();
-    return recipes.filter(recipe =>
-      recipe.title?.toLowerCase().includes(lowercaseQuery) ||
-      recipe.description?.toLowerCase().includes(lowercaseQuery) ||
-      recipe.tags?.some(tag => tag.toLowerCase().includes(lowercaseQuery))
+    return recipes.filter(
+      recipe =>
+        recipe.title?.toLowerCase().includes(lowercaseQuery) ||
+        recipe.description?.toLowerCase().includes(lowercaseQuery) ||
+        recipe.tags?.some(tag => tag.toLowerCase().includes(lowercaseQuery))
     );
   }
 

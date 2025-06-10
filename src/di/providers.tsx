@@ -12,11 +12,7 @@ interface DIProviderProps {
 export const DIProvider: React.FC<DIProviderProps> = ({ children }) => {
   const container = useMemo(() => createDIContainer(), []);
 
-  return (
-    <DIContext.Provider value={container}>
-      {children}
-    </DIContext.Provider>
-  );
+  return <DIContext.Provider value={container}>{children}</DIContext.Provider>;
 };
 
 export const useDI = (): DIContainer => {

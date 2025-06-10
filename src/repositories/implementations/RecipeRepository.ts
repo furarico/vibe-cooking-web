@@ -19,7 +19,12 @@ export class RecipeRepository implements IRecipeRepository {
       const recipe: Recipe = await this.apiClient.recipesIdGet({ id });
       return recipe;
     } catch (error: unknown) {
-      if (error && typeof error === 'object' && 'status' in error && error.status === 404) {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'status' in error &&
+        error.status === 404
+      ) {
         return null;
       }
       console.error('レシピ詳細取得エラー:', error);

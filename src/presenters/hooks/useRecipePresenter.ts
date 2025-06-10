@@ -26,7 +26,8 @@ export interface RecipePresenterActions {
   refreshRecipes: () => Promise<void>;
 }
 
-export const useRecipePresenter = (): RecipePresenterState & RecipePresenterActions => {
+export const useRecipePresenter = (): RecipePresenterState &
+  RecipePresenterActions => {
   const { recipeService } = useDI();
 
   const [state, setState] = useState<RecipePresenterState>({
@@ -38,7 +39,7 @@ export const useRecipePresenter = (): RecipePresenterState & RecipePresenterActi
     searchQuery: '',
     servingsFilter: 1,
     maxTimeFilter: 180, // 3時間
-    showDialog: false
+    showDialog: false,
   });
 
   // レシピ一覧取得
@@ -51,13 +52,14 @@ export const useRecipePresenter = (): RecipePresenterState & RecipePresenterActi
         ...prev,
         recipes,
         filteredRecipes: recipes,
-        loading: false
+        loading: false,
       }));
     } catch (error) {
       setState(prev => ({
         ...prev,
-        error: error instanceof Error ? error.message : '不明なエラーが発生しました',
-        loading: false
+        error:
+          error instanceof Error ? error.message : '不明なエラーが発生しました',
+        loading: false,
       }));
     }
   }, [recipeService]);
@@ -67,7 +69,7 @@ export const useRecipePresenter = (): RecipePresenterState & RecipePresenterActi
     setState(prev => ({
       ...prev,
       selectedRecipe: recipe,
-      showDialog: true
+      showDialog: true,
     }));
   }, []);
 
@@ -76,7 +78,7 @@ export const useRecipePresenter = (): RecipePresenterState & RecipePresenterActi
     setState(prev => ({
       ...prev,
       selectedRecipe: null,
-      showDialog: false
+      showDialog: false,
     }));
   }, []);
 
@@ -120,7 +122,13 @@ export const useRecipePresenter = (): RecipePresenterState & RecipePresenterActi
     }
 
     setState(prev => ({ ...prev, filteredRecipes: filtered }));
-  }, [state.recipes, state.searchQuery, state.servingsFilter, state.maxTimeFilter, recipeService]);
+  }, [
+    state.recipes,
+    state.searchQuery,
+    state.servingsFilter,
+    state.maxTimeFilter,
+    recipeService,
+  ]);
 
   // 初回データ取得
   useEffect(() => {
@@ -135,6 +143,6 @@ export const useRecipePresenter = (): RecipePresenterState & RecipePresenterActi
     setSearchQuery,
     setServingsFilter,
     setMaxTimeFilter,
-    refreshRecipes
+    refreshRecipes,
   };
 };

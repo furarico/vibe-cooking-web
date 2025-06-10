@@ -6,7 +6,7 @@ export async function GET() {
   try {
     // RecipesGet200Response 形式で返す
     return NextResponse.json({
-      recipes: sampleRecipes
+      recipes: sampleRecipes,
     });
   } catch (error) {
     console.error('レシピ一覧取得エラー:', error);
