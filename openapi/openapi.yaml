@@ -133,8 +133,6 @@ components:
           type: array
           items:
             type: string
-        nutritionInfo:
-          $ref: '#/components/schemas/NutritionInfo'
         ratings:
           type: object
           properties:
@@ -189,31 +187,6 @@ components:
       required:
         - step
         - description
-
-    NutritionInfo:
-      type: object
-      properties:
-        calories:
-          type: integer
-          description: カロリー
-        protein:
-          type: number
-          description: タンパク質（g）
-        carbs:
-          type: number
-          description: 炭水化物（g）
-        fat:
-          type: number
-          description: 脂質（g）
-        fiber:
-          type: number
-          description: 食物繊維（g）
-        sugar:
-          type: number
-          description: 糖質（g）
-        sodium:
-          type: number
-          description: ナトリウム（mg）
 
     Pagination:
       type: object
