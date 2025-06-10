@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { IRecipeRepository } from '../repositories/interfaces/i-recipe-repository';
 import { RecipeRepository } from '../repositories/implementations/recipe-repository';
+import { IRecipeRepository } from '../repositories/interfaces/i-recipe-repository';
 import { IRecipeService, RecipeService } from '../services/recipe-service';
 
 export class ServerContainer {

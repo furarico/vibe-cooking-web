@@ -1,6 +1,6 @@
-import { DefaultApi } from '@/lib/api-client';
 import { RecipeRepository } from '@/client/repositories/implementations/recipe-repository';
 import { RecipeService } from '@/client/services/recipe/recipe-service';
+import { DefaultApi } from '@/lib/api-client';
 import { prisma } from '@/lib/database';
 
 export interface DIContainer {

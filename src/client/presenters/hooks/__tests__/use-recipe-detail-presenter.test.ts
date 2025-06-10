@@ -1,8 +1,8 @@
-import { renderHook, act } from '@testing-library/react';
-import { useRecipeDetailPresenter } from '../use-recipe-detail-presenter';
 import { useDI } from '@/client/di/providers';
-import { Recipe } from '@/lib/api-client';
 import { RecipeService } from '@/client/services/recipe/recipe-service';
+import { Recipe } from '@/lib/api-client';
+import { act, renderHook } from '@testing-library/react';
+import { useRecipeDetailPresenter } from '../use-recipe-detail-presenter';
 
 // DIプロバイダーをモック
 jest.mock('@/client/di/providers');

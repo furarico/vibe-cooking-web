@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useCallback } from 'react';
 import { useDI } from '@/client/di/providers';
 import { Recipe } from '@/lib/api-client';
+import { useCallback, useState } from 'react';
 
 export interface RecipeDetailPresenterState {
   recipe: Recipe | null;

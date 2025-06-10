@@ -1,8 +1,8 @@
-import { RecipeService } from '../recipe-service';
 import {
   IRecipeRepository,
   RecipeWithDetails,
 } from '../../repositories/interfaces/i-recipe-repository';
+import { RecipeService } from '../recipe-service';
 
 // リポジトリのモック
 const mockRecipeRepository: jest.Mocked<IRecipeRepository> = {

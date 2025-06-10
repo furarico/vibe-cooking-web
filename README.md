@@ -33,6 +33,7 @@
 
 ## 🛠️ 開発コマンド
 
+### 基本コマンド
 ```bash
 # 開発サーバー起動（Turbopack使用）
 pnpm dev
@@ -43,32 +44,112 @@ pnpm build
 # 本番サーバー起動
 pnpm start
 
-# コード品質チェック
+# リンティング
 pnpm lint
 
-# APIクライアント生成（OpenAPIスキーマから）
-pnpm run api:generate
+# フォーマット（リンティング修正とPrettierフォーマット）
+pnpm format
 
-# APIドキュメントプレビュー
-pnpm run preview:api
+# テスト実行
+pnpm test
+
+# テスト監視
+pnpm test:watch
+
+# テストカバレッジ
+pnpm test:coverage
 ```
 
-## 🏗️ プロジェクト構造
+### API関連コマンド
+```bash
+# APIクライアント生成（OpenAPI仕様からTypeScript型定義を再生成）
+pnpm api:generate
+
+# APIドキュメントプレビュー（ブラウザでRedoclyドキュメントを開く）
+pnpm api:preview
+```
+
+### データベース関連コマンド
+```bash
+# Prismaマイグレーション生成・適用
+pnpm db:migrate
+
+# Prismaクライアント生成
+pnpm db:generate
+
+# データベースシード（初期データ投入）
+pnpm db:seed
+
+# Prisma Studio（データベースGUI管理ツール起動）
+pnpm db:studio
+
+# データベース完全リセット
+pnpm db:reset
+```
+
+## 🏗️ アーキテクチャ概要
+
+このプロジェクトは**Next.js 15 App Router**をベースとした**APIファースト開発**アプローチで、クライアントサイドとサーバーサイドの両方で**レイヤードアーキテクチャ**を採用しています。
+
+### クライアントサイドアーキテクチャ
+
+```
+UI Layer (Presentation)
+    ↓
+Presenter Layer
+    ↓
+Service Layer
+    ↓
+Repository Layer
+    ↓
+External API / Data Source
+```
+
+### サーバーサイドアーキテクチャ
+
+```
+API Routes Layer (Next.js App Router)
+    ↓
+Controller Layer
+    ↓
+Service Layer
+    ↓
+Repository Layer
+    ↓
+Database Layer (Prisma + PostgreSQL)
+```
+
+### プロジェクト構造
 
 ```
 vibe-cooking-web/
 ├── src/
-│   ├── app/                    # Next.js App Router（ページとレイアウト）
+│   ├── app/                    # Next.js App Router（UI Layer）
+│   │   ├── api/                # API Routes
 │   │   ├── layout.tsx         # ルートレイアウト
 │   │   ├── page.tsx           # ホームページ
 │   │   └── globals.css        # グローバルスタイル
-│   └── lib/
-│       └── api/               # 自動生成されたAPIクライアント
+│   ├── client/                 # クライアントサイドレイヤー
+│   │   ├── di/                # 依存性注入コンテナ
+│   │   ├── presenters/        # Presenter Layer
+│   │   ├── repositories/      # Repository Layer
+│   │   └── services/          # Service Layer
+│   ├── server/                 # サーバーサイドレイヤー
+│   │   ├── di/                # 依存性注入コンテナ
+│   │   ├── repositories/      # Repository Layer
+│   │   └── services/          # Service Layer
+│   ├── lib/                    # 共通ライブラリ
+│   │   ├── api-client.ts      # 手動実装HTTPクライアント
+│   │   └── database.ts        # データベース接続管理
+│   └── types/                  # 型定義
+│       └── api.d.ts           # 自動生成されたAPI型定義
 ├── openapi/
-│   ├── openapi.yaml           # OpenAPI仕様書
-│   └── config.yaml            # コード生成設定
-├── public/                     # 静的ファイル
-└── 設定ファイル群
+│   └── openapi.yaml           # OpenAPI仕様書
+├── prisma/                     # データベーススキーマとマイグレーション
+│   ├── schema.prisma
+│   ├── migrations/
+│   └── seed.ts
+└── public/                     # 静的ファイル
 ```
 
 ## 🔧 技術スタック
@@ -76,9 +157,12 @@ vibe-cooking-web/
 - **フレームワーク**: Next.js 15 (App Router)
 - **言語**: TypeScript
 - **スタイリング**: Tailwind CSS 4
+- **データベース**: PostgreSQL + Prisma ORM
 - **パッケージマネージャー**: pnpm
 - **API仕様**: OpenAPI 3.0.3
+- **テスト**: Jest
 - **フォント**: Geist (Vercel)
+- **デプロイ**: Google Cloud Run + Cloud SQL
 
 ## 📋 API開発ワークフロー
 
@@ -89,13 +173,13 @@ vibe-cooking-web/
 
 ### 2. クライアントコード生成
 ```bash
-pnpm run api:generate
+pnpm api:generate
 ```
-TypeScript型定義とAPIクライアントが `src/lib/api/` に自動生成されます
+TypeScript型定義が `src/types/api.d.ts` に自動生成されます
 
 ### 3. APIドキュメント確認
 ```bash
-pnpm run preview:api
+pnpm api:preview
 ```
 ブラウザでインタラクティブなAPIドキュメントを表示
 
@@ -115,16 +199,44 @@ pnpm run preview:api
 - パスマッピング: `@/*` → `./src/*`
 - 自動生成されたAPI型を活用
 
-### コード品質
+### コード品質とテスト
 - ESLint with Next.js設定
-- 自動フォーマット対応
+- Prettier自動フォーマット
+- Jestでユニットテスト
+- テスト駆動開発（TDD）を推奨
 - Turbopackで高速開発
+
+## 💾 データベース設定
+
+### ローカル開発環境
+ローカル開発では、環境変数でデータベース接続を設定してください。
+
+### プロダクション環境（Cloud SQL）
+プロダクションではCloud SQLとIAM認証を使用します。
+
+### Prisma Schema
+データベーススキーマは `prisma/schema.prisma` で管理し、マイグレーションでバージョン管理しています。
+
+## 🚀 デプロイメント
+
+### Google Cloud Run
+プロダクションアプリケーションはGoogle Cloud Runでホストされています。
+
+### Dockerコンテナ
+```bash
+# Dockerイメージビルド
+docker build -t vibe-cooking .
+
+# ローカルテスト
+docker run -p 3000:3000 vibe-cooking
+```
 
 ## 🚨 重要な注意点
 
-- **生成されたコードを手動編集しない**: `src/lib/api/` 内のファイルは `pnpm run api:generate` で再生成されます
+- **生成された型定義を手動編集しない**: `src/types/api.d.ts` は `pnpm api:generate` で再生成されます
 - **pnpmを使用**: このプロジェクトはpnpmに最適化されています
 - **API変更時**: OpenAPI仕様変更後は必ずクライアントコードを再生成してください
+- **テスト駆動開発**: 新機能実装時はテストを先に実装してください
 
 ## 📚 詳細ドキュメント
 

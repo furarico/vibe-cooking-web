@@ -1,5 +1,5 @@
-import { Recipe } from '@/lib/api-client';
 import { IRecipeRepository } from '@/client/repositories/interfaces/i-recipe-repository';
+import { Recipe } from '@/lib/api-client';
 
 export class RecipeService {
   constructor(private recipeRepository: IRecipeRepository) {}

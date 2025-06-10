@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useMemo, ReactNode } from 'react';
+import React, { ReactNode, createContext, useContext, useMemo } from 'react';
 import { DIContainer, createDIContainer } from './container';
 
 const DIContext = createContext<DIContainer | null>(null);
