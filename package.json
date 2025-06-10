@@ -13,11 +13,11 @@
     "test:coverage": "jest --coverage",
     "generate:api": "cd openapi && openapi-generator-cli generate -i openapi.yaml -g typescript-fetch -o ../src/lib/api --additional-properties=typescriptThreePlus=true,stringEnums=true,supportsES6=true,withInterfaces=true,useSeparateModelsAndApi=true",
     "preview:api": "redocly preview-docs openapi/openapi.yaml",
-    "db:migrate": "prisma migrate dev",
-    "db:generate": "prisma generate",
-    "db:seed": "prisma db seed",
-    "db:studio": "prisma studio",
-    "db:reset": "prisma migrate reset"
+    "db:migrate": "dotenv -e .env.local -- prisma migrate dev --name init",
+    "db:generate": "dotenv -e .env.local -- prisma generate",
+    "db:seed": "dotenv -e .env.local -- prisma db seed",
+    "db:studio": "dotenv -e .env.local -- prisma studio",
+    "db:reset": "dotenv -e .env.local -- prisma migrate reset"
   },
   "dependencies": {
     "@prisma/client": "^6.9.0",
@@ -38,6 +38,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv-cli": "^8.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
     "eslint-config-prettier": "^10.1.5",
