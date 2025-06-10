@@ -23,7 +23,7 @@ export interface RecipeDetailPresenterActions {
 
 export const useRecipeDetailPresenter = (): RecipeDetailPresenterState &
   RecipeDetailPresenterActions => {
-  const { recipeService } = useDI();
+  const { recipeRepository } = useDI();
 
   const [state, setState] = useState<RecipeDetailPresenterState>({
     recipe: null,
@@ -39,7 +39,7 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenterState &
       setState(prev => ({ ...prev, loading: true, error: null }));
 
       try {
-        const recipe = await recipeService.getRecipeById(id);
+        const recipe = await recipeRepository.findById(id);
 
         if (!recipe) {
           setState(prev => ({
@@ -68,7 +68,7 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenterState &
         }));
       }
     },
-    [recipeService]
+    [recipeRepository]
   );
 
   // 現在のステップ設定

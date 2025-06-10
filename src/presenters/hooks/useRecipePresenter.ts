@@ -28,7 +28,7 @@ export interface RecipePresenterActions {
 
 export const useRecipePresenter = (): RecipePresenterState &
   RecipePresenterActions => {
-  const { recipeService } = useDI();
+  const { recipeRepository } = useDI();
 
   const [state, setState] = useState<RecipePresenterState>({
     recipes: [],
@@ -47,7 +47,7 @@ export const useRecipePresenter = (): RecipePresenterState &
     setState(prev => ({ ...prev, loading: true, error: null }));
 
     try {
-      const recipes = await recipeService.getAllRecipes();
+      const recipes = await recipeRepository.findAll();
       setState(prev => ({
         ...prev,
         recipes,
@@ -62,7 +62,7 @@ export const useRecipePresenter = (): RecipePresenterState &
         loading: false,
       }));
     }
-  }, [recipeService]);
+  }, [recipeRepository]);
 
   // レシピ選択
   const selectRecipe = useCallback((recipe: Recipe) => {
@@ -108,17 +108,27 @@ export const useRecipePresenter = (): RecipePresenterState &
 
     // 検索フィルター
     if (state.searchQuery) {
-      filtered = recipeService.searchRecipes(filtered, state.searchQuery);
+      const query = state.searchQuery.toLowerCase();
+      filtered = filtered.filter(recipe => 
+        recipe.title?.toLowerCase().includes(query) ||
+        recipe.description?.toLowerCase().includes(query) ||
+        recipe.tags?.some(tag => tag.toLowerCase().includes(query))
+      );
     }
 
     // 人数フィルター
     if (state.servingsFilter > 1) {
-      filtered = recipeService.filterByServings(filtered, state.servingsFilter);
+      filtered = filtered.filter(recipe => 
+        recipe.servings && recipe.servings >= state.servingsFilter
+      );
     }
 
     // 時間フィルター
     if (state.maxTimeFilter < 180) {
-      filtered = recipeService.filterByMaxTime(filtered, state.maxTimeFilter);
+      filtered = filtered.filter(recipe => {
+        const totalTime = (recipe.prepTime || 0) + (recipe.cookTime || 0);
+        return totalTime <= state.maxTimeFilter;
+      });
     }
 
     setState(prev => ({ ...prev, filteredRecipes: filtered }));
@@ -127,7 +137,6 @@ export const useRecipePresenter = (): RecipePresenterState &
     state.searchQuery,
     state.servingsFilter,
     state.maxTimeFilter,
-    recipeService,
   ]);
 
   // 初回データ取得
