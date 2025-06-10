@@ -43,6 +43,13 @@
 - **APIクライアント生成**: `pnpm run generate:api` (OpenAPI仕様からTypeScriptクライアントを再生成)
 - **APIドキュメントプレビュー**: `pnpm run preview:api` (ブラウザでRedoclyドキュメントを開く)
 
+### データベース関連コマンド
+- **Prismaマイグレーション生成**: `pnpm prisma migrate dev` (開発環境用マイグレーション作成・適用)
+- **Prismaクライアント生成**: `pnpm prisma generate` (Prismaクライアントコード生成)
+- **データベースシード**: `pnpm prisma db seed` (初期データ投入)
+- **Prisma Studio**: `pnpm prisma studio` (データベースGUI管理ツール起動)
+- **データベースリセット**: `pnpm prisma migrate reset` (データベース完全リセット)
+
 ## アーキテクチャ概要
 
 これは**Next.js 15 App Router**プロジェクトで、**TypeScript**と**Tailwind CSS 4**を使用し、料理・レシピプラットフォーム向けの**APIファースト開発**アプローチで設計されています。
@@ -107,6 +114,70 @@ External API / Data Source
 
 ### サーバサイドアーキテクチャ
 
+**レイヤードアーキテクチャ**
+
+サーバーサイドもクライアントサイドと一貫した5層構造を採用し、**Prisma ORM**と**PostgreSQL**を使用します：
+
+```
+API Routes Layer (Next.js App Router)
+    ↓
+Controller Layer  
+    ↓
+Service Layer
+    ↓
+Repository Layer
+    ↓
+Database Layer (Prisma + PostgreSQL)
+```
+
+#### 1. API Routes Layer（APIルートレイヤー）
+- **責務**: HTTPリクエストのルーティング、基本的な認証・認可
+- **技術**: Next.js App Router
+- **場所**: `src/app/api/` (既存)
+- **特徴**: 薄いレイヤー、Controllerへの移譲のみ
+
+#### 2. Controller Layer（コントローラーレイヤー）
+- **責務**: リクエスト・レスポンスの変換、バリデーション、エラーハンドリング
+- **場所**: `src/server/controllers/`
+- **特徴**: HTTPプロトコルに依存、OpenAPI仕様との整合性確保
+
+#### 3. Service Layer（サービスレイヤー）
+- **責務**: ビジネスロジック、トランザクション管理、複数リポジトリの協調
+- **場所**: `src/server/services/`
+- **特徴**: ドメイン中心の設計、HTTPに非依存
+
+#### 4. Repository Layer（リポジトリレイヤー）
+- **責務**: データアクセスの抽象化、Prismaクライアントの管理
+- **場所**: `src/server/repositories/`
+- **特徴**: データソースの詳細を隠蔽、型安全なデータアクセス
+
+#### 5. Database Layer（データベースレイヤー）
+- **責務**: データ永続化、スキーマ管理
+- **技術**: Prisma ORM + PostgreSQL
+- **場所**: `prisma/` ディレクトリ
+
+#### 6. DI Container（依存性注入コンテナ）
+- **責務**: サーバーサイド各レイヤー間の依存関係管理、インスタンス生成
+- **場所**: `src/server/di/`
+- **特徴**: 疎結合、テスタビリティの向上
+
+**サーバーサイド推奨ディレクトリ構造**:
+```
+src/server/
+├── controllers/          # コントローラーレイヤー
+├── services/            # サービスレイヤー  
+├── repositories/        # リポジトリレイヤー
+│   ├── interfaces/      # リポジトリインターフェース
+│   └── implementations/ # リポジトリ実装
+├── di/                 # 依存性注入
+├── types/              # サーバー固有の型定義
+└── utils/              # ユーティリティ
+
+prisma/                 # Prismaスキーマとマイグレーション
+├── schema.prisma
+├── migrations/
+└── seed.ts
+```
 
 ### コアデータモデル
 
@@ -127,7 +198,8 @@ External API / Data Source
 
 1. **API変更**: `openapi/openapi.yaml`を修正 → `pnpm run generate:api`を実行 → 仕様と生成されたコード両方をコミット
 2. **APIドキュメントプレビュー**: 開発中にAPIドキュメントを表示するために`pnpm run preview:api`を使用
-3. **フォント最適化**: プロジェクトは自動最適化のために`next/font`経由でGeistフォントを使用
+3. **データベーススキーマ変更**: `prisma/schema.prisma`を修正 → `pnpm prisma migrate dev`を実行 → マイグレーションファイルをコミット
+4. **フォント最適化**: プロジェクトは自動最適化のために`next/font`経由でGeistフォントを使用
 
 ### 重要な注意事項
 
