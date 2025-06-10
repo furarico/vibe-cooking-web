@@ -4,16 +4,16 @@ import {
   RecipePresenterState,
   RecipePresenterActions,
 } from '../use-recipe-presenter';
-import { useDI } from '@/di/providers';
+import { useDI } from '@/client/di/providers';
 import { Recipe } from '@/lib/api';
-import { RecipeService } from '@/services/recipe/recipe-service';
+import { RecipeService } from '@/client/services/recipe/recipe-service';
 
 // DIプロバイダーをモック
-jest.mock('@/di/providers');
+jest.mock('@/client/di/providers');
 
 // モックされたレシピサービス
 const mockRecipeService = jest.createMockFromModule<RecipeService>(
-  '@/services/recipe/recipe-service'
+  '@/client/services/recipe/recipe-service'
 ) as jest.Mocked<RecipeService>;
 mockRecipeService.getAllRecipes = jest.fn<Promise<Recipe[]>, []>();
 mockRecipeService.getRecipeById = jest.fn<Promise<Recipe | null>, [string]>();

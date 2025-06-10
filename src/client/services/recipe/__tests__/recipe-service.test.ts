@@ -1,5 +1,5 @@
 import { RecipeService } from '../recipe-service';
-import { IRecipeRepository } from '@/repositories/interfaces/i-recipe-repository';
+import { IRecipeRepository } from '@/client/repositories/interfaces/i-recipe-repository';
 import { Recipe } from '@/lib/api';
 
 // IRecipeRepositoryのモック
