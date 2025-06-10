@@ -1,12 +1,6 @@
 import { Recipe } from '@/lib/api';
 import { IRecipeRepository } from '@/repositories/interfaces/IRecipeRepository';
 
-export interface EnrichedRecipe extends Recipe {
-  totalTime: number;
-  formattedTime: string;
-  difficultyLevel: 'easy' | 'medium' | 'hard';
-}
-
 export class RecipeService {
   constructor(private recipeRepository: IRecipeRepository) {}
 
