@@ -40,3 +40,6 @@ Thumbs.db
 # その他
 README.md
 CLAUDE.md
+
+prisma/migrations/
+src/lib/api/

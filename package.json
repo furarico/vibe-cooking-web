@@ -11,13 +11,14 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "generate:api": "cd openapi && openapi-generator-cli generate -i openapi.yaml -g typescript-fetch -o ../src/lib/api --additional-properties=typescriptThreePlus=true,stringEnums=true,supportsES6=true,withInterfaces=true,useSeparateModelsAndApi=true",
+    "generate:api": "openapi-generator-cli generate -i ./openapi/openapi.yaml -g typescript-fetch -o ./src/lib/api --additional-properties=typescriptThreePlus=true,stringEnums=true,supportsES6=true,withInterfaces=true,useSeparateModelsAndApi=true",
     "preview:api": "redocly preview-docs openapi/openapi.yaml",
     "db:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "db:generate": "dotenv -e .env.local -- prisma generate",
     "db:seed": "dotenv -e .env.local -- prisma db seed",
     "db:studio": "dotenv -e .env.local -- prisma studio",
-    "db:reset": "dotenv -e .env.local -- prisma migrate reset"
+    "db:reset": "dotenv -e .env.local -- prisma migrate reset",
+    "deploy:run": "dotenv -e .env -- gcloud run deploy vibe-cooking-web --source . --region asia-northeast1 --allow-unauthenticated --set-cloudsql-instances=$CLOUD_SQL_PROJECT_ID:$CLOUD_SQL_REGION:$CLOUD_SQL_INSTANCE_NAME --set-env-vars=CLOUD_SQL_PROJECT_ID=$CLOUD_SQL_PROJECT_ID,CLOUD_SQL_REGION=$CLOUD_SQL_REGION,CLOUD_SQL_INSTANCE_NAME=$CLOUD_SQL_INSTANCE_NAME,CLOUD_SQL_DATABASE_NAME=$CLOUD_SQL_DATABASE_NAME,CLOUD_SQL_IAM_USER=$CLOUD_SQL_IAM_USER,NODE_ENV=production --project furarico-vibe-cooking"
   },
   "dependencies": {
     "@prisma/client": "^6.9.0",
