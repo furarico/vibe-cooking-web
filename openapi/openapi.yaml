@@ -19,23 +19,6 @@ paths:
       summary: レシピ一覧取得
       description: フィルタリング機能付きでレシピ一覧を取得
       parameters:
-        - name: category
-          in: query
-          description: カテゴリーでフィルタ
-          schema:
-            type: string
-            enum: ["前菜", "メイン", "デザート", "ドリンク", "スナック"]
-        - name: cuisine
-          in: query
-          description: 料理の種類でフィルタ
-          schema:
-            type: string
-        - name: difficulty
-          in: query
-          description: 難易度でフィルタ
-          schema:
-            type: string
-            enum: ["簡単", "普通", "難しい"]
         - name: cookTime
           in: query
           description: 最大調理時間（分）
@@ -99,14 +82,6 @@ components:
           type: string
         description:
           type: string
-        category:
-          type: string
-          enum: ["前菜", "メイン", "デザート", "ドリンク", "スナック"]
-        cuisine:
-          type: string
-        difficulty:
-          type: string
-          enum: ["簡単", "普通", "難しい"]
         prepTime:
           type: integer
           description: 準備時間（分）
@@ -131,14 +106,6 @@ components:
           type: array
           items:
             type: string
-        ratings:
-          type: object
-          properties:
-            average:
-              type: number
-              format: float
-            count:
-              type: integer
         createdAt:
           type: string
           format: date-time
