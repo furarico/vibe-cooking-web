@@ -39,7 +39,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Generate API client
-        run: pnpm generate:api
+        run: pnpm api:generate
 
       - name: Generate Prisma client
         run: pnpm db:generate

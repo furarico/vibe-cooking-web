@@ -40,8 +40,8 @@
 - **テスト**: `pnpm test` (Jestでユニットテストを実行)
 - **テスト監視**: `pnpm test:watch` (ファイル変更を監視してテストを自動実行)
 - **テストカバレッジ**: `pnpm test:coverage` (カバレッジレポート付きでテストを実行)
-- **APIクライアント生成**: `pnpm run generate:api` (OpenAPI仕様からTypeScriptクライアントを再生成)
-- **APIドキュメントプレビュー**: `pnpm run preview:api` (ブラウザでRedoclyドキュメントを開く)
+- **APIクライアント生成**: `pnpm generate:api` (OpenAPI仕様からTypeScript型定義を再生成)
+- **APIドキュメントプレビュー**: `pnpm preview:api` (ブラウザでRedoclyドキュメントを開く)
 
 ### データベース関連コマンド
 - **Prismaマイグレーション生成**: `pnpm db:migrate` (開発環境用マイグレーション作成・適用)
@@ -62,10 +62,10 @@
 
 **APIファースト開発**: プロジェクトはOpenAPI仕様（`openapi/openapi.yaml`）を使用して型安全なTypeScriptクライアントコードを生成します。API仕様はフロントエンドとバックエンド間のデータ契約の信頼できる情報源です。
 
-**生成されたAPIクライアント**: `openapi/openapi.yaml`への変更後は`pnpm run generate:api`を実行してください。これにより`/src/lib/api/`ディレクトリ全体が以下で再生成されます：
-- `apis/DefaultApi.ts`の型安全なAPI関数
-- `models/`ディレクトリのTypeScriptインターフェース
-- HTTPリクエスト用のランタイムユーティリティ
+**生成されたAPI型定義**: `openapi/openapi.yaml`への変更後は`pnpm generate:api`を実行してください。これにより以下が生成されます：
+- `src/types/api.d.ts`にTypeScript型定義
+- `src/lib/api-client.ts`で手動実装されたHTTPクライアント（DefaultApiクラス）
+- Recipe、Ingredient、Instruction等の型安全なインターフェース
 
 **現在のAPIエンドポイント**:
 - `GET /recipes` - 全レシピを取得（フィルタリング・ページネーションなし）
@@ -194,14 +194,15 @@ prisma/                 # Prismaスキーマとマイグレーション
 ### プロジェクト構造の詳細
 
 - **App Router**: `src/app/`ディレクトリ内の全ページ
-- **生成されたコード**: `src/lib/api/`を手動で編集しないでください - 常にOpenAPI仕様から再生成
+- **生成されたコード**: `src/types/api.d.ts`を手動で編集しないでください - 常にOpenAPI仕様から再生成
+- **APIクライアント**: `src/lib/api-client.ts`でfetchベースのHTTPクライアントを手動実装
 - **API仕様**: "Vibe Cooking API"の日本語ドキュメントを含む`openapi/openapi.yaml`に配置
 - **スタイリング**: テーマ用のCSSカスタムプロパティでTailwind CSS 4を使用
 
 ### 開発ワークフロー
 
-1. **API変更**: `openapi/openapi.yaml`を修正 → `pnpm run generate:api`を実行 → 仕様と生成されたコード両方をコミット
-2. **APIドキュメントプレビュー**: 開発中にAPIドキュメントを表示するために`pnpm run preview:api`を使用
+1. **API変更**: `openapi/openapi.yaml`を修正 → `pnpm generate:api`を実行 → 仕様と生成された型定義をコミット
+2. **APIドキュメントプレビュー**: 開発中にAPIドキュメントを表示するために`pnpm preview:api`を使用
 3. **データベーススキーマ変更**: `prisma/schema.prisma`を修正 → `pnpm db:migrate`を実行 → マイグレーションファイルをコミット
 4. **フォント最適化**: プロジェクトは自動最適化のために`next/font`経由でGeistフォントを使用
 
@@ -236,4 +237,5 @@ prisma/                 # Prismaスキーマとマイグレーション
 - 開発サーバーは高速ビルドのために**Turbopack**を含む
 - APIサーバーは`http://localhost:3000/api`で動作（Next.js APIルート）
 - 生成された全てのTypeScript型は**文字列enum**と**ES6+機能**を使用
-- `.gitignore`は`openapi/openapitools.json`と`src/lib/api`を除外（生成された更新をコミットする場合を除く）
+- 型定義生成には`openapi-typescript`を使用（軽量で高速）
+- `.gitignore`は`src/types/api.d.ts`を含める（生成されたファイルもコミット対象）
