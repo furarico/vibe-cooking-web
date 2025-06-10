@@ -44,11 +44,11 @@
 - **APIドキュメントプレビュー**: `pnpm run preview:api` (ブラウザでRedoclyドキュメントを開く)
 
 ### データベース関連コマンド
-- **Prismaマイグレーション生成**: `pnpm prisma migrate dev` (開発環境用マイグレーション作成・適用)
-- **Prismaクライアント生成**: `pnpm prisma generate` (Prismaクライアントコード生成)
-- **データベースシード**: `pnpm prisma db seed` (初期データ投入)
-- **Prisma Studio**: `pnpm prisma studio` (データベースGUI管理ツール起動)
-- **データベースリセット**: `pnpm prisma migrate reset` (データベース完全リセット)
+- **Prismaマイグレーション生成**: `pnpm db:migrate` (開発環境用マイグレーション作成・適用)
+- **Prismaクライアント生成**: `pnpm db:generate` (Prismaクライアントコード生成)
+- **データベースシード**: `pnpm db:seed` (初期データ投入)
+- **Prisma Studio**: `pnpm db:studio` (データベースGUI管理ツール起動)
+- **データベースリセット**: `pnpm db:reset` (データベース完全リセット)
 
 ## アーキテクチャ概要
 
@@ -198,7 +198,7 @@ prisma/                 # Prismaスキーマとマイグレーション
 
 1. **API変更**: `openapi/openapi.yaml`を修正 → `pnpm run generate:api`を実行 → 仕様と生成されたコード両方をコミット
 2. **APIドキュメントプレビュー**: 開発中にAPIドキュメントを表示するために`pnpm run preview:api`を使用
-3. **データベーススキーマ変更**: `prisma/schema.prisma`を修正 → `pnpm prisma migrate dev`を実行 → マイグレーションファイルをコミット
+3. **データベーススキーマ変更**: `prisma/schema.prisma`を修正 → `pnpm db:migrate`を実行 → マイグレーションファイルをコミット
 4. **フォント最適化**: プロジェクトは自動最適化のために`next/font`経由でGeistフォントを使用
 
 ### 重要な注意事項

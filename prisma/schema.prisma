@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Recipe {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  prepTime    Int?     // 準備時間（分）
+  cookTime    Int?     // 調理時間（分）
+  servings    Int?     // 人数分
+  imageUrl    String?
+  tags        String[] // PostgreSQLの配列型を使用
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // リレーション
+  ingredients  Ingredient[]
+  instructions Instruction[]
+
+  @@map("recipes")
+}
+
+model Ingredient {
+  id     String  @id @default(cuid())
+  name   String  // 材料名
+  amount Float   // 分量
+  unit   String  // 単位
+  notes  String? // 備考
+
+  // リレーション
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId String
+
+  @@map("ingredients")
+}
+
+model Instruction {
+  id            String  @id @default(cuid())
+  step          Int     // 手順番号
+  description   String  // 手順の説明
+  imageUrl      String? // 手順の画像URL
+  estimatedTime Int?    // この手順の推定時間（分）
+
+  // リレーション
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId String
+
+  @@map("instructions")
+}
