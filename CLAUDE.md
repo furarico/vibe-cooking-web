@@ -40,8 +40,8 @@
 - **テスト**: `pnpm test` (Jestでユニットテストを実行)
 - **テスト監視**: `pnpm test:watch` (ファイル変更を監視してテストを自動実行)
 - **テストカバレッジ**: `pnpm test:coverage` (カバレッジレポート付きでテストを実行)
-- **APIクライアント生成**: `pnpm generate:api` (OpenAPI仕様からTypeScript型定義を再生成)
-- **APIドキュメントプレビュー**: `pnpm preview:api` (ブラウザでRedoclyドキュメントを開く)
+- **APIクライアント生成**: `pnpm api:generate` (OpenAPI仕様からTypeScript型定義を再生成)
+- **APIドキュメントプレビュー**: `pnpm api:preview` (ブラウザでRedoclyドキュメントを開く)
 
 ### データベース関連コマンド
 - **Prismaマイグレーション生成**: `pnpm db:migrate` (開発環境用マイグレーション作成・適用)
@@ -62,7 +62,7 @@
 
 **APIファースト開発**: プロジェクトはOpenAPI仕様（`openapi/openapi.yaml`）を使用して型安全なTypeScriptクライアントコードを生成します。API仕様はフロントエンドとバックエンド間のデータ契約の信頼できる情報源です。
 
-**生成されたAPI型定義**: `openapi/openapi.yaml`への変更後は`pnpm generate:api`を実行してください。これにより以下が生成されます：
+**生成されたAPI型定義**: `openapi/openapi.yaml`への変更後は`pnpm api:generate`を実行してください。これにより以下が生成されます：
 - `src/types/api.d.ts`にTypeScript型定義
 - `src/lib/api-client.ts`で手動実装されたHTTPクライアント（DefaultApiクラス）
 - Recipe、Ingredient、Instruction等の型安全なインターフェース
@@ -201,8 +201,8 @@ prisma/                 # Prismaスキーマとマイグレーション
 
 ### 開発ワークフロー
 
-1. **API変更**: `openapi/openapi.yaml`を修正 → `pnpm generate:api`を実行 → 仕様と生成された型定義をコミット
-2. **APIドキュメントプレビュー**: 開発中にAPIドキュメントを表示するために`pnpm preview:api`を使用
+1. **API変更**: `openapi/openapi.yaml`を修正 → `pnpm api:generate`を実行 → 仕様と生成された型定義をコミット
+2. **APIドキュメントプレビュー**: 開発中にAPIドキュメントを表示するために`pnpm api:preview`を使用
 3. **データベーススキーマ変更**: `prisma/schema.prisma`を修正 → `pnpm db:migrate`を実行 → マイグレーションファイルをコミット
 4. **フォント最適化**: プロジェクトは自動最適化のために`next/font`経由でGeistフォントを使用
 
