@@ -66,4 +66,3 @@ export interface UpdateInstructionInput {
   imageUrl?: string;
   estimatedTime?: number;
 }
-
