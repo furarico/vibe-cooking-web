@@ -24,19 +24,6 @@ paths:
           description: 最大調理時間（分）
           schema:
             type: integer
-        - name: page
-          in: query
-          description: ページ番号
-          schema:
-            type: integer
-            default: 1
-        - name: limit
-          in: query
-          description: 1ページあたりのレシピ数
-          schema:
-            type: integer
-            default: 20
-            maximum: 100
       responses:
         '200':
           description: 成功
