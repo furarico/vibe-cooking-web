@@ -1,5 +1,7 @@
 # Vibe Cooking Web
 
+[![CI](https://github.com/kantacky/vibe-cooking-web/actions/workflows/ci.yml/badge.svg)](https://github.com/kantacky/vibe-cooking-web/actions/workflows/ci.yml)
+
 レシピ共有とクッキングコミュニティのためのWebアプリケーション
 
 ## 🚀 クイックスタート
