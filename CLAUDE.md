@@ -23,6 +23,10 @@
 - **開発サーバー**: `pnpm dev` (高速ビルドのためTurbopackを使用)
 - **本番ビルド**: `pnpm build`
 - **リンティング**: `pnpm lint`
+- **フォーマット**: `pnpm format` (リンティング修正とPrettierフォーマットを実行)
+- **テスト**: `pnpm test` (Jestでユニットテストを実行)
+- **テスト監視**: `pnpm test:watch` (ファイル変更を監視してテストを自動実行)
+- **テストカバレッジ**: `pnpm test:coverage` (カバレッジレポート付きでテストを実行)
 - **APIクライアント生成**: `pnpm run generate:api` (OpenAPI仕様からTypeScriptクライアントを再生成)
 - **APIドキュメントプレビュー**: `pnpm run preview:api` (ブラウザでRedoclyドキュメントを開く)
 
