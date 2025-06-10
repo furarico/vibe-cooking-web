@@ -52,7 +52,6 @@
 
 ### Cloud Run関連
 - **Dockerビルド**: `docker build -t vibe-cooking .`
-- **Cloud Build**: `gcloud builds submit --config cloudbuild.yaml`
 - **ローカルテスト**: `docker run -p 3000:3000 vibe-cooking`
 
 ## アーキテクチャ概要
