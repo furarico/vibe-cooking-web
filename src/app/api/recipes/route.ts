@@ -1,12 +1,21 @@
 import { NextResponse } from 'next/server';
-import { sampleRecipes } from '@/lib/mock-data';
+import { prisma } from '@/lib/database';
 
 // GET /api/recipes - レシピ一覧を取得
 export async function GET() {
   try {
+    const recipes = await prisma.recipe.findMany({
+      include: {
+        ingredients: true,
+        instructions: {
+          orderBy: { step: 'asc' },
+        },
+      },
+    });
+
     // RecipesGet200Response 形式で返す
     return NextResponse.json({
-      recipes: sampleRecipes,
+      recipes,
     });
   } catch (error) {
     console.error('レシピ一覧取得エラー:', error);
