@@ -1,144 +1,144 @@
-# Vibe Cooking Web - Client Architecture
+# Vibe Cooking Web - クライアントアーキテクチャ
 
-## Project Overview
+## プロジェクト概要
 
-Vibe Cooking Web is a Next.js 15 App Router project that adopts an **API-First development** approach for a cooking and recipe platform.
+Vibe Cooking Webは、料理・レシピプラットフォーム向けの**API-First開発**を採用したNext.js 15 App Routerプロジェクトです。
 
-## Technology Stack
+## 技術スタック
 
-### Core Framework
+### コアフレームワーク
 - **Next.js 15** (App Router)
 - **React 19**
 - **TypeScript 5**
 - **Tailwind CSS 4**
 
-### Development Tools & Libraries
-- **pnpm** - Package manager
-- **Turbopack** - Fast build tool
-- **ESLint** - Code quality management
-- **OpenAPI Generator CLI** - API client generation
-- **Redocly CLI** - API documentation generation and preview
+### 開発ツール・ライブラリ
+- **pnpm** - パッケージマネージャー
+- **Turbopack** - 高速ビルドツール
+- **ESLint** - コード品質管理
+- **OpenAPI Generator CLI** - API クライアント生成
+- **Redocly CLI** - API ドキュメント生成・プレビュー
 
-### Font Optimization
-- **Geist Sans & Geist Mono** - Automatic optimization via next/font
+### フォント最適化
+- **Geist Sans & Geist Mono** - next/fontによる自動最適化
 
-## Architecture Patterns
+## アーキテクチャパターン
 
-### API-First Development
+### API-First開発
 
-Using OpenAPI specification (`openapi/openapi.yaml`) as the **single source of truth**, automatically generating type-safe TypeScript client code.
+OpenAPI仕様書（`openapi/openapi.yaml`）を**真実の情報源**として、型安全なTypeScriptクライアントコードを自動生成します。
 
 ```
 openapi/openapi.yaml → `pnpm run generate:api` → src/lib/api/
 ```
 
-#### Generated File Structure
+#### 生成されるファイル構造
 ```
 src/lib/api/
 ├── apis/
-│   └── DefaultApi.ts          # Type-safe API functions
-├── models/                    # TypeScript interfaces
+│   └── DefaultApi.ts          # 型安全なAPI関数
+├── models/                    # TypeScriptインターフェース
 │   ├── Recipe.ts
 │   ├── Ingredient.ts
 │   └── Instruction.ts
-└── runtime/                   # HTTP request utilities
+└── runtime/                   # HTTP リクエストユーティリティ
 ```
 
-### Data Models
+### データモデル
 
-#### Recipe Schema
-- **Basic Info**: id, title, description
-- **Cooking Info**: prepTime, cookTime, servings
-- **Content**: ingredients[], instructions[]
-- **Metadata**: tags[], imageUrl, createdAt, updatedAt
+#### Recipeスキーマ
+- **基本情報**: id, title, description
+- **調理情報**: prepTime, cookTime, servings
+- **コンテンツ**: ingredients[], instructions[]
+- **メタデータ**: tags[], imageUrl, createdAt, updatedAt
 
-#### Ingredient Schema
-- **Required Fields**: name, amount, unit
-- **Optional**: notes
+#### Ingredientスキーマ
+- **必須フィールド**: name, amount, unit
+- **オプション**: notes
 
-#### Instruction Schema
-- **Required Fields**: step, description
-- **Optional**: imageUrl, estimatedTime
+#### Instructionスキーマ
+- **必須フィールド**: step, description
+- **オプション**: imageUrl, estimatedTime
 
-### Current API Endpoints
+### 現在のAPIエンドポイント
 
-| Method | Path | Description |
+| メソッド | パス | 説明 |
 |---------|------|------|
-| GET | `/recipes` | Retrieve all recipes |
-| GET | `/recipes/{id}` | Retrieve specific recipe |
+| GET | `/recipes` | レシピ一覧取得 |
+| GET | `/recipes/{id}` | レシピ詳細取得 |
 
-## Project Structure
+## プロジェクト構造
 
 ```
 vibe-cooking-web/
 ├── src/
 │   ├── app/                   # Next.js App Router
-│   │   ├── layout.tsx         # Root layout
-│   │   ├── page.tsx           # Home page
-│   │   └── globals.css        # Global styles
+│   │   ├── layout.tsx         # ルートレイアウト
+│   │   ├── page.tsx           # ホームページ
+│   │   └── globals.css        # グローバルスタイル
 │   └── lib/
-│       └── api/               # Auto-generated API client
+│       └── api/               # 自動生成されたAPIクライアント
 ├── openapi/
-│   └── openapi.yaml           # API specification (Japanese docs)
-├── public/                    # Static assets
-├── docs/                      # Project documentation
-└── CLAUDE.md                  # Claude Code project instructions
+│   └── openapi.yaml           # API仕様書（日本語ドキュメント）
+├── public/                    # 静的アセット
+├── docs/                      # プロジェクトドキュメント
+└── CLAUDE.md                  # Claude Code用プロジェクト指示
 ```
 
-## Development Workflow
+## 開発ワークフロー
 
-### 1. API Changes
+### 1. API変更
 ```bash
-# 1. Edit openapi/openapi.yaml
-# 2. Regenerate API client
+# 1. openapi/openapi.yaml を編集
+# 2. APIクライアント再生成
 pnpm run generate:api
 
-# 3. Commit both specification and code
+# 3. 仕様書とコードの両方をコミット
 git add openapi/openapi.yaml src/lib/api/
 git commit -m "Update API specification and generated client"
 ```
 
-### 2. Development Server
+### 2. 開発サーバー起動
 ```bash
-pnpm dev  # Fast builds with Turbopack
+pnpm dev  # Turbopack使用で高速ビルド
 ```
 
-### 3. API Documentation Preview
+### 3. API ドキュメント確認
 ```bash
-pnpm run preview:api  # Display Redocly docs in browser
+pnpm run preview:api  # ブラウザでRedoclyドキュメント表示
 ```
 
-### 4. Code Quality Check
+### 4. コード品質チェック
 ```bash
-pnpm lint      # Run ESLint
-pnpm build     # Production build
+pnpm lint      # ESLint実行
+pnpm build     # プロダクションビルド
 ```
 
-## Important Development Rules
+## 重要な開発ルール
 
-### Generated Code Handling
-- **Never manually edit `src/lib/api/` directory**
-- Always run `pnpm run generate:api` when changing APIs
-- OpenAPI specification changes and code generation must be done together
+### 生成コードの取り扱い
+- **`src/lib/api/`ディレクトリは手動編集禁止**
+- API変更時は必ず`pnpm run generate:api`で再生成
+- OpenAPI仕様書の変更とコード生成はセットで実行
 
-### Styling
-- **Tailwind CSS 4** usage
-- Theme management with CSS custom properties
-- Dark mode support
+### スタイリング
+- **Tailwind CSS 4**使用
+- CSSカスタムプロパティでテーマ管理
+- ダークモード対応
 
-### Package Management
-- **pnpm** usage (no npm/yarn)
-- Strict dependency management via `package.json`
+### パッケージ管理
+- **pnpm**使用（npm/yarn不使用）
+- 依存関係は`package.json`で厳密管理
 
-## API Server Configuration
+## API サーバー設定
 
-- **Development Environment**: `http://localhost:3000/api`
-- **Next.js API Routes** for server-side implementation
-- Type-safe implementation following OpenAPI specification
+- **開発環境**: `http://localhost:3000/api`
+- **Next.js API Routes**でサーバーサイド実装
+- OpenAPI仕様書に従った型安全な実装
 
-## TypeScript Configuration
+## TypeScript設定
 
-- **String Enums** usage
-- **ES6+ features** enabled
-- **Type safety** as top priority
-- Separated management of interfaces and APIs
+- **String Enums**使用
+- **ES6+機能**有効
+- **型安全性**を最優先
+- インターフェースとAPIの分離管理
