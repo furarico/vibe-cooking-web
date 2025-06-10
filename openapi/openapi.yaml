@@ -1,0 +1,655 @@
+openapi: 3.0.3
+info:
+  title: Vibe Cooking API
+  description: レシピ共有とクッキングコミュニティプラットフォームのAPI
+  version: 1.0.0
+  contact:
+    name: Vibe Cooking Team
+    email: contact@vibecooking.com
+
+servers:
+  - url: https://api.vibecooking.com/v1
+    description: 本番サーバー
+  - url: http://localhost:3000/api
+    description: 開発サーバー
+
+paths:
+  /recipes:
+    get:
+      summary: レシピ一覧取得
+      description: フィルタリング機能付きでレシピ一覧を取得
+      parameters:
+        - name: category
+          in: query
+          description: カテゴリーでフィルタ
+          schema:
+            type: string
+            enum: ["前菜", "メイン", "デザート", "ドリンク", "スナック"]
+        - name: cuisine
+          in: query
+          description: 料理の種類でフィルタ
+          schema:
+            type: string
+        - name: difficulty
+          in: query
+          description: 難易度でフィルタ
+          schema:
+            type: string
+            enum: ["簡単", "普通", "難しい"]
+        - name: cookTime
+          in: query
+          description: 最大調理時間（分）
+          schema:
+            type: integer
+        - name: page
+          in: query
+          description: ページ番号
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: 1ページあたりのレシピ数
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recipes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Recipe'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+    post:
+      summary: レシピ作成
+      description: 新しいレシピを作成（認証が必要）
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRecipeRequest'
+      responses:
+        '201':
+          description: レシピが正常に作成されました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+        '400':
+          description: 不正なリクエスト
+        '401':
+          description: 認証が必要
+
+  /recipes/{id}:
+    get:
+      summary: レシピ詳細取得
+      description: IDで指定されたレシピの詳細を取得
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: レシピID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+        '404':
+          description: レシピが見つかりません
+    put:
+      summary: レシピ更新
+      description: 既存のレシピを更新（認証と所有権が必要）
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: レシピID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRecipeRequest'
+      responses:
+        '200':
+          description: レシピが正常に更新されました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+        '400':
+          description: 不正なリクエスト
+        '401':
+          description: 認証が必要
+        '403':
+          description: 権限がありません
+        '404':
+          description: レシピが見つかりません
+    delete:
+      summary: レシピ削除
+      description: レシピを削除（認証と所有権が必要）
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: レシピID
+          schema:
+            type: string
+      responses:
+        '204':
+          description: レシピが正常に削除されました
+        '401':
+          description: 認証が必要
+        '403':
+          description: 権限がありません
+        '404':
+          description: レシピが見つかりません
+
+  /recipes/{id}/ratings:
+    post:
+      summary: レシピ評価
+      description: レシピに評価とコメントを追加
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: レシピID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                comment:
+                  type: string
+                  maxLength: 500
+              required:
+                - rating
+      responses:
+        '201':
+          description: 評価が正常に追加されました
+        '400':
+          description: 不正なリクエスト
+        '401':
+          description: 認証が必要
+        '404':
+          description: レシピが見つかりません
+
+  /users:
+    post:
+      summary: ユーザー登録
+      description: 新しいユーザーアカウントを作成
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUserRequest'
+      responses:
+        '201':
+          description: ユーザーが正常に作成されました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: 不正なリクエスト
+        '409':
+          description: メールアドレスが既に存在します
+
+  /users/login:
+    post:
+      summary: ユーザーログイン
+      description: ユーザー認証を行い、JWTトークンを返す
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: ログイン成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: 不正なリクエスト
+        '401':
+          description: 認証情報が無効です
+
+  /users/profile:
+    get:
+      summary: ユーザープロフィール取得
+      description: 認証されたユーザーのプロフィールを取得
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: ユーザープロフィール
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: 認証が必要
+    put:
+      summary: プロフィール更新
+      description: 認証されたユーザーのプロフィールを更新
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: プロフィールが正常に更新されました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: 不正なリクエスト
+        '401':
+          description: 認証が必要
+
+  /users/{id}/recipes:
+    get:
+      summary: ユーザーのレシピ一覧
+      description: 指定されたユーザーが作成したレシピ一覧を取得
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ユーザーID
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: ユーザーのレシピ一覧
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recipes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Recipe'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '404':
+          description: ユーザーが見つかりません
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Recipe:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+          enum: ["前菜", "メイン", "デザート", "ドリンク", "スナック"]
+        cuisine:
+          type: string
+        difficulty:
+          type: string
+          enum: ["簡単", "普通", "難しい"]
+        prepTime:
+          type: integer
+          description: 準備時間（分）
+        cookTime:
+          type: integer
+          description: 調理時間（分）
+        servings:
+          type: integer
+          description: 人数分
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ingredient'
+        instructions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Instruction'
+        imageUrl:
+          type: string
+          format: uri
+        tags:
+          type: array
+          items:
+            type: string
+        nutritionInfo:
+          $ref: '#/components/schemas/NutritionInfo'
+        author:
+          $ref: '#/components/schemas/User'
+        ratings:
+          type: object
+          properties:
+            average:
+              type: number
+              format: float
+            count:
+              type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Ingredient:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 材料名
+        amount:
+          type: number
+          description: 分量
+        unit:
+          type: string
+          description: 単位
+        notes:
+          type: string
+          description: 備考
+      required:
+        - name
+        - amount
+        - unit
+
+    Instruction:
+      type: object
+      properties:
+        step:
+          type: integer
+          description: 手順番号
+        description:
+          type: string
+          description: 手順の説明
+        imageUrl:
+          type: string
+          format: uri
+          description: 手順の画像URL
+        estimatedTime:
+          type: integer
+          description: この手順の推定時間（分）
+      required:
+        - step
+        - description
+
+    NutritionInfo:
+      type: object
+      properties:
+        calories:
+          type: integer
+          description: カロリー
+        protein:
+          type: number
+          description: タンパク質（g）
+        carbs:
+          type: number
+          description: 炭水化物（g）
+        fat:
+          type: number
+          description: 脂質（g）
+        fiber:
+          type: number
+          description: 食物繊維（g）
+        sugar:
+          type: number
+          description: 糖質（g）
+        sodium:
+          type: number
+          description: ナトリウム（mg）
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        displayName:
+          type: string
+          description: 表示名
+        bio:
+          type: string
+          description: 自己紹介
+        profileImageUrl:
+          type: string
+          format: uri
+          description: プロフィール画像URL
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateRecipeRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        category:
+          type: string
+          enum: ["前菜", "メイン", "デザート", "ドリンク", "スナック"]
+        cuisine:
+          type: string
+        difficulty:
+          type: string
+          enum: ["簡単", "普通", "難しい"]
+        prepTime:
+          type: integer
+          minimum: 0
+        cookTime:
+          type: integer
+          minimum: 0
+        servings:
+          type: integer
+          minimum: 1
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ingredient'
+          minItems: 1
+        instructions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Instruction'
+          minItems: 1
+        imageUrl:
+          type: string
+          format: uri
+        tags:
+          type: array
+          items:
+            type: string
+        nutritionInfo:
+          $ref: '#/components/schemas/NutritionInfo'
+      required:
+        - title
+        - category
+        - difficulty
+        - ingredients
+        - instructions
+
+    UpdateRecipeRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        category:
+          type: string
+          enum: ["前菜", "メイン", "デザート", "ドリンク", "スナック"]
+        cuisine:
+          type: string
+        difficulty:
+          type: string
+          enum: ["簡単", "普通", "難しい"]
+        prepTime:
+          type: integer
+          minimum: 0
+        cookTime:
+          type: integer
+          minimum: 0
+        servings:
+          type: integer
+          minimum: 1
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ingredient'
+        instructions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Instruction'
+        imageUrl:
+          type: string
+          format: uri
+        tags:
+          type: array
+          items:
+            type: string
+        nutritionInfo:
+          $ref: '#/components/schemas/NutritionInfo'
+
+    RegisterUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+        displayName:
+          type: string
+          maxLength: 50
+      required:
+        - email
+        - password
+        - username
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        displayName:
+          type: string
+          maxLength: 50
+        bio:
+          type: string
+          maxLength: 200
+        profileImageUrl:
+          type: string
+          format: uri
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: 現在のページ番号
+        limit:
+          type: integer
+          description: 1ページあたりのアイテム数
+        total:
+          type: integer
+          description: 総アイテム数
+        pages:
+          type: integer
+          description: 総ページ数
+        hasNext:
+          type: boolean
+          description: 次のページがあるかどうか
+        hasPrev:
+          type: boolean
+          description: 前のページがあるかどうか
