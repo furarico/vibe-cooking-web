@@ -50,6 +50,10 @@
 - **Prisma Studio**: `pnpm db:studio` (データベースGUI管理ツール起動)
 - **データベースリセット**: `pnpm db:reset` (データベース完全リセット)
 
+### Cloud Run関連
+- **Dockerビルド**: `docker build -t vibe-cooking .`
+- **ローカルテスト**: `docker run -p 3000:3000 vibe-cooking`
+
 ## アーキテクチャ概要
 
 これは**Next.js 15 App Router**プロジェクトで、**TypeScript**と**Tailwind CSS 4**を使用し、料理・レシピプラットフォーム向けの**APIファースト開発**アプローチで設計されています。
@@ -200,6 +204,31 @@ prisma/                 # Prismaスキーマとマイグレーション
 2. **APIドキュメントプレビュー**: 開発中にAPIドキュメントを表示するために`pnpm run preview:api`を使用
 3. **データベーススキーマ変更**: `prisma/schema.prisma`を修正 → `pnpm db:migrate`を実行 → マイグレーションファイルをコミット
 4. **フォント最適化**: プロジェクトは自動最適化のために`next/font`経由でGeistフォントを使用
+
+### Cloud SQL接続設定
+
+**データベース接続**: プロジェクトは環境に応じて異なるデータベース接続方式をサポートします：
+
+1. **ローカル開発**: 従来のURL接続文字列を使用（`DATABASE_URL`環境変数）
+2. **Cloud Run本番環境**: Unix Socket + IAM認証を使用
+
+**Cloud SQL IAM認証設定**:
+- `src/lib/database.ts`でデータベース接続を管理
+- 環境変数を通じて接続設定を動的に切り替え
+- Unix Socketパス: `/cloudsql/<PROJECT_ID>:<REGION>:<INSTANCE_NAME>`
+- IAM認証用ユーザー名: サービスアカウントメールアドレス
+
+**必要な環境変数** (`.env.example`参照):
+- `CLOUD_SQL_PROJECT_ID`: GCPプロジェクトID
+- `CLOUD_SQL_REGION`: Cloud SQLインスタンスのリージョン
+- `CLOUD_SQL_INSTANCE_NAME`: Cloud SQLインスタンス名
+- `CLOUD_SQL_DATABASE_NAME`: データベース名
+- `CLOUD_SQL_IAM_USER`: IAM認証用サービスアカウント
+
+**Cloud Runデプロイ要件**:
+- Cloud SQL接続設定が必要（`--set-cloudsql-instances`フラグ）
+- サービスアカウントにCloud SQL Client権限が必要
+- Dockerfileでstandalone出力モードを使用
 
 ### 重要な注意事項
 

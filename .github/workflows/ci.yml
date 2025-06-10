@@ -41,6 +41,9 @@ jobs:
       - name: Generate API client
         run: pnpm generate:api
 
+      - name: Generate Prisma client
+        run: pnpm db:generate
+
       - name: Run linting
         run: pnpm lint
 

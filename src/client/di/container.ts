@@ -1,8 +1,10 @@
 import { DefaultApi } from '@/lib/api';
 import { RecipeRepository } from '@/client/repositories/implementations/recipe-repository';
 import { RecipeService } from '@/client/services/recipe/recipe-service';
+import { prisma } from '@/lib/database';
 
 export interface DIContainer {
+  prisma: typeof prisma;
   recipeService: RecipeService;
 }
 
@@ -17,6 +19,7 @@ export const createDIContainer = (): DIContainer => {
   const recipeService = new RecipeService(recipeRepository);
 
   return {
+    prisma,
     recipeService,
   };
 };
