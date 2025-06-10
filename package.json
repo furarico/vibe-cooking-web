@@ -12,10 +12,17 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "generate:api": "cd openapi && openapi-generator-cli generate -i openapi.yaml -g typescript-fetch -o ../src/lib/api --additional-properties=typescriptThreePlus=true,stringEnums=true,supportsES6=true,withInterfaces=true,useSeparateModelsAndApi=true",
-    "preview:api": "redocly preview-docs openapi/openapi.yaml"
+    "preview:api": "redocly preview-docs openapi/openapi.yaml",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset"
   },
   "dependencies": {
+    "@prisma/client": "^6.9.0",
     "next": "15.3.3",
+    "prisma": "^6.9.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -38,6 +45,10 @@
     "jest-environment-jsdom": "^30.0.0",
     "prettier": "^3.5.3",
     "tailwindcss": "^4",
+    "tsx": "^4.19.4",
     "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }
