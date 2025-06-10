@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vibe Cooking - レイヤードアーキテクチャ",
+  title: "Vibe Cooking",
   description: "美味しいレシピで素敵な料理時間を。レイヤードアーキテクチャで構築されたレシピアプリ。",
 };
 
