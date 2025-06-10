@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useDI } from '@/client/di/providers';
-import { Recipe } from '@/lib/api';
+import { Recipe } from '@/lib/api-client';
 
 export interface RecipeDetailPresenterState {
   recipe: Recipe | null;

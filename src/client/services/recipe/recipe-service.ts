@@ -1,4 +1,4 @@
-import { Recipe } from '@/lib/api';
+import { Recipe } from '@/lib/api-client';
 import { IRecipeRepository } from '@/client/repositories/interfaces/i-recipe-repository';
 
 export class RecipeService {

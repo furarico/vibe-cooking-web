@@ -5,7 +5,7 @@ import {
   RecipePresenterActions,
 } from '../use-recipe-presenter';
 import { useDI } from '@/client/di/providers';
-import { Recipe } from '@/lib/api';
+import { Recipe } from '@/lib/api-client';
 import { RecipeService } from '@/client/services/recipe/recipe-service';
 
 // DIプロバイダーをモック

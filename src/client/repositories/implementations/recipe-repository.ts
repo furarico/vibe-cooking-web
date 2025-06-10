@@ -1,4 +1,4 @@
-import { DefaultApi, Recipe, RecipesGet200Response } from '@/lib/api';
+import { DefaultApi, Recipe, RecipesGet200Response } from '@/lib/api-client';
 import { IRecipeRepository } from '../interfaces/i-recipe-repository';
 
 export class RecipeRepository implements IRecipeRepository {

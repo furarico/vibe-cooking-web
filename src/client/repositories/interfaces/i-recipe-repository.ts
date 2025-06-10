@@ -1,4 +1,4 @@
-import { Recipe } from '@/lib/api';
+import { Recipe } from '@/lib/api-client';
 
 export interface IRecipeRepository {
   findAll(): Promise<Recipe[]>;
