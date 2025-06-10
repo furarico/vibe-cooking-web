@@ -1,15 +1,15 @@
 import { renderHook, act } from '@testing-library/react';
-import { useRecipeDetailPresenter } from '../useRecipeDetailPresenter';
+import { useRecipeDetailPresenter } from '../use-recipe-detail-presenter';
 import { useDI } from '@/di/providers';
 import { Recipe } from '@/lib/api';
-import { RecipeService } from '@/services/recipe/RecipeService';
+import { RecipeService } from '@/services/recipe/recipe-service';
 
 // DIプロバイダーをモック
 jest.mock('@/di/providers');
 
 // モックされたレシピサービス
 const mockRecipeService = jest.createMockFromModule<RecipeService>(
-  '@/services/recipe/RecipeService'
+  '@/services/recipe/recipe-service'
 ) as jest.Mocked<RecipeService>;
 mockRecipeService.getAllRecipes = jest.fn<Promise<Recipe[]>, []>();
 mockRecipeService.getRecipeById = jest.fn<Promise<Recipe | null>, [string]>();

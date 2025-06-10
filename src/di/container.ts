@@ -1,6 +1,6 @@
 import { DefaultApi } from '@/lib/api';
-import { RecipeRepository } from '@/repositories/implementations/RecipeRepository';
-import { RecipeService } from '@/services/recipe/RecipeService';
+import { RecipeRepository } from '@/repositories/implementations/recipe-repository';
+import { RecipeService } from '@/services/recipe/recipe-service';
 
 export interface DIContainer {
   recipeService: RecipeService;

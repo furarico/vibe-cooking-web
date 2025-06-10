@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { sampleRecipes } from '@/lib/mockData';
+import { sampleRecipes } from '@/lib/mock-data';
 
 // GET /api/recipes - レシピ一覧を取得
 export async function GET() {

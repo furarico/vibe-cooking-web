@@ -1,5 +1,5 @@
 import { DefaultApi, Recipe, RecipesGet200Response } from '@/lib/api';
-import { IRecipeRepository } from '../interfaces/IRecipeRepository';
+import { IRecipeRepository } from '../interfaces/i-recipe-repository';
 
 export class RecipeRepository implements IRecipeRepository {
   constructor(private apiClient: DefaultApi) {}
