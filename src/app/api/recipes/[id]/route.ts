@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/database';
+import { sampleRecipes } from '@/lib/mock-data';
 
 // GET /api/recipes/[id] - 特定IDのレシピ詳細を取得
 export async function GET(
@@ -10,15 +10,7 @@ export async function GET(
     const { id } = await params;
 
     // レシピを検索
-    const recipe = await prisma.recipe.findUnique({
-      where: { id },
-      include: {
-        ingredients: true,
-        instructions: {
-          orderBy: { step: 'asc' },
-        },
-      },
-    });
+    const recipe = sampleRecipes.find(r => r.id === id);
 
     if (!recipe) {
       return NextResponse.json(
