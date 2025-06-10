@@ -17,13 +17,7 @@ paths:
   /recipes:
     get:
       summary: レシピ一覧取得
-      description: フィルタリング機能付きでレシピ一覧を取得
-      parameters:
-        - name: cookTime
-          in: query
-          description: 最大調理時間（分）
-          schema:
-            type: integer
+      description: 全てのレシピ一覧を取得
       responses:
         '200':
           description: 成功
