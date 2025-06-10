@@ -1,19 +1,25 @@
-import { renderHook, act } from '@testing-library/react';
-import { useRecipePresenter } from '../useRecipePresenter';
+import { renderHook, act, RenderHookResult } from '@testing-library/react';
+import {
+  useRecipePresenter,
+  RecipePresenterState,
+  RecipePresenterActions,
+} from '../useRecipePresenter';
 import { useDI } from '@/di/providers';
 import { Recipe } from '@/lib/api';
+import { RecipeService } from '@/services/recipe/RecipeService';
 
 // DIプロバイダーをモック
 jest.mock('@/di/providers');
 
 // モックされたレシピサービス
-const mockRecipeService = {
-  getAllRecipes: jest.fn(),
-  getRecipeById: jest.fn(),
-  searchRecipes: jest.fn(),
-  filterByServings: jest.fn(),
-  filterByMaxTime: jest.fn(),
-};
+const mockRecipeService = jest.createMockFromModule<RecipeService>(
+  '@/services/recipe/RecipeService'
+) as jest.Mocked<RecipeService>;
+mockRecipeService.getAllRecipes = jest.fn<Promise<Recipe[]>, []>();
+mockRecipeService.getRecipeById = jest.fn<Promise<Recipe | null>, [string]>();
+mockRecipeService.searchRecipes = jest.fn<Recipe[], [Recipe[], string]>();
+mockRecipeService.filterByServings = jest.fn<Recipe[], [Recipe[], number]>();
+mockRecipeService.filterByMaxTime = jest.fn<Recipe[], [Recipe[], number]>();
 
 // モックされたuseDI
 const mockUseDI = useDI as jest.MockedFunction<typeof useDI>;
@@ -65,31 +71,38 @@ describe('useRecipePresenter', () => {
 
     // デフォルトのモック実装
     mockRecipeService.getAllRecipes.mockResolvedValue(mockRecipes);
-    mockRecipeService.searchRecipes.mockImplementation((recipes, query) =>
-      recipes.filter((recipe: Recipe) => recipe.title?.includes(query))
+    mockRecipeService.searchRecipes.mockImplementation(
+      (recipes: Recipe[], query: string) =>
+        recipes.filter((recipe: Recipe) => recipe.title?.includes(query))
     );
-    mockRecipeService.filterByServings.mockImplementation((recipes, servings) =>
-      recipes.filter(
-        (recipe: Recipe) => recipe.servings && recipe.servings >= servings
-      )
+    mockRecipeService.filterByServings.mockImplementation(
+      (recipes: Recipe[], servings: number) =>
+        recipes.filter(
+          (recipe: Recipe) => recipe.servings && recipe.servings >= servings
+        )
     );
-    mockRecipeService.filterByMaxTime.mockImplementation((recipes, maxTime) =>
-      recipes.filter(
-        (recipe: Recipe) =>
-          recipe.prepTime &&
-          recipe.cookTime &&
-          recipe.prepTime + recipe.cookTime <= maxTime
-      )
+    mockRecipeService.filterByMaxTime.mockImplementation(
+      (recipes: Recipe[], maxTime: number) =>
+        recipes.filter(
+          (recipe: Recipe) =>
+            recipe.prepTime &&
+            recipe.cookTime &&
+            recipe.prepTime + recipe.cookTime <= maxTime
+        )
     );
   });
 
   describe('初期状態', () => {
     it('正しい初期状態を持つべき', async () => {
-      const { result } = renderHook(() => useRecipePresenter());
+      let result: RenderHookResult<
+        RecipePresenterState & RecipePresenterActions,
+        unknown
+      >['result'];
 
-      // 初期化時のuseEffectが完了するまで待機
       await act(async () => {
-        // レンダリング後の非同期処理を待つ
+        const hookResult = renderHook(() => useRecipePresenter());
+        result = hookResult.result;
+        // 初期化時のuseEffectが完了するまで待機
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
@@ -107,10 +120,15 @@ describe('useRecipePresenter', () => {
 
   describe('fetchRecipes', () => {
     it('レシピを正常に取得できるべき', async () => {
-      const { result } = renderHook(() => useRecipePresenter());
+      let result: RenderHookResult<
+        RecipePresenterState & RecipePresenterActions,
+        unknown
+      >['result'];
 
-      // 初期化完了を待つ
       await act(async () => {
+        const hookResult = renderHook(() => useRecipePresenter());
+        result = hookResult.result;
+        // 初期化完了を待つ
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
@@ -137,9 +155,28 @@ describe('useRecipePresenter', () => {
 
       mockRecipeService.getAllRecipes.mockReturnValue(longRunningPromise);
 
-      const { result } = renderHook(() => useRecipePresenter());
+      let result: RenderHookResult<
+        RecipePresenterState & RecipePresenterActions,
+        unknown
+      >['result'];
 
-      act(() => {
+      await act(async () => {
+        const hookResult = renderHook(() => useRecipePresenter());
+        result = hookResult.result;
+        // 初期化のPromiseを解決して初期ローディングを完了
+        resolvePromise!(mockRecipes);
+        await longRunningPromise;
+      });
+
+      // 新しいPromiseでローディング状態をテスト
+      let newResolvePromise: (value: Recipe[]) => void;
+      const newLongRunningPromise = new Promise<Recipe[]>(resolve => {
+        newResolvePromise = resolve;
+      });
+
+      mockRecipeService.getAllRecipes.mockReturnValue(newLongRunningPromise);
+
+      await act(async () => {
         result.current.fetchRecipes();
       });
 
@@ -149,8 +186,8 @@ describe('useRecipePresenter', () => {
 
       // Promise を解決
       await act(async () => {
-        resolvePromise!(mockRecipes);
-        await longRunningPromise;
+        newResolvePromise!(mockRecipes);
+        await newLongRunningPromise;
       });
 
       expect(result.current.loading).toBe(false);
@@ -162,10 +199,16 @@ describe('useRecipePresenter', () => {
         new Error(errorMessage)
       );
 
-      const { result } = renderHook(() => useRecipePresenter());
+      let result: RenderHookResult<
+        RecipePresenterState & RecipePresenterActions,
+        unknown
+      >['result'];
 
       await act(async () => {
-        await result.current.fetchRecipes();
+        const hookResult = renderHook(() => useRecipePresenter());
+        result = hookResult.result;
+        // 初期化時のエラーを待機
+        await new Promise(resolve => setTimeout(resolve, 0));
       });
 
       expect(result.current.loading).toBe(false);
@@ -175,8 +218,18 @@ describe('useRecipePresenter', () => {
   });
 
   describe('selectRecipe', () => {
-    it('レシピを選択してダイアログを表示するべき', () => {
-      const { result } = renderHook(() => useRecipePresenter());
+    it('レシピを選択してダイアログを表示するべき', async () => {
+      let result: RenderHookResult<
+        RecipePresenterState & RecipePresenterActions,
+        unknown
+      >['result'];
+
+      await act(async () => {
+        const hookResult = renderHook(() => useRecipePresenter());
+        result = hookResult.result;
+        // 初期化完了を待つ
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       act(() => {
         result.current.selectRecipe(mockRecipes[0]);
@@ -188,8 +241,18 @@ describe('useRecipePresenter', () => {
   });
 
   describe('closeDialog', () => {
-    it('ダイアログを閉じて選択されたレシピをクリアするべき', () => {
-      const { result } = renderHook(() => useRecipePresenter());
+    it('ダイアログを閉じて選択されたレシピをクリアするべき', async () => {
+      let result: RenderHookResult<
+        RecipePresenterState & RecipePresenterActions,
+        unknown
+      >['result'];
+
+      await act(async () => {
+        const hookResult = renderHook(() => useRecipePresenter());
+        result = hookResult.result;
+        // 初期化完了を待つ
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       // まずレシピを選択
       act(() => {
@@ -207,8 +270,18 @@ describe('useRecipePresenter', () => {
   });
 
   describe('setSearchQuery', () => {
-    it('検索クエリを設定できるべき', () => {
-      const { result } = renderHook(() => useRecipePresenter());
+    it('検索クエリを設定できるべき', async () => {
+      let result: RenderHookResult<
+        RecipePresenterState & RecipePresenterActions,
+        unknown
+      >['result'];
+
+      await act(async () => {
+        const hookResult = renderHook(() => useRecipePresenter());
+        result = hookResult.result;
+        // 初期化完了を待つ
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       act(() => {
         result.current.setSearchQuery('テスト');
@@ -219,8 +292,18 @@ describe('useRecipePresenter', () => {
   });
 
   describe('setServingsFilter', () => {
-    it('人数フィルターを設定できるべき', () => {
-      const { result } = renderHook(() => useRecipePresenter());
+    it('人数フィルターを設定できるべき', async () => {
+      let result: RenderHookResult<
+        RecipePresenterState & RecipePresenterActions,
+        unknown
+      >['result'];
+
+      await act(async () => {
+        const hookResult = renderHook(() => useRecipePresenter());
+        result = hookResult.result;
+        // 初期化完了を待つ
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       act(() => {
         result.current.setServingsFilter(4);
@@ -231,8 +314,18 @@ describe('useRecipePresenter', () => {
   });
 
   describe('setMaxTimeFilter', () => {
-    it('最大時間フィルターを設定できるべき', () => {
-      const { result } = renderHook(() => useRecipePresenter());
+    it('最大時間フィルターを設定できるべき', async () => {
+      let result: RenderHookResult<
+        RecipePresenterState & RecipePresenterActions,
+        unknown
+      >['result'];
+
+      await act(async () => {
+        const hookResult = renderHook(() => useRecipePresenter());
+        result = hookResult.result;
+        // 初期化完了を待つ
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       act(() => {
         result.current.setMaxTimeFilter(60);
@@ -244,10 +337,15 @@ describe('useRecipePresenter', () => {
 
   describe('refreshRecipes', () => {
     it('レシピを再取得できるべき', async () => {
-      const { result } = renderHook(() => useRecipePresenter());
+      let result: RenderHookResult<
+        RecipePresenterState & RecipePresenterActions,
+        unknown
+      >['result'];
 
-      // 初期化完了を待つ
       await act(async () => {
+        const hookResult = renderHook(() => useRecipePresenter());
+        result = hookResult.result;
+        // 初期化完了を待つ
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
@@ -264,10 +362,15 @@ describe('useRecipePresenter', () => {
 
   describe('フィルタリング機能', () => {
     it('検索クエリでフィルタリングされるべき', async () => {
-      const { result } = renderHook(() => useRecipePresenter());
+      let result: RenderHookResult<
+        RecipePresenterState & RecipePresenterActions,
+        unknown
+      >['result'];
 
-      // 初期化完了を待つ
       await act(async () => {
+        const hookResult = renderHook(() => useRecipePresenter());
+        result = hookResult.result;
+        // 初期化完了を待つ
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
@@ -283,10 +386,15 @@ describe('useRecipePresenter', () => {
     });
 
     it('人数フィルターでフィルタリングされるべき', async () => {
-      const { result } = renderHook(() => useRecipePresenter());
+      let result: RenderHookResult<
+        RecipePresenterState & RecipePresenterActions,
+        unknown
+      >['result'];
 
-      // 初期化完了を待つ
       await act(async () => {
+        const hookResult = renderHook(() => useRecipePresenter());
+        result = hookResult.result;
+        // 初期化完了を待つ
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
@@ -302,10 +410,15 @@ describe('useRecipePresenter', () => {
     });
 
     it('時間フィルターでフィルタリングされるべき', async () => {
-      const { result } = renderHook(() => useRecipePresenter());
+      let result: RenderHookResult<
+        RecipePresenterState & RecipePresenterActions,
+        unknown
+      >['result'];
 
-      // 初期化完了を待つ
       await act(async () => {
+        const hookResult = renderHook(() => useRecipePresenter());
+        result = hookResult.result;
+        // 初期化完了を待つ
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 

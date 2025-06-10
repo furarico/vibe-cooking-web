@@ -2,18 +2,20 @@ import { renderHook, act } from '@testing-library/react';
 import { useRecipeDetailPresenter } from '../useRecipeDetailPresenter';
 import { useDI } from '@/di/providers';
 import { Recipe } from '@/lib/api';
+import { RecipeService } from '@/services/recipe/RecipeService';
 
 // DIプロバイダーをモック
 jest.mock('@/di/providers');
 
 // モックされたレシピサービス
-const mockRecipeService = {
-  getAllRecipes: jest.fn(),
-  getRecipeById: jest.fn(),
-  searchRecipes: jest.fn(),
-  filterByServings: jest.fn(),
-  filterByMaxTime: jest.fn(),
-};
+const mockRecipeService = jest.createMockFromModule<RecipeService>(
+  '@/services/recipe/RecipeService'
+) as jest.Mocked<RecipeService>;
+mockRecipeService.getAllRecipes = jest.fn<Promise<Recipe[]>, []>();
+mockRecipeService.getRecipeById = jest.fn<Promise<Recipe | null>, [string]>();
+mockRecipeService.searchRecipes = jest.fn<Recipe[], [Recipe[], string]>();
+mockRecipeService.filterByServings = jest.fn<Recipe[], [Recipe[], number]>();
+mockRecipeService.filterByMaxTime = jest.fn<Recipe[], [Recipe[], number]>();
 
 // モックされたuseDI
 const mockUseDI = useDI as jest.MockedFunction<typeof useDI>;
