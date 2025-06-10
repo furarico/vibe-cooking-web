@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description: Understand CLAUDE.md
+globs: Understand CLAUDE.md
 alwaysApply: true
 ---
 Understand [CLAUDE.md](mdc:CLAUDE.md)
