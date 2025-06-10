@@ -187,6 +187,55 @@ prisma/                 # Prismaスキーマとマイグレーション
 
 **Instructionスキーマ**: step number、description（両方必須）と、オプションのimageUrlとestimatedTimeを持つ順次ステップです。
 
+**Prismaスキーマ例**:
+```prisma
+// prisma/schema.prisma
+model Recipe {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  prepTime    Int
+  cookTime    Int
+  servings    Int
+  imageUrl    String?
+  tags        String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  ingredients  Ingredient[]
+  instructions Instruction[]
+  
+  @@map("recipes")
+}
+
+model Ingredient {
+  id       String  @id @default(cuid())
+  name     String
+  amount   Float
+  unit     String
+  notes    String?
+  recipeId String
+  
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  
+  @@map("ingredients")
+}
+
+model Instruction {
+  id            String  @id @default(cuid())
+  step          Int
+  description   String
+  imageUrl      String?
+  estimatedTime Int?
+  recipeId      String
+  
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  
+  @@map("instructions")
+  @@unique([recipeId, step])
+}
+```
+
 ### プロジェクト構造の詳細
 
 - **App Router**: `src/app/`ディレクトリ内の全ページ
