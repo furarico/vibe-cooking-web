@@ -6,13 +6,9 @@ import { Recipe } from '@/lib/api';
 
 export interface RecipePresenterState {
   recipes: Recipe[];
-  filteredRecipes: Recipe[];
   selectedRecipe: Recipe | null;
   loading: boolean;
   error: string | null;
-  searchQuery: string;
-  servingsFilter: number;
-  maxTimeFilter: number;
   showDialog: boolean;
 }
 
@@ -20,9 +16,6 @@ export interface RecipePresenterActions {
   fetchRecipes: () => Promise<void>;
   selectRecipe: (recipe: Recipe) => void;
   closeDialog: () => void;
-  setSearchQuery: (query: string) => void;
-  setServingsFilter: (servings: number) => void;
-  setMaxTimeFilter: (maxTime: number) => void;
   refreshRecipes: () => Promise<void>;
 }
 
@@ -32,13 +25,9 @@ export const useRecipePresenter = (): RecipePresenterState &
 
   const [state, setState] = useState<RecipePresenterState>({
     recipes: [],
-    filteredRecipes: [],
     selectedRecipe: null,
     loading: false,
     error: null,
-    searchQuery: '',
-    servingsFilter: 1,
-    maxTimeFilter: 180, // 3時間
     showDialog: false,
   });
 
@@ -51,7 +40,6 @@ export const useRecipePresenter = (): RecipePresenterState &
       setState(prev => ({
         ...prev,
         recipes,
-        filteredRecipes: recipes,
         loading: false,
       }));
     } catch (error) {
@@ -82,53 +70,10 @@ export const useRecipePresenter = (): RecipePresenterState &
     }));
   }, []);
 
-  // 検索クエリ設定
-  const setSearchQuery = useCallback((query: string) => {
-    setState(prev => ({ ...prev, searchQuery: query }));
-  }, []);
-
-  // 人数フィルター設定
-  const setServingsFilter = useCallback((servings: number) => {
-    setState(prev => ({ ...prev, servingsFilter: servings }));
-  }, []);
-
-  // 最大時間フィルター設定
-  const setMaxTimeFilter = useCallback((maxTime: number) => {
-    setState(prev => ({ ...prev, maxTimeFilter: maxTime }));
-  }, []);
-
   // リフレッシュ
   const refreshRecipes = useCallback(async () => {
     await fetchRecipes();
   }, [fetchRecipes]);
-
-  // フィルタリング処理
-  useEffect(() => {
-    let filtered = state.recipes;
-
-    // 検索フィルター
-    if (state.searchQuery) {
-      filtered = recipeService.searchRecipes(filtered, state.searchQuery);
-    }
-
-    // 人数フィルター
-    if (state.servingsFilter > 1) {
-      filtered = recipeService.filterByServings(filtered, state.servingsFilter);
-    }
-
-    // 時間フィルター
-    if (state.maxTimeFilter < 180) {
-      filtered = recipeService.filterByMaxTime(filtered, state.maxTimeFilter);
-    }
-
-    setState(prev => ({ ...prev, filteredRecipes: filtered }));
-  }, [
-    state.recipes,
-    state.searchQuery,
-    state.servingsFilter,
-    state.maxTimeFilter,
-    recipeService,
-  ]);
 
   // 初回データ取得
   useEffect(() => {
@@ -140,9 +85,6 @@ export const useRecipePresenter = (): RecipePresenterState &
     fetchRecipes,
     selectRecipe,
     closeDialog,
-    setSearchQuery,
-    setServingsFilter,
-    setMaxTimeFilter,
     refreshRecipes,
   };
 };
