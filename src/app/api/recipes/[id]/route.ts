@@ -4,10 +4,10 @@ import { sampleRecipes } from '@/lib/mockData';
 // GET /api/recipes/[id] - 特定IDのレシピ詳細を取得
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // レシピを検索
     const recipe = sampleRecipes.find(r => r.id === id);
