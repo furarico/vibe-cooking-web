@@ -47,17 +47,28 @@ function getDatabaseUrl(): string {
 }
 
 /**
- * Prismaクライアントの初期化
+ * Prismaクライアントの初期化（遅延初期化）
  */
-export const prisma =
-  globalThis.prisma ??
-  new PrismaClient({
-    datasources: {
-      db: {
-        url: getDatabaseUrl(),
+function createPrismaClient(): PrismaClient {
+  try {
+    return new PrismaClient({
+      datasources: {
+        db: {
+          url: getDatabaseUrl(),
+        },
       },
-    },
-  });
+    });
+  } catch (error) {
+    // ビルド時やDATABASE_URLが設定されていない場合はデフォルトのPrismaClientを返す
+    console.warn('データベース接続設定が不完全です:', error);
+    return new PrismaClient();
+  }
+}
+
+/**
+ * Prismaクライアントのインスタンス取得
+ */
+export const prisma = globalThis.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== 'production') {
   globalThis.prisma = prisma;
