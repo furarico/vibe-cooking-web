@@ -23,7 +23,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # APIコードを生成
-RUN pnpm generate:api
+RUN pnpm api:generate
 # Prismaクライアント生成
 RUN pnpm db:generate
 # Next.jsビルド

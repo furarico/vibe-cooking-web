@@ -58,9 +58,7 @@ function createPrismaClient(): PrismaClient {
         },
       },
     });
-  } catch (error) {
-    // ビルド時やDATABASE_URLが設定されていない場合はデフォルトのPrismaClientを返す
-    console.warn('データベース接続設定が不完全です:', error);
+  } catch {
     return new PrismaClient();
   }
 }

@@ -13,12 +13,12 @@
     "test:coverage": "jest --coverage",
     "api:generate": "openapi-typescript ./openapi/openapi.yaml -o ./src/types/api.d.ts",
     "api:preview": "redocly preview-docs openapi/openapi.yaml",
+    "db:generate": "prisma generate",
     "db:migrate": "dotenv -e .env.local -- prisma migrate dev",
-    "db:generate": "dotenv -e .env.local -- prisma generate",
     "db:seed": "dotenv -e .env.local -- prisma db seed",
     "db:studio": "dotenv -e .env.local -- prisma studio",
     "db:reset": "dotenv -e .env.local -- prisma migrate reset",
-    "deploy:run": "dotenv -e .env -- gcloud run deploy vibe-cooking-web --source . --region asia-northeast1 --allow-unauthenticated --set-cloudsql-instances=$CLOUD_SQL_PROJECT_ID:$CLOUD_SQL_REGION:$CLOUD_SQL_INSTANCE_NAME --set-env-vars=CLOUD_SQL_PROJECT_ID=$CLOUD_SQL_PROJECT_ID,CLOUD_SQL_REGION=$CLOUD_SQL_REGION,CLOUD_SQL_INSTANCE_NAME=$CLOUD_SQL_INSTANCE_NAME,CLOUD_SQL_DATABASE_NAME=$CLOUD_SQL_DATABASE_NAME,CLOUD_SQL_IAM_USER=$CLOUD_SQL_IAM_USER,NODE_ENV=production --project furarico-vibe-cooking"
+    "deploy:run": "gcloud run deploy vibe-cooking-web --source . --region asia-northeast1 --project furarico-vibe-cooking"
   },
   "dependencies": {
     "@prisma/client": "^6.9.0",
