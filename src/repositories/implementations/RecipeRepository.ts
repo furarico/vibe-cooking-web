@@ -18,8 +18,8 @@ export class RecipeRepository implements IRecipeRepository {
     try {
       const recipe: Recipe = await this.apiClient.recipesIdGet({ id });
       return recipe;
-    } catch (error: any) {
-      if (error.status === 404) {
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'status' in error && error.status === 404) {
         return null;
       }
       console.error('レシピ詳細取得エラー:', error);
