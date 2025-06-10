@@ -135,8 +135,6 @@ components:
             type: string
         nutritionInfo:
           $ref: '#/components/schemas/NutritionInfo'
-        author:
-          $ref: '#/components/schemas/User'
         ratings:
           type: object
           properties:
@@ -216,33 +214,6 @@ components:
         sodium:
           type: number
           description: ナトリウム（mg）
-
-    User:
-      type: object
-      properties:
-        id:
-          type: string
-        email:
-          type: string
-          format: email
-        username:
-          type: string
-        displayName:
-          type: string
-          description: 表示名
-        bio:
-          type: string
-          description: 自己紹介
-        profileImageUrl:
-          type: string
-          format: uri
-          description: プロフィール画像URL
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
 
     Pagination:
       type: object
