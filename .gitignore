@@ -44,3 +44,4 @@ openapi/openapitools.json
 src/lib/api
 
 /src/generated/prisma
+!.env.example
