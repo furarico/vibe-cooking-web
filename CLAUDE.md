@@ -1,57 +1,73 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは、このリポジトリでコードを扱う際のClaude Code（claude.ai/code）向けガイダンスを提供します。
 
-## Development Commands
+## ルール
 
-- **Development server**: `pnpm dev` (uses Turbopack for fast builds)
-- **Production build**: `pnpm build`
-- **Linting**: `pnpm lint`
-- **Generate API client**: `pnpm run generate:api` (regenerates TypeScript client from OpenAPI spec)
-- **Preview API documentation**: `pnpm run preview:api` (opens Redocly docs in browser)
+- 変更は Git コミットすること。
+- Gitコミットする前に，必ず`pnpm format`を実行すること。
+- 全ての出力は日本語で行うこと。
+- 日本語をファイルに出力する場合は、UTF-8 エンコーディングを使用すること。
+- ファイルの最終行は改行すること。
+- テスト駆動で開発を行うこと。
+  - 新たに実装する場合は，ユニットテストを先に実装すること。
+  - 新規にユニットテストを実装した場合は、必ずそのテストが失敗することを最初に確認すること。
+    - テストが失敗することを確認するまで、機能を実装しないこと。
+  - 新たに機能を実装した場合や、既存の機能を変更した場合は、必ずユニットテストが成功することを確認すること。
+  - すでにあるユニットテストは、変更しないこと。
+- モック実装をしないこと。
+- `.ts`および`.tsx` のファイル名は、`kebab-case` で命名すること。
 
-## Architecture Overview
+## 開発コマンド
 
-This is a **Next.js 15 App Router** project with **TypeScript** and **Tailwind CSS 4**, designed around an **API-first development** approach for a cooking/recipe platform.
+- **開発サーバー**: `pnpm dev` (高速ビルドのためTurbopackを使用)
+- **本番ビルド**: `pnpm build`
+- **リンティング**: `pnpm lint`
+- **APIクライアント生成**: `pnpm run generate:api` (OpenAPI仕様からTypeScriptクライアントを再生成)
+- **APIドキュメントプレビュー**: `pnpm run preview:api` (ブラウザでRedoclyドキュメントを開く)
 
-### Key Architectural Patterns
+## アーキテクチャ概要
 
-**API-First Development**: The project uses OpenAPI specifications (`openapi/openapi.yaml`) to generate type-safe TypeScript client code. The API spec is the source of truth for data contracts between frontend and backend.
+これは**Next.js 15 App Router**プロジェクトで、**TypeScript**と**Tailwind CSS 4**を使用し、料理・レシピプラットフォーム向けの**APIファースト開発**アプローチで設計されています。
 
-**Generated API Client**: Run `pnpm run generate:api` after any changes to `openapi/openapi.yaml`. This regenerates the entire `/src/lib/api/` directory with:
-- Type-safe API functions in `apis/DefaultApi.ts`
-- TypeScript interfaces in `models/` directory
-- Runtime utilities for HTTP requests
+### 主要なアーキテクチャパターン
 
-**Current API Endpoints**:
-- `GET /recipes` - Retrieve all recipes (no filtering/pagination)
-- `GET /recipes/{id}` - Retrieve specific recipe by ID
+**APIファースト開発**: プロジェクトはOpenAPI仕様（`openapi/openapi.yaml`）を使用して型安全なTypeScriptクライアントコードを生成します。API仕様はフロントエンドとバックエンド間のデータ契約の信頼できる情報源です。
 
-### Core Data Models
+**生成されたAPIクライアント**: `openapi/openapi.yaml`への変更後は`pnpm run generate:api`を実行してください。これにより`/src/lib/api/`ディレクトリ全体が以下で再生成されます：
+- `apis/DefaultApi.ts`の型安全なAPI関数
+- `models/`ディレクトリのTypeScriptインターフェース
+- HTTPリクエスト用のランタイムユーティリティ
 
-**Recipe Schema**: Contains basic info (id, title, description), timing (prepTime, cookTime, servings), content arrays (ingredients, instructions), and metadata (tags, imageUrl, timestamps).
+**現在のAPIエンドポイント**:
+- `GET /recipes` - 全レシピを取得（フィルタリング・ページネーションなし）
+- `GET /recipes/{id}` - IDで特定のレシピを取得
 
-**Ingredient Schema**: Structured with name, amount, unit (all required), plus optional notes.
+### コアデータモデル
 
-**Instruction Schema**: Sequential steps with step number, description (both required), plus optional imageUrl and estimatedTime.
+**Recipeスキーマ**: 基本情報（id、title、description）、時間（prepTime、cookTime、servings）、コンテンツ配列（ingredients、instructions）、メタデータ（tags、imageUrl、timestamps）を含みます。
 
-### Project Structure Specifics
+**Ingredientスキーマ**: name、amount、unit（すべて必須）と、オプションのnotesで構成されています。
 
-- **App Router**: All pages in `src/app/` directory
-- **Generated Code**: Never manually edit `src/lib/api/` - always regenerate from OpenAPI spec
-- **API Spec**: Located at `openapi/openapi.yaml` with Japanese documentation for "Vibe Cooking API"
-- **Styling**: Uses Tailwind CSS 4 with CSS custom properties for theming
+**Instructionスキーマ**: step number、description（両方必須）と、オプションのimageUrlとestimatedTimeを持つ順次ステップです。
 
-### Development Workflow
+### プロジェクト構造の詳細
 
-1. **API Changes**: Modify `openapi/openapi.yaml` → run `pnpm run generate:api` → commit both spec and generated code
-2. **Preview API Docs**: Use `pnpm run preview:api` to view API documentation during development
-3. **Font Optimization**: Project uses Geist font via `next/font` for automatic optimization
+- **App Router**: `src/app/`ディレクトリ内の全ページ
+- **生成されたコード**: `src/lib/api/`を手動で編集しないでください - 常にOpenAPI仕様から再生成
+- **API仕様**: "Vibe Cooking API"の日本語ドキュメントを含む`openapi/openapi.yaml`に配置
+- **スタイリング**: テーマ用のCSSカスタムプロパティでTailwind CSS 4を使用
 
-### Important Notes
+### 開発ワークフロー
 
-- The project uses **pnpm** as package manager (not npm/yarn)
-- Development server includes **Turbopack** for faster builds
-- API server runs on `http://localhost:3000/api` (Next.js API routes)
-- All generated TypeScript types use **string enums** and **ES6+ features**
-- The `.gitignore` excludes `openapi/openapitools.json` and `src/lib/api` (except when committing generated updates)
+1. **API変更**: `openapi/openapi.yaml`を修正 → `pnpm run generate:api`を実行 → 仕様と生成されたコード両方をコミット
+2. **APIドキュメントプレビュー**: 開発中にAPIドキュメントを表示するために`pnpm run preview:api`を使用
+3. **フォント最適化**: プロジェクトは自動最適化のために`next/font`経由でGeistフォントを使用
+
+### 重要な注意事項
+
+- プロジェクトはパッケージマネージャーとして**pnpm**を使用（npm/yarnではない）
+- 開発サーバーは高速ビルドのために**Turbopack**を含む
+- APIサーバーは`http://localhost:3000/api`で動作（Next.js APIルート）
+- 生成された全てのTypeScript型は**文字列enum**と**ES6+機能**を使用
+- `.gitignore`は`openapi/openapitools.json`と`src/lib/api`を除外（生成された更新をコミットする場合を除く）

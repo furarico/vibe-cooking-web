@@ -1,6 +1,0 @@
----
-description: 
-globs: 
-alwaysApply: true
----
-[CLAUDE.md](mdc:.claude/rules/CLAUDE.md) のルールに従うこと。
