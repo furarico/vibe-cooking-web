@@ -66,8 +66,6 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Recipe'
-                  pagination:
-                    $ref: '#/components/schemas/Pagination'
 
   /recipes/{id}:
     get:
@@ -188,24 +186,3 @@ components:
         - step
         - description
 
-    Pagination:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: 現在のページ番号
-        limit:
-          type: integer
-          description: 1ページあたりのアイテム数
-        total:
-          type: integer
-          description: 総アイテム数
-        pages:
-          type: integer
-          description: 総ページ数
-        hasNext:
-          type: boolean
-          description: 次のページがあるかどうか
-        hasPrev:
-          type: boolean
-          description: 前のページがあるかどうか
