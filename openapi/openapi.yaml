@@ -1,0 +1,133 @@
+openapi: 3.0.3
+info:
+  title: Vibe Cooking API
+  description: Vibe CookingのためのAPI
+  version: 1.0.0
+  contact:
+    name: ギャFUN!!
+    email: gyafun@furari.co
+
+servers:
+  - url: http://localhost:3000/api
+    description: Next.js
+
+paths:
+  /recipes:
+    get:
+      summary: レシピ一覧取得
+      description: 全てのレシピ一覧を取得
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recipes:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Recipe"
+
+  /recipes/{id}:
+    get:
+      summary: レシピ詳細取得
+      description: IDで指定されたレシピの詳細を取得
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: レシピID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Recipe"
+        "404":
+          description: レシピが見つかりません
+
+components:
+  schemas:
+    Recipe:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        prepTime:
+          type: integer
+          description: 準備時間（分）
+        cookTime:
+          type: integer
+          description: 調理時間（分）
+        servings:
+          type: integer
+          description: 人数分
+        ingredients:
+          type: array
+          items:
+            $ref: "#/components/schemas/Ingredient"
+        instructions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Instruction"
+        imageUrl:
+          type: string
+          format: uri
+        tags:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Ingredient:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 材料名
+        amount:
+          type: number
+          description: 分量
+        unit:
+          type: string
+          description: 単位
+        notes:
+          type: string
+          description: 備考
+      required:
+        - name
+        - amount
+        - unit
+
+    Instruction:
+      type: object
+      properties:
+        step:
+          type: integer
+          description: 手順番号
+        description:
+          type: string
+          description: 手順の説明
+        imageUrl:
+          type: string
+          format: uri
+          description: 手順の画像URL
+        estimatedTime:
+          type: integer
+          description: この手順の推定時間（分）
+      required:
+        - step
+        - description
