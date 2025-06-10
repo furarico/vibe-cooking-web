@@ -1,36 +1,147 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vibe Cooking Web
 
-## Getting Started
+レシピ共有とクッキングコミュニティのためのWebアプリケーション
 
-First, run the development server:
+## 🚀 クイックスタート
+
+### 必要な環境
+- **Node.js** 18以上
+- **pnpm** （推奨パッケージマネージャー）
+
+### セットアップ
+
+1. **リポジトリをクローン**
+   ```bash
+   git clone https://github.com/kantacky/vibe-cooking-web.git
+   cd vibe-cooking-web
+   ```
+
+2. **依存関係をインストール**
+   ```bash
+   pnpm install
+   ```
+
+3. **開発サーバーを起動**
+   ```bash
+   pnpm dev
+   ```
+
+4. **ブラウザでアクセス**
+   [http://localhost:3000](http://localhost:3000) を開いてアプリケーションを確認
+
+## 🛠️ 開発コマンド
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# 開発サーバー起動（Turbopack使用）
 pnpm dev
-# or
-bun dev
+
+# 本番ビルド
+pnpm build
+
+# 本番サーバー起動
+pnpm start
+
+# コード品質チェック
+pnpm lint
+
+# APIクライアント生成（OpenAPIスキーマから）
+pnpm run generate:api
+
+# APIドキュメントプレビュー
+pnpm run preview:api
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🏗️ プロジェクト構造
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+vibe-cooking-web/
+├── src/
+│   ├── app/                    # Next.js App Router（ページとレイアウト）
+│   │   ├── layout.tsx         # ルートレイアウト
+│   │   ├── page.tsx           # ホームページ
+│   │   └── globals.css        # グローバルスタイル
+│   └── lib/
+│       └── api/               # 自動生成されたAPIクライアント
+├── openapi/
+│   ├── openapi.yaml           # OpenAPI仕様書
+│   └── config.yaml            # コード生成設定
+├── public/                     # 静的ファイル
+└── 設定ファイル群
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔧 技術スタック
 
-## Learn More
+- **フレームワーク**: Next.js 15 (App Router)
+- **言語**: TypeScript
+- **スタイリング**: Tailwind CSS 4
+- **パッケージマネージャー**: pnpm
+- **API仕様**: OpenAPI 3.0.3
+- **フォント**: Geist (Vercel)
 
-To learn more about Next.js, take a look at the following resources:
+## 📋 API開発ワークフロー
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+このプロジェクトは **API ファースト開発** を採用しています。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 1. API仕様の編集
+`openapi/openapi.yaml` を編集してAPIエンドポイントを定義
 
-## Deploy on Vercel
+### 2. クライアントコード生成
+```bash
+pnpm run generate:api
+```
+TypeScript型定義とAPIクライアントが `src/lib/api/` に自動生成されます
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3. APIドキュメント確認
+```bash
+pnpm run preview:api
+```
+ブラウザでインタラクティブなAPIドキュメントを表示
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 現在のAPIエンドポイント
+- `GET /recipes` - レシピ一覧取得
+- `GET /recipes/{id}` - レシピ詳細取得
+
+## 🎨 開発ガイドライン
+
+### スタイリング
+- **Tailwind CSS 4** を使用
+- CSS変数でテーマカスタマイズ
+- ダークモード自動対応（`prefers-color-scheme`）
+
+### TypeScript
+- 厳密な型チェック有効
+- パスマッピング: `@/*` → `./src/*`
+- 自動生成されたAPI型を活用
+
+### コード品質
+- ESLint with Next.js設定
+- 自動フォーマット対応
+- Turbopackで高速開発
+
+## 🚨 重要な注意点
+
+- **生成されたコードを手動編集しない**: `src/lib/api/` 内のファイルは `pnpm run generate:api` で再生成されます
+- **pnpmを使用**: このプロジェクトはpnpmに最適化されています
+- **API変更時**: OpenAPI仕様変更後は必ずクライアントコードを再生成してください
+
+## 📚 詳細ドキュメント
+
+- [CLAUDE.md](./CLAUDE.md) - Claude Code向けの詳細な開発ガイド
+- [OpenAPI仕様書](./openapi/openapi.yaml) - API仕様の詳細
+- [Next.js公式ドキュメント](https://nextjs.org/docs)
+- [Tailwind CSS公式ドキュメント](https://tailwindcss.com/docs)
+
+## 🤝 コントリビューション
+
+1. Issueで議論
+2. フィーチャーブランチを作成
+3. 変更を実装
+4. プルリクエストを作成
+
+## 📄 ライセンス
+
+このプロジェクトは私的使用のため、ライセンスは設定されていません。
+
+---
+
+**開発チーム**: ギャFUN!! (gyafun@furari.co)
