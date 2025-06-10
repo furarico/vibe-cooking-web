@@ -17,9 +17,6 @@ const mockRecipeService = jest.createMockFromModule<RecipeService>(
 ) as jest.Mocked<RecipeService>;
 mockRecipeService.getAllRecipes = jest.fn<Promise<Recipe[]>, []>();
 mockRecipeService.getRecipeById = jest.fn<Promise<Recipe | null>, [string]>();
-mockRecipeService.searchRecipes = jest.fn<Recipe[], [Recipe[], string]>();
-mockRecipeService.filterByServings = jest.fn<Recipe[], [Recipe[], number]>();
-mockRecipeService.filterByMaxTime = jest.fn<Recipe[], [Recipe[], number]>();
 
 // モックされたuseDI
 const mockUseDI = useDI as jest.MockedFunction<typeof useDI>;
@@ -71,25 +68,6 @@ describe('useRecipePresenter', () => {
 
     // デフォルトのモック実装
     mockRecipeService.getAllRecipes.mockResolvedValue(mockRecipes);
-    mockRecipeService.searchRecipes.mockImplementation(
-      (recipes: Recipe[], query: string) =>
-        recipes.filter((recipe: Recipe) => recipe.title?.includes(query))
-    );
-    mockRecipeService.filterByServings.mockImplementation(
-      (recipes: Recipe[], servings: number) =>
-        recipes.filter(
-          (recipe: Recipe) => recipe.servings && recipe.servings >= servings
-        )
-    );
-    mockRecipeService.filterByMaxTime.mockImplementation(
-      (recipes: Recipe[], maxTime: number) =>
-        recipes.filter(
-          (recipe: Recipe) =>
-            recipe.prepTime &&
-            recipe.cookTime &&
-            recipe.prepTime + recipe.cookTime <= maxTime
-        )
-    );
   });
 
   describe('初期状態', () => {
@@ -107,13 +85,9 @@ describe('useRecipePresenter', () => {
       });
 
       expect(result.current.recipes).toEqual(mockRecipes);
-      expect(result.current.filteredRecipes).toEqual(mockRecipes);
       expect(result.current.selectedRecipe).toBeNull();
       expect(result.current.loading).toBe(false);
       expect(result.current.error).toBeNull();
-      expect(result.current.searchQuery).toBe('');
-      expect(result.current.servingsFilter).toBe(1);
-      expect(result.current.maxTimeFilter).toBe(180);
       expect(result.current.showDialog).toBe(false);
     });
   });
@@ -141,7 +115,6 @@ describe('useRecipePresenter', () => {
 
       expect(mockRecipeService.getAllRecipes).toHaveBeenCalledTimes(1);
       expect(result.current.recipes).toEqual(mockRecipes);
-      expect(result.current.filteredRecipes).toEqual(mockRecipes);
       expect(result.current.loading).toBe(false);
       expect(result.current.error).toBeNull();
     });
@@ -269,72 +242,6 @@ describe('useRecipePresenter', () => {
     });
   });
 
-  describe('setSearchQuery', () => {
-    it('検索クエリを設定できるべき', async () => {
-      let result: RenderHookResult<
-        RecipePresenterState & RecipePresenterActions,
-        unknown
-      >['result'];
-
-      await act(async () => {
-        const hookResult = renderHook(() => useRecipePresenter());
-        result = hookResult.result;
-        // 初期化完了を待つ
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      act(() => {
-        result.current.setSearchQuery('テスト');
-      });
-
-      expect(result.current.searchQuery).toBe('テスト');
-    });
-  });
-
-  describe('setServingsFilter', () => {
-    it('人数フィルターを設定できるべき', async () => {
-      let result: RenderHookResult<
-        RecipePresenterState & RecipePresenterActions,
-        unknown
-      >['result'];
-
-      await act(async () => {
-        const hookResult = renderHook(() => useRecipePresenter());
-        result = hookResult.result;
-        // 初期化完了を待つ
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      act(() => {
-        result.current.setServingsFilter(4);
-      });
-
-      expect(result.current.servingsFilter).toBe(4);
-    });
-  });
-
-  describe('setMaxTimeFilter', () => {
-    it('最大時間フィルターを設定できるべき', async () => {
-      let result: RenderHookResult<
-        RecipePresenterState & RecipePresenterActions,
-        unknown
-      >['result'];
-
-      await act(async () => {
-        const hookResult = renderHook(() => useRecipePresenter());
-        result = hookResult.result;
-        // 初期化完了を待つ
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      act(() => {
-        result.current.setMaxTimeFilter(60);
-      });
-
-      expect(result.current.maxTimeFilter).toBe(60);
-    });
-  });
-
   describe('refreshRecipes', () => {
     it('レシピを再取得できるべき', async () => {
       let result: RenderHookResult<
@@ -357,80 +264,6 @@ describe('useRecipePresenter', () => {
       });
 
       expect(mockRecipeService.getAllRecipes).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('フィルタリング機能', () => {
-    it('検索クエリでフィルタリングされるべき', async () => {
-      let result: RenderHookResult<
-        RecipePresenterState & RecipePresenterActions,
-        unknown
-      >['result'];
-
-      await act(async () => {
-        const hookResult = renderHook(() => useRecipePresenter());
-        result = hookResult.result;
-        // 初期化完了を待つ
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      // 検索クエリを設定
-      act(() => {
-        result.current.setSearchQuery('テストレシピ1');
-      });
-
-      expect(mockRecipeService.searchRecipes).toHaveBeenCalledWith(
-        mockRecipes,
-        'テストレシピ1'
-      );
-    });
-
-    it('人数フィルターでフィルタリングされるべき', async () => {
-      let result: RenderHookResult<
-        RecipePresenterState & RecipePresenterActions,
-        unknown
-      >['result'];
-
-      await act(async () => {
-        const hookResult = renderHook(() => useRecipePresenter());
-        result = hookResult.result;
-        // 初期化完了を待つ
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      // 人数フィルターを設定
-      act(() => {
-        result.current.setServingsFilter(3);
-      });
-
-      expect(mockRecipeService.filterByServings).toHaveBeenCalledWith(
-        mockRecipes,
-        3
-      );
-    });
-
-    it('時間フィルターでフィルタリングされるべき', async () => {
-      let result: RenderHookResult<
-        RecipePresenterState & RecipePresenterActions,
-        unknown
-      >['result'];
-
-      await act(async () => {
-        const hookResult = renderHook(() => useRecipePresenter());
-        result = hookResult.result;
-        // 初期化完了を待つ
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      // 時間フィルターを設定
-      act(() => {
-        result.current.setMaxTimeFilter(60);
-      });
-
-      expect(mockRecipeService.filterByMaxTime).toHaveBeenCalledWith(
-        mockRecipes,
-        60
-      );
     });
   });
 });
