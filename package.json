@@ -13,7 +13,7 @@
     "test:coverage": "jest --coverage",
     "generate:api": "cd openapi && openapi-generator-cli generate -i openapi.yaml -g typescript-fetch -o ../src/lib/api --additional-properties=typescriptThreePlus=true,stringEnums=true,supportsES6=true,withInterfaces=true,useSeparateModelsAndApi=true",
     "preview:api": "redocly preview-docs openapi/openapi.yaml",
-    "db:migrate": "dotenv -e .env.local -- prisma migrate dev --name init",
+    "db:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "db:generate": "dotenv -e .env.local -- prisma generate",
     "db:seed": "dotenv -e .env.local -- prisma db seed",
     "db:studio": "dotenv -e .env.local -- prisma studio",
