@@ -1,12 +1,13 @@
+import { getAppCheck } from 'firebase-admin/app-check';
 import { NextRequest, NextResponse } from 'next/server';
-import { appCheck } from '../firebase-admin';
+import { app } from '../firebase-admin';
 
 async function verifyAppCheck(
   request: NextRequest
 ): Promise<{ isValid: boolean; errorResponse?: NextResponse }> {
   try {
     // Authorization ヘッダーからトークンを取得
-    const authHeader = request.headers.get('authorization');
+    const authHeader = request.headers.get('X-Firebase-AppCheck');
 
     if (!authHeader) {
       return {
@@ -32,7 +33,7 @@ async function verifyAppCheck(
     }
 
     // AppCheck トークンを検証
-    const appCheckToken = await appCheck.verifyToken(token);
+    const appCheckToken = await getAppCheck(app).verifyToken(token);
 
     if (!appCheckToken) {
       return {

@@ -2,6 +2,7 @@ import {
   getToken,
   initializeAppCheck,
   ReCaptchaV3Provider,
+  type AppCheck,
 } from '@firebase/app-check';
 import { getApp, getApps, initializeApp } from 'firebase/app';
 
@@ -23,11 +24,13 @@ declare global {
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
+let appCheck: AppCheck | null = null;
+
 // App Checkの初期化
 if (typeof window !== 'undefined') {
   window.FIREBASE_APPCHECK_DEBUG_TOKEN = process.env.NODE_ENV === 'development';
 
-  const appCheck = initializeAppCheck(app, {
+  appCheck = initializeAppCheck(app, {
     provider: new ReCaptchaV3Provider(
       process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''
     ),
@@ -41,4 +44,4 @@ if (typeof window !== 'undefined') {
   }
 }
 
-export { app };
+export { app, appCheck };

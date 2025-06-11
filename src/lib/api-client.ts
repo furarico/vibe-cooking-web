@@ -1,5 +1,7 @@
 import type { components, paths } from '@/types/api';
-import createClient from 'openapi-fetch';
+import { getToken } from 'firebase/app-check';
+import createClient, { Middleware } from 'openapi-fetch';
+import { appCheck } from './firebase';
 
 export type Recipe = components['schemas']['Recipe'];
 export type Ingredient = components['schemas']['Ingredient'];
@@ -9,11 +11,32 @@ export type RecipesGet200Response = {
   recipes?: Recipe[];
 };
 
+const appCheckInterceptor: Middleware = {
+  async onRequest({ request }) {
+    try {
+      if (typeof window !== 'undefined') {
+        if (!appCheck) {
+          throw new Error('Firebase App Check is not initialized');
+        }
+        const appCheckToken = await getToken(appCheck);
+        const bearerToken = `Bearer ${appCheckToken.token}`;
+        request.headers.set('X-Firebase-AppCheck', bearerToken);
+        return request;
+      }
+      return request;
+    } catch (error) {
+      console.error('AppCheck error:', error);
+      return request;
+    }
+  },
+};
+
 export class DefaultApi {
   private client: ReturnType<typeof createClient<paths>>;
 
   constructor(baseUrl: string = '/api') {
     this.client = createClient<paths>({ baseUrl });
+    this.client.use(appCheckInterceptor);
   }
 
   async recipesGet(): Promise<RecipesGet200Response> {
