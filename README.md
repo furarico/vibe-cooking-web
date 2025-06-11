@@ -128,7 +128,10 @@ vibe-cooking-web/
 │   │   ├── api/                # API Routes
 │   │   ├── layout.tsx         # ルートレイアウト
 │   │   ├── page.tsx           # ホームページ
+│   │   ├── firebase-init.tsx  # Firebase初期化コンポーネント
 │   │   └── globals.css        # グローバルスタイル
+│   ├── components/             # UIコンポーネント
+│   │   └── ui/                # shadcn/ui再利用可能コンポーネント
 │   ├── client/                 # クライアントサイドレイヤー
 │   │   ├── di/                # 依存性注入コンテナ
 │   │   ├── presenters/        # Presenter Layer
@@ -140,7 +143,9 @@ vibe-cooking-web/
 │   │   └── services/          # Service Layer
 │   ├── lib/                    # 共通ライブラリ
 │   │   ├── api-client.ts      # 手動実装HTTPクライアント
-│   │   └── database.ts        # データベース接続管理
+│   │   ├── database.ts        # データベース接続管理
+│   │   ├── firebase.ts        # Firebase設定
+│   │   └── utils.ts           # shadcn/ui用ユーティリティ
 │   └── types/                  # 型定義
 │       └── api.d.ts           # 自動生成されたAPI型定義
 ├── openapi/
@@ -149,6 +154,8 @@ vibe-cooking-web/
 │   ├── schema.prisma
 │   ├── migrations/
 │   └── seed.ts
+├── components.json             # shadcn/ui設定
+├── tailwind.config.ts         # Tailwind CSS設定
 └── public/                     # 静的ファイル
 ```
 
@@ -156,8 +163,10 @@ vibe-cooking-web/
 
 - **フレームワーク**: Next.js 15 (App Router)
 - **言語**: TypeScript
-- **スタイリング**: Tailwind CSS 4
+- **スタイリング**: Tailwind CSS 4 + shadcn/ui
+- **UIコンポーネント**: shadcn/ui (Button, Card, Input等)
 - **データベース**: PostgreSQL + Prisma ORM
+- **認証・分析**: Firebase + App Check (reCAPTCHA v3)
 - **パッケージマネージャー**: pnpm
 - **API仕様**: OpenAPI 3.0.3
 - **テスト**: Jest
@@ -191,6 +200,7 @@ pnpm api:preview
 
 ### スタイリング
 - **Tailwind CSS 4** を使用
+- **shadcn/ui** コンポーネントライブラリ
 - CSS変数でテーマカスタマイズ
 - ダークモード自動対応（`prefers-color-scheme`）
 
@@ -217,6 +227,52 @@ pnpm api:preview
 ### Prisma Schema
 データベーススキーマは `prisma/schema.prisma` で管理し、マイグレーションでバージョン管理しています。
 
+## 🎨 UIコンポーネントシステム
+
+### shadcn/ui
+プロジェクトは現代的で再利用可能なUIコンポーネントライブラリ **shadcn/ui** を採用しています。
+
+#### 設定
+- **スタイル**: New York
+- **ベースカラー**: Slate
+- **CSS変数**: 使用
+- **Tailwind CSS prefix**: なし
+- **アイコンライブラリ**: Lucide React
+
+#### 利用可能なコンポーネント
+- `Button`: 複数バリアント対応ボタン（default, destructive, outline, secondary, ghost, link）
+- `Card`: カードコンポーネント（Header, Title, Description, Content, Footer）
+- `Input`: 入力フィールドコンポーネント
+
+#### 主要な依存関係
+- `class-variance-authority`: バリアント管理
+- `clsx`: 条件付きクラス名管理
+- `tailwind-merge`: TailwindCSSクラスのマージ
+- `lucide-react`: アイコンライブラリ
+- `@radix-ui/react-slot`: プリミティブコンポーネント
+
+## 🔐 Firebase統合
+
+### 設定
+プロジェクトはFirebase SDKとApp Checkを統合し、セキュリティを強化しています。
+
+#### App Check
+- **Provider**: reCAPTCHA v3
+- **初期化**: クライアントサイドのみ
+- **自動トークンリフレッシュ**: 有効
+
+#### 必要な環境変数
+```bash
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=your_recaptcha_site_key
+```
+
 ## 🚀 デプロイメント
 
 ### Google Cloud Run
@@ -237,6 +293,8 @@ docker run -p 3000:3000 vibe-cooking
 - **pnpmを使用**: このプロジェクトはpnpmに最適化されています
 - **API変更時**: OpenAPI仕様変更後は必ずクライアントコードを再生成してください
 - **テスト駆動開発**: 新機能実装時はテストを先に実装してください
+- **shadcn/ui**: UIコンポーネントは `src/components/ui/` から使用してください
+- **Firebase環境変数**: 本番環境では適切なFirebase設定が必要です
 
 ## 📚 詳細ドキュメント
 
