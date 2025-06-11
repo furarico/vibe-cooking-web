@@ -1,4 +1,4 @@
-import { cert, getApps, initializeApp } from 'firebase-admin/app';
+import { getApps, initializeApp } from 'firebase-admin/app';
 import { getAppCheck } from 'firebase-admin/app-check';
 
 // Firebase Admin SDKの初期化
@@ -8,23 +8,16 @@ function initializeFirebaseAdmin() {
     return getApps()[0];
   }
 
-  // 環境変数から認証情報を取得
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  const projectId = process.env.FIREBASE_PROJECT_ID;
-
-  if (!privateKey || !clientEmail || !projectId) {
-    throw new Error('Firebase Admin SDK の必要な環境変数が設定されていません');
+  // GOOGLE_APPLICATION_CREDENTIALSが設定されているかチェック
+  if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    throw new Error(
+      'GOOGLE_APPLICATION_CREDENTIALS 環境変数が設定されていません。サービスアカウントキーファイルのパスを指定してください。'
+    );
   }
 
-  return initializeApp({
-    credential: cert({
-      projectId,
-      clientEmail,
-      privateKey,
-    }),
-    projectId,
-  });
+  // GOOGLE_APPLICATION_CREDENTIALSを使用して初期化
+  // credentialを明示的に指定せず、デフォルトの認証方法を使用
+  return initializeApp();
 }
 
 // AppCheck トークンを検証する関数

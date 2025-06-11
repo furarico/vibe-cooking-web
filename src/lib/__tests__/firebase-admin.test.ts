@@ -29,9 +29,8 @@ describe('Firebase Admin', () => {
     jest.clearAllMocks();
 
     // 環境変数をセット
-    process.env.FIREBASE_PRIVATE_KEY = 'mock-private-key';
-    process.env.FIREBASE_CLIENT_EMAIL = 'test@test.com';
-    process.env.FIREBASE_PROJECT_ID = 'test-project';
+    process.env.GOOGLE_APPLICATION_CREDENTIALS =
+      '/path/to/service-account-key.json';
 
     // AppCheck モックの設定
     mockGetAppCheck.mockReturnValue({
@@ -42,9 +41,7 @@ describe('Firebase Admin', () => {
 
   afterEach(() => {
     // 環境変数をクリア
-    delete process.env.FIREBASE_PRIVATE_KEY;
-    delete process.env.FIREBASE_CLIENT_EMAIL;
-    delete process.env.FIREBASE_PROJECT_ID;
+    delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
   });
 
   describe('verifyAppCheckToken', () => {
@@ -81,8 +78,8 @@ describe('Firebase Admin', () => {
       expect(mockInitializeApp).toHaveBeenCalled();
     });
 
-    it('必要な環境変数がない場合にfalseを返す', async () => {
-      delete process.env.FIREBASE_PRIVATE_KEY;
+    it('GOOGLE_APPLICATION_CREDENTIALSがない場合にfalseを返す', async () => {
+      delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
       mockGetApps.mockReturnValue([]);
 
       const result = await verifyAppCheckToken('token');

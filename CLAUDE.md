@@ -292,9 +292,12 @@ prisma/                 # Prismaスキーマとマイグレーション
 - 検証失敗時は適切なHTTPステータスコードを返却
 
 **必要な環境変数**（本番環境のみ）:
-- `FIREBASE_PROJECT_ID`: FirebaseプロジェクトID（管理用）
-- `FIREBASE_CLIENT_EMAIL`: サービスアカウントのメールアドレス
-- `FIREBASE_PRIVATE_KEY`: サービスアカウントの秘密鍵（改行は`\\n`でエスケープ）
+- `GOOGLE_APPLICATION_CREDENTIALS`: サービスアカウントキーファイルのパス（例: `/path/to/service-account-key.json`）
+
+**サービスアカウント設定**:
+- Firebase ConsoleでサービスアカウントキーファイルをJSONでダウンロード
+- Cloud Runにファイルをマウントして`GOOGLE_APPLICATION_CREDENTIALS`にパスを設定
+- または、環境変数でJSONコンテンツを直接設定する方法も可能
 
 ### 重要な注意事項
 
