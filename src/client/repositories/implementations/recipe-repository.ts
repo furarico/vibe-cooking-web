@@ -6,10 +6,15 @@ export class RecipeRepository implements IRecipeRepository {
 
   async findAll(): Promise<Recipe[]> {
     try {
+      console.log('📡 レシピ一覧取得開始');
       const response: RecipesGet200Response = await this.apiClient.recipesGet();
+      console.log('✅ レシピ一覧取得成功:', response);
       return response.recipes || [];
     } catch (error) {
-      console.error('レシピ一覧取得エラー:', error);
+      console.error('❌ レシピ一覧取得エラー:', error);
+      if (error instanceof Error) {
+        throw new Error(`レシピ一覧の取得に失敗しました: ${error.message}`);
+      }
       throw new Error('レシピ一覧の取得に失敗しました');
     }
   }

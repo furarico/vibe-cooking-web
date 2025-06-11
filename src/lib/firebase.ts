@@ -28,10 +28,15 @@ let appCheck: AppCheck | null = null;
 
 // App Checkの初期化
 if (typeof window !== 'undefined') {
+<<<<<<< HEAD
+=======
+  // 開発環境でのみデバッグトークンを有効化
+>>>>>>> 9a75a3d (本番環境でのFirebase AppCheck認証とAPI通信の問題を修正)
   if (process.env.NODE_ENV === 'development') {
     window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
   }
 
+<<<<<<< HEAD
   const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
   if (recaptchaSiteKey) {
@@ -49,6 +54,34 @@ if (typeof window !== 'undefined') {
     console.warn(
       '⚠️ reCAPTCHA Site Key が設定されていません。Firebase App Check が無効です。'
     );
+=======
+  // ReCAPTCHA Site Keyが設定されている場合のみApp Checkを初期化
+  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  if (siteKey) {
+    try {
+      appCheck = initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider(siteKey),
+        isTokenAutoRefreshEnabled: true,
+      });
+
+      if (process.env.NODE_ENV === 'development') {
+        getToken(appCheck)
+          .then(appCheckToken => {
+            console.log(
+              '🔐 Firebase App Check Token:',
+              appCheckToken.token.substring(0, 20) + '...'
+            );
+          })
+          .catch(error => {
+            console.error('Firebase App Check Token取得エラー:', error);
+          });
+      }
+    } catch (error) {
+      console.error('Firebase App Check初期化エラー:', error);
+    }
+  } else {
+    console.warn('NEXT_PUBLIC_RECAPTCHA_SITE_KEYが設定されていません');
+>>>>>>> 9a75a3d (本番環境でのFirebase AppCheck認証とAPI通信の問題を修正)
   }
 }
 

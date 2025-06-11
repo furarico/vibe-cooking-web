@@ -31,9 +31,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ServiceWorkerRegistration />
-        <FirebaseInit />
-        <DIProvider>{children}</DIProvider>
+        <DIProvider>
+          <ServiceWorkerRegistration />
+          <FirebaseInit />
+          {children}
+        </DIProvider>
       </body>
     </html>
   );
