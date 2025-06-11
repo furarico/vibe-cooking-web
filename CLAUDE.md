@@ -276,6 +276,26 @@ prisma/                 # Prismaスキーマとマイグレーション
 - `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID`: Google Analytics測定ID
 - `NEXT_PUBLIC_RECAPTCHA_SITE_KEY`: reCAPTCHA Site Key
 
+### Firebase AppCheck セキュリティ
+
+**AppCheck 設定**: プロジェクトはFirebase AppCheckを使用してAPIエンドポイントを保護します：
+
+**サーバーサイド設定**:
+- `src/lib/firebase-admin.ts`: Firebase Admin SDK初期化とAppCheckトークン検証
+- `src/lib/middleware/app-check.ts`: AppCheck検証ミドルウェア
+- 開発環境では検証をスキップ、本番環境では必須
+
+**AppCheck 検証ミドルウェア**:
+- `withAppCheck()`: HOF（高階関数）でAPIハンドラーをラップ
+- Authorizationヘッダーから`Bearer`トークンを取得
+- Firebase Admin SDKでトークンを検証
+- 検証失敗時は適切なHTTPステータスコードを返却
+
+**必要な環境変数**（本番環境のみ）:
+- `FIREBASE_PROJECT_ID`: FirebaseプロジェクトID（管理用）
+- `FIREBASE_CLIENT_EMAIL`: サービスアカウントのメールアドレス
+- `FIREBASE_PRIVATE_KEY`: サービスアカウントの秘密鍵（改行は`\\n`でエスケープ）
+
 ### 重要な注意事項
 
 - プロジェクトはパッケージマネージャーとして**pnpm**を使用（npm/yarnではない）
