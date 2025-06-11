@@ -15,7 +15,36 @@ paths:
   /recipes:
     get:
       summary: レシピ一覧取得
-      description: 全てのレシピ一覧を取得
+      description: フィルター条件を指定してレシピ一覧を取得
+      parameters:
+        - name: q
+          in: query
+          required: false
+          description: テキスト検索（レシピタイトル、説明、材料名、手順で検索）
+          schema:
+            type: string
+          example: パスタ
+        - name: tag
+          in: query
+          required: false
+          description: タグフィルター（カンマ区切りで複数指定可能、全て含むレシピを取得）
+          schema:
+            type: string
+          example: 和食,簡単
+        - name: category
+          in: query
+          required: false
+          description: カテゴリ名でフィルター
+          schema:
+            type: string
+          example: ご飯
+        - name: categoryId
+          in: query
+          required: false
+          description: カテゴリIDでフィルター
+          schema:
+            type: string
+          example: cm123abc456
       responses:
         '200':
           description: 成功
