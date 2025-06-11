@@ -93,16 +93,21 @@ describe('AppCheck Middleware', () => {
       mockHandler.mockClear();
     });
 
-    it('開発環境ではAppCheck検証をスキップする', async () => {
+    it('開発環境でもAppCheck検証を実行する', async () => {
       process.env.NODE_ENV = 'development';
+      mockVerifyAppCheckToken.mockResolvedValue(true);
       const wrappedHandler = withAppCheck(mockHandler);
 
-      const request = new NextRequest('http://localhost:3000/api/test');
+      const request = new NextRequest('http://localhost:3000/api/test', {
+        headers: {
+          authorization: 'Bearer debug-token',
+        },
+      });
 
       await wrappedHandler(request);
 
       expect(mockHandler).toHaveBeenCalledWith(request);
-      expect(mockVerifyAppCheckToken).not.toHaveBeenCalled();
+      expect(mockVerifyAppCheckToken).toHaveBeenCalledWith('debug-token');
     });
 
     it('本番環境では有効なトークンでハンドラーを実行する', async () => {

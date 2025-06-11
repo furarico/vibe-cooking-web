@@ -31,6 +31,7 @@ describe('Firebase Admin', () => {
     // 環境変数をセット
     process.env.GOOGLE_APPLICATION_CREDENTIALS =
       '/path/to/service-account-key.json';
+    process.env.FIREBASE_DEBUG_TOKENS = 'debug-token-1,debug-token-2';
 
     // AppCheck モックの設定
     mockGetAppCheck.mockReturnValue({
@@ -42,6 +43,7 @@ describe('Firebase Admin', () => {
   afterEach(() => {
     // 環境変数をクリア
     delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    delete process.env.FIREBASE_DEBUG_TOKENS;
   });
 
   describe('verifyAppCheckToken', () => {
@@ -78,7 +80,28 @@ describe('Firebase Admin', () => {
       expect(mockInitializeApp).toHaveBeenCalled();
     });
 
-    it('GOOGLE_APPLICATION_CREDENTIALSがない場合にfalseを返す', async () => {
+    it('開発環境でデバッグトークンを使用した場合にtrueを返す', async () => {
+      process.env.NODE_ENV = 'development';
+
+      const result = await verifyAppCheckToken('debug-token-1');
+
+      expect(result).toBe(true);
+      expect(mockVerifyToken).not.toHaveBeenCalled();
+    });
+
+    it('開発環境で認証情報なしの場合に全てのトークンでtrueを返す', async () => {
+      process.env.NODE_ENV = 'development';
+      delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
+      mockGetApps.mockReturnValue([]);
+
+      const result = await verifyAppCheckToken('any-token');
+
+      expect(result).toBe(true);
+      expect(mockVerifyToken).not.toHaveBeenCalled();
+    });
+
+    it('本番環境でGOOGLE_APPLICATION_CREDENTIALSがない場合にfalseを返す', async () => {
+      process.env.NODE_ENV = 'production';
       delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
       mockGetApps.mockReturnValue([]);
 

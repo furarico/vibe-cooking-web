@@ -71,12 +71,7 @@ export function withAppCheck<T extends unknown[]>(
   handler: (request: NextRequest, ...args: T) => Promise<NextResponse>
 ) {
   return async (request: NextRequest, ...args: T): Promise<NextResponse> => {
-    // 開発環境では AppCheck 検証をスキップ
-    if (process.env.NODE_ENV === 'development') {
-      console.log('開発環境のため AppCheck 検証をスキップします');
-      return handler(request, ...args);
-    }
-
+    // 開発環境でも AppCheck 検証を実行（デバッグトークン対応）
     const { isValid, errorResponse } = await verifyAppCheck(request);
 
     if (!isValid && errorResponse) {
