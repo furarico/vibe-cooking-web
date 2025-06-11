@@ -40,7 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-openapi/openapitools.json
 src/types/api.d.ts
 
 /src/generated/prisma

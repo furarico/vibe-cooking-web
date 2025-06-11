@@ -28,7 +28,9 @@ let appCheck: AppCheck | null = null;
 
 // App Checkの初期化
 if (typeof window !== 'undefined') {
-  window.FIREBASE_APPCHECK_DEBUG_TOKEN = process.env.NODE_ENV === 'development';
+  if (process.env.NODE_ENV === 'development') {
+    window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+  }
 
   const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
