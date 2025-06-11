@@ -7,5 +7,6 @@ export type RecipeWithDetails = Recipe & {
 
 export interface IRecipeRepository {
   findAll(): Promise<RecipeWithDetails[]>;
+  findAllSummary(): Promise<RecipeWithDetails[]>;
   findById(id: string): Promise<RecipeWithDetails | null>;
 }
