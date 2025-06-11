@@ -7,6 +7,7 @@ import { RecipeService } from '../recipe-service';
 // リポジトリのモック
 const mockRecipeRepository: jest.Mocked<IRecipeRepository> = {
   findAll: jest.fn(),
+  findAllSummary: jest.fn(),
   findById: jest.fn(),
 };
 
@@ -53,13 +54,21 @@ describe('RecipeService', () => {
 
   describe('getAllRecipes', () => {
     it('全てのレシピを取得できること', async () => {
-      const mockRecipes = [mockRecipe];
-      mockRecipeRepository.findAll.mockResolvedValue(mockRecipes);
+      const mockSummaryRecipes = [
+        {
+          ...mockRecipe,
+          ingredients: [],
+          instructions: [],
+        },
+      ];
+      mockRecipeRepository.findAllSummary.mockResolvedValue(mockSummaryRecipes);
 
       const result = await recipeService.getAllRecipes();
 
-      expect(result).toEqual(mockRecipes);
-      expect(mockRecipeRepository.findAll).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(mockSummaryRecipes);
+      expect(result[0].ingredients).toEqual([]);
+      expect(result[0].instructions).toEqual([]);
+      expect(mockRecipeRepository.findAllSummary).toHaveBeenCalledTimes(1);
     });
   });
 
