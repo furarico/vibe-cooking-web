@@ -50,6 +50,23 @@ paths:
         '404':
           description: レシピが見つかりません
 
+  /categories:
+    get:
+      summary: カテゴリ一覧取得
+      description: 全てのカテゴリ一覧を取得
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+
 components:
   schemas:
     Recipe:
@@ -62,8 +79,7 @@ components:
         description:
           type: string
         category:
-          type: string
-          description: レシピのカテゴリ（例：ご飯、おかず、デザート、汁物）
+          $ref: '#/components/schemas/Category'
         prepTime:
           type: integer
           description: 準備時間（分）
@@ -138,3 +154,16 @@ components:
         - step
         - title
         - description
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          description: カテゴリID
+        name:
+          type: string
+          description: カテゴリ名（例：ご飯、おかず、デザート、汁物）
+      required:
+        - id
+        - name

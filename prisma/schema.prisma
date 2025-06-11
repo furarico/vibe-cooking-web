@@ -17,7 +17,6 @@ model Recipe {
   id          String   @id @default(cuid())
   title       String
   description String?
-  category    String?  // レシピのカテゴリ（例：ご飯、おかず、デザート、汁物）
   prepTime    Int?     // 準備時間（分）
   cookTime    Int?     // 調理時間（分）
   servings    Int?     // 人数分
@@ -27,6 +26,8 @@ model Recipe {
   updatedAt   DateTime @updatedAt
 
   // リレーション
+  category     Category?    @relation(fields: [categoryId], references: [id])
+  categoryId   String?
   ingredients  Ingredient[]
   instructions Instruction[]
 
@@ -60,4 +61,12 @@ model Instruction {
   recipeId String
 
   @@map("instructions")
+}
+
+model Category {
+  id      String   @id @default(cuid())
+  name    String   @unique // カテゴリ名（例：ご飯、おかず、デザート、汁物）
+  recipes Recipe[] // 1つのカテゴリに複数のレシピが属する
+
+  @@map("categories")
 }

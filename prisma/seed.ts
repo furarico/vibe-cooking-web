@@ -3,12 +3,17 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
+  // カテゴリを作成
+  const categoryGohan = await prisma.category.create({ data: { name: 'ご飯' } });
+  const categoryOkazu = await prisma.category.create({ data: { name: 'おかず' } });
+  const categoryMen = await prisma.category.create({ data: { name: '麺' } });
+
   // サンプルレシピデータ
   const recipe1 = await prisma.recipe.create({
     data: {
       title: 'チキンカレー',
       description: '本格的なスパイスを使った美味しいチキンカレーです',
-      category: 'ご飯',
+      categoryId: categoryOkazu.id,
       prepTime: 20,
       cookTime: 40,
       servings: 4,
@@ -74,7 +79,7 @@ async function main() {
     data: {
       title: 'パスタアラビアータ',
       description: 'ピリ辛トマトソースのシンプルなパスタです',
-      category: '麺',
+      categoryId: categoryMen.id,
       prepTime: 10,
       cookTime: 15,
       servings: 2,

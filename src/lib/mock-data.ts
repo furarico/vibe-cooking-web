@@ -1,3 +1,12 @@
+// カテゴリのサンプルデータ
+export const sampleCategories = [
+  { id: 'category-001', name: 'ご飯' },
+  { id: 'category-002', name: 'おかず' },
+  { id: 'category-003', name: 'デザート' },
+  { id: 'category-004', name: '汁物' },
+  { id: 'category-005', name: '麺' },
+];
+
 // レシピのサンプルデータ
 export const sampleRecipes = [
   {
@@ -5,7 +14,7 @@ export const sampleRecipes = [
     title: 'クリーミーチキンカレー',
     description:
       'スパイスの効いた本格的なチキンカレーです。ココナッツミルクでまろやかな仕上がりに。',
-    category: 'おかず',
+    category: { id: 'category-002', name: 'おかず' },
     prepTime: 20,
     cookTime: 40,
     servings: 4,
@@ -96,7 +105,7 @@ export const sampleRecipes = [
     title: '和風パスタ きのこと海苔',
     description:
       'しめじとしいたけの旨味が効いた和風パスタ。海苔の風味がアクセントです。',
-    category: 'ご飯',
+    category: { id: 'category-001', name: 'ご飯' },
     prepTime: 10,
     cookTime: 15,
     servings: 2,
@@ -174,7 +183,7 @@ export const sampleRecipes = [
     title: 'チョコレートブラウニー',
     description:
       '濃厚なチョコレートの味わいが楽しめる手作りブラウニー。混ぜるだけで簡単！',
-    category: 'デザート',
+    category: { id: 'category-003', name: 'デザート' },
     prepTime: 15,
     cookTime: 30,
     servings: 6,
