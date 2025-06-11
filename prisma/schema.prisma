@@ -17,6 +17,7 @@ model Recipe {
   id          String   @id @default(cuid())
   title       String
   description String?
+  category    String?  // レシピのカテゴリ（例：ご飯、おかず、デザート、汁物）
   prepTime    Int?     // 準備時間（分）
   cookTime    Int?     // 調理時間（分）
   servings    Int?     // 人数分

@@ -8,6 +8,7 @@ async function main() {
     data: {
       title: 'チキンカレー',
       description: '本格的なスパイスを使った美味しいチキンカレーです',
+      category: 'ご飯',
       prepTime: 20,
       cookTime: 40,
       servings: 4,
@@ -67,6 +68,7 @@ async function main() {
     data: {
       title: 'パスタアラビアータ',
       description: 'ピリ辛トマトソースのシンプルなパスタです',
+      category: '麺',
       prepTime: 10,
       cookTime: 15,
       servings: 2,

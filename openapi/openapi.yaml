@@ -61,6 +61,9 @@ components:
           type: string
         description:
           type: string
+        category:
+          type: string
+          description: レシピのカテゴリ（例：ご飯、おかず、デザート、汁物）
         prepTime:
           type: integer
           description: 準備時間（分）
