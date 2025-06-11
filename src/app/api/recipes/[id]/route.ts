@@ -1,5 +1,5 @@
 import { withAppCheck } from '@/lib/middleware/app-check';
-import { sampleRecipes } from '@/lib/mock-data';
+import { ServerContainer } from '@/server/di/container';
 import { NextRequest, NextResponse } from 'next/server';
 
 // GET /api/recipes/[id] - 特定IDのレシピ詳細を取得
@@ -10,8 +10,8 @@ async function handleGet(
   try {
     const { id } = await params;
 
-    // レシピを検索
-    const recipe = sampleRecipes.find(r => r.id === id);
+    const recipeService = ServerContainer.getInstance().recipeService;
+    const recipe = await recipeService.getRecipeById(id);
 
     if (!recipe) {
       return NextResponse.json(

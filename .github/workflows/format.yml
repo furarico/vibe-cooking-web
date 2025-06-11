@@ -26,9 +26,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
@@ -62,11 +59,26 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Commit and push changes
+      - name: Create Pull Request
         if: steps.verify-changed-files.outputs.changed == 'true'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add .
-          git commit -m "🤖 自動フォーマット適用"
-          git push
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: '🤖 自動フォーマット適用'
+          title: '🤖 自動フォーマット適用'
+          body: |
+            ## 概要
+            自動フォーマットによるコード整形を適用しました。
+
+            ## 変更内容
+            - コードフォーマットの自動適用
+            - リンティングエラーの修正
+
+            ## 確認事項
+            - [ ] フォーマット結果を確認
+            - [ ] 意図しない変更がないことを確認
+
+            ---
+            *このPRは自動生成されました*
+          branch: auto-format/format-${{ github.run_number }}
+          delete-branch: true
+          base: ${{ github.head_ref || github.ref_name }}
