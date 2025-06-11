@@ -81,3 +81,4 @@ jobs:
             *このPRは自動生成されました*
           branch: auto-format/format-${{ github.run_number }}
           delete-branch: true
+          base: ${{ github.head_ref || github.ref_name }}
