@@ -28,37 +28,19 @@ let appCheck: AppCheck | null = null;
 
 // App Checkの初期化
 if (typeof window !== 'undefined') {
-  // 開発環境でのみデバッグトークンを有効化
+  window.FIREBASE_APPCHECK_DEBUG_TOKEN = process.env.NODE_ENV === 'development';
+
+  appCheck = initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider(
+      process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''
+    ),
+    isTokenAutoRefreshEnabled: true,
+  });
+
   if (process.env.NODE_ENV === 'development') {
-    window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
-  }
-
-  // ReCAPTCHA Site Keyが設定されている場合のみApp Checkを初期化
-  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-  if (siteKey) {
-    try {
-      appCheck = initializeAppCheck(app, {
-        provider: new ReCaptchaV3Provider(siteKey),
-        isTokenAutoRefreshEnabled: true,
-      });
-
-      if (process.env.NODE_ENV === 'development') {
-        getToken(appCheck)
-          .then(appCheckToken => {
-            console.log(
-              '🔐 Firebase App Check Token:',
-              appCheckToken.token.substring(0, 20) + '...'
-            );
-          })
-          .catch(error => {
-            console.error('Firebase App Check Token取得エラー:', error);
-          });
-      }
-    } catch (error) {
-      console.error('Firebase App Check初期化エラー:', error);
-    }
-  } else {
-    console.warn('NEXT_PUBLIC_RECAPTCHA_SITE_KEYが設定されていません');
+    getToken(appCheck).then(appCheckToken => {
+      console.log('🔐 Firebase App Check:', appCheckToken.token);
+    });
   }
 }
 

@@ -16,16 +16,11 @@ const appCheckInterceptor: Middleware = {
     try {
       if (typeof window !== 'undefined') {
         if (!appCheck) {
-          console.warn('Firebase App Check is not initialized');
-          return request;
+          throw new Error('Firebase App Check is not initialized');
         }
         const appCheckToken = await getToken(appCheck);
         const bearerToken = `Bearer ${appCheckToken.token}`;
-        request.headers.set('Authorization', bearerToken);
-        console.log(
-          'AppCheck token set:',
-          bearerToken.substring(0, 20) + '...'
-        );
+        request.headers.set('X-Firebase-AppCheck', bearerToken);
         return request;
       }
       return request;
