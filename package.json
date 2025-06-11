@@ -21,7 +21,9 @@
     "deploy:run": "gcloud run deploy vibe-cooking-web --source . --region asia-northeast1 --project furarico-vibe-cooking"
   },
   "dependencies": {
+    "@firebase/app-check": "^0.10.0",
     "@prisma/client": "^6.9.0",
+    "firebase": "^11.9.1",
     "next": "15.3.3",
     "prisma": "^6.9.0",
     "react": "^19.1.0",
