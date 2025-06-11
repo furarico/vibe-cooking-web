@@ -1,7 +1,6 @@
 import {
   IRecipeRepository,
   RecipeWithDetails,
-  RecipeFilters,
 } from '../../repositories/interfaces/i-recipe-repository';
 import { RecipeService } from '../recipe-service';
 
@@ -136,79 +135,115 @@ describe('RecipeService', () => {
         { ...mockRecipe, ingredients: [], instructions: [] },
         { ...mockRecipe2, ingredients: [], instructions: [] },
       ];
-      mockRecipeRepository.findAllSummaryWithFilters.mockResolvedValue(mockSummaryRecipes);
+      mockRecipeRepository.findAllSummaryWithFilters.mockResolvedValue(
+        mockSummaryRecipes
+      );
 
       const result = await recipeService.getAllRecipesWithFilters({});
 
       expect(result).toEqual(mockSummaryRecipes);
-      expect(mockRecipeRepository.findAllSummaryWithFilters).toHaveBeenCalledWith({});
+      expect(
+        mockRecipeRepository.findAllSummaryWithFilters
+      ).toHaveBeenCalledWith({});
     });
 
     it('テキスト検索（q）でレシピを絞り込めること', async () => {
       const mockFilteredRecipes = [
         { ...mockRecipe2, ingredients: [], instructions: [] },
       ];
-      mockRecipeRepository.findAllSummaryWithFilters.mockResolvedValue(mockFilteredRecipes);
+      mockRecipeRepository.findAllSummaryWithFilters.mockResolvedValue(
+        mockFilteredRecipes
+      );
 
-      const result = await recipeService.getAllRecipesWithFilters({ q: 'パスタ' });
+      const result = await recipeService.getAllRecipesWithFilters({
+        q: 'パスタ',
+      });
 
       expect(result).toEqual(mockFilteredRecipes);
-      expect(mockRecipeRepository.findAllSummaryWithFilters).toHaveBeenCalledWith({ q: 'パスタ' });
+      expect(
+        mockRecipeRepository.findAllSummaryWithFilters
+      ).toHaveBeenCalledWith({ q: 'パスタ' });
     });
 
     it('タグフィルター（tag）でレシピを絞り込めること', async () => {
       const mockFilteredRecipes = [
         { ...mockRecipe, ingredients: [], instructions: [] },
       ];
-      mockRecipeRepository.findAllSummaryWithFilters.mockResolvedValue(mockFilteredRecipes);
+      mockRecipeRepository.findAllSummaryWithFilters.mockResolvedValue(
+        mockFilteredRecipes
+      );
 
-      const result = await recipeService.getAllRecipesWithFilters({ tag: '和食' });
+      const result = await recipeService.getAllRecipesWithFilters({
+        tag: '和食',
+      });
 
       expect(result).toEqual(mockFilteredRecipes);
-      expect(mockRecipeRepository.findAllSummaryWithFilters).toHaveBeenCalledWith({ tag: '和食' });
+      expect(
+        mockRecipeRepository.findAllSummaryWithFilters
+      ).toHaveBeenCalledWith({ tag: '和食' });
     });
 
     it('複数タグフィルターでレシピを絞り込めること', async () => {
       const mockFilteredRecipes = [
         { ...mockRecipe2, ingredients: [], instructions: [] },
       ];
-      mockRecipeRepository.findAllSummaryWithFilters.mockResolvedValue(mockFilteredRecipes);
+      mockRecipeRepository.findAllSummaryWithFilters.mockResolvedValue(
+        mockFilteredRecipes
+      );
 
-      const result = await recipeService.getAllRecipesWithFilters({ tag: '洋食,簡単' });
+      const result = await recipeService.getAllRecipesWithFilters({
+        tag: '洋食,簡単',
+      });
 
       expect(result).toEqual(mockFilteredRecipes);
-      expect(mockRecipeRepository.findAllSummaryWithFilters).toHaveBeenCalledWith({ tag: '洋食,簡単' });
+      expect(
+        mockRecipeRepository.findAllSummaryWithFilters
+      ).toHaveBeenCalledWith({ tag: '洋食,簡単' });
     });
 
     it('カテゴリIDフィルター（categoryId）でレシピを絞り込めること', async () => {
       const mockFilteredRecipes = [
         { ...mockRecipe, ingredients: [], instructions: [] },
       ];
-      mockRecipeRepository.findAllSummaryWithFilters.mockResolvedValue(mockFilteredRecipes);
+      mockRecipeRepository.findAllSummaryWithFilters.mockResolvedValue(
+        mockFilteredRecipes
+      );
 
-      const result = await recipeService.getAllRecipesWithFilters({ categoryId: 'category1' });
+      const result = await recipeService.getAllRecipesWithFilters({
+        categoryId: 'category1',
+      });
 
       expect(result).toEqual(mockFilteredRecipes);
-      expect(mockRecipeRepository.findAllSummaryWithFilters).toHaveBeenCalledWith({ categoryId: 'category1' });
+      expect(
+        mockRecipeRepository.findAllSummaryWithFilters
+      ).toHaveBeenCalledWith({ categoryId: 'category1' });
     });
 
     it('カテゴリ名フィルター（category）でレシピを絞り込めること', async () => {
       const mockFilteredRecipes = [
         { ...mockRecipe, ingredients: [], instructions: [] },
       ];
-      mockRecipeRepository.findAllSummaryWithFilters.mockResolvedValue(mockFilteredRecipes);
+      mockRecipeRepository.findAllSummaryWithFilters.mockResolvedValue(
+        mockFilteredRecipes
+      );
 
-      const result = await recipeService.getAllRecipesWithFilters({ category: 'ご飯' });
+      const result = await recipeService.getAllRecipesWithFilters({
+        category: 'ご飯',
+      });
 
       expect(result).toEqual(mockFilteredRecipes);
-      expect(mockRecipeRepository.findAllSummaryWithFilters).toHaveBeenCalledWith({ category: 'ご飯' });
+      expect(
+        mockRecipeRepository.findAllSummaryWithFilters
+      ).toHaveBeenCalledWith({ category: 'ご飯' });
     });
 
     it('複数フィルターを組み合わせてレシピを絞り込めること', async () => {
       const mockFilteredRecipes = [
         { ...mockRecipe2, ingredients: [], instructions: [] },
       ];
-      mockRecipeRepository.findAllSummaryWithFilters.mockResolvedValue(mockFilteredRecipes);
+      mockRecipeRepository.findAllSummaryWithFilters.mockResolvedValue(
+        mockFilteredRecipes
+      );
 
       const result = await recipeService.getAllRecipesWithFilters({
         q: 'パスタ',
@@ -217,7 +252,9 @@ describe('RecipeService', () => {
       });
 
       expect(result).toEqual(mockFilteredRecipes);
-      expect(mockRecipeRepository.findAllSummaryWithFilters).toHaveBeenCalledWith({
+      expect(
+        mockRecipeRepository.findAllSummaryWithFilters
+      ).toHaveBeenCalledWith({
         q: 'パスタ',
         tag: '洋食',
         categoryId: 'category2',

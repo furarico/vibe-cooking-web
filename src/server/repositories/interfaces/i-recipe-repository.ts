@@ -15,6 +15,8 @@ export interface RecipeFilters {
 export interface IRecipeRepository {
   findAll(): Promise<RecipeWithDetails[]>;
   findAllSummary(): Promise<RecipeWithDetails[]>;
-  findAllSummaryWithFilters(filters: RecipeFilters): Promise<RecipeWithDetails[]>;
+  findAllSummaryWithFilters(
+    filters: RecipeFilters
+  ): Promise<RecipeWithDetails[]>;
   findById(id: string): Promise<RecipeWithDetails | null>;
 }

@@ -1,12 +1,14 @@
 import {
   IRecipeRepository,
-  RecipeWithDetails,
   RecipeFilters,
+  RecipeWithDetails,
 } from '../repositories/interfaces/i-recipe-repository';
 
 export interface IRecipeService {
   getAllRecipes(): Promise<RecipeWithDetails[]>;
-  getAllRecipesWithFilters(filters: RecipeFilters): Promise<RecipeWithDetails[]>;
+  getAllRecipesWithFilters(
+    filters: RecipeFilters
+  ): Promise<RecipeWithDetails[]>;
   getRecipeById(id: string): Promise<RecipeWithDetails>;
 }
 
@@ -17,7 +19,9 @@ export class RecipeService implements IRecipeService {
     return this.recipeRepository.findAllSummary();
   }
 
-  async getAllRecipesWithFilters(filters: RecipeFilters): Promise<RecipeWithDetails[]> {
+  async getAllRecipesWithFilters(
+    filters: RecipeFilters
+  ): Promise<RecipeWithDetails[]> {
     return this.recipeRepository.findAllSummaryWithFilters(filters);
   }
 
