@@ -56,7 +56,7 @@
 
 ## アーキテクチャ概要
 
-これは**Next.js 15 App Router**プロジェクトで、**TypeScript**と**Tailwind CSS 4**を使用し、料理・レシピプラットフォーム向けの**APIファースト開発**アプローチで設計されています。
+これは**Next.js 15 App Router**プロジェクトで、**TypeScript**、**Tailwind CSS 4**、**shadcn/ui**を使用し、料理・レシピプラットフォーム向けの**APIファースト開発**アプローチで設計されています。
 
 ### 主要なアーキテクチャパターン
 
@@ -91,7 +91,7 @@ External API / Data Source
 
 #### 1. UI Layer（UIレイヤー）
 - **責務**: ユーザーインターフェースの描画とユーザーインタラクション
-- **技術**: React Components, Next.js Pages, Tailwind CSS
+- **技術**: React Components, Next.js Pages, shadcn/ui, Tailwind CSS
 - **場所**: `src/app/`, `src/components/`
 - **特徴**: プレゼンテーション専用、ビジネスロジックは含まない
 
@@ -197,7 +197,8 @@ prisma/                 # Prismaスキーマとマイグレーション
 - **生成されたコード**: `src/types/api.d.ts`を手動で編集しないでください - 常にOpenAPI仕様から再生成
 - **APIクライアント**: `src/lib/api-client.ts`でfetchベースのHTTPクライアントを手動実装
 - **API仕様**: "Vibe Cooking API"の日本語ドキュメントを含む`openapi/openapi.yaml`に配置
-- **スタイリング**: テーマ用のCSSカスタムプロパティでTailwind CSS 4を使用
+- **スタイリング**: shadcn/uiコンポーネントシステムとTailwind CSS 4を使用
+- **UIコンポーネント**: `src/components/ui/`にshadcn/ui再利用可能コンポーネント
 
 ### 開発ワークフロー
 
@@ -230,6 +231,50 @@ prisma/                 # Prismaスキーマとマイグレーション
 - Cloud SQL接続設定が必要（`--set-cloudsql-instances`フラグ）
 - サービスアカウントにCloud SQL Client権限が必要
 - Dockerfileでstandalone出力モードを使用
+
+### UIコンポーネントシステム
+
+**shadcn/ui設定**: プロジェクトはモダンなUIコンポーネントライブラリshadcn/uiを使用します：
+
+**設定ファイル**:
+- `components.json`: shadcn/ui設定（New Yorkスタイル、TypeScript、Tailwind CSS変数使用）
+- `tailwind.config.ts`: shadcn/ui用のTailwind CSS設定
+- `src/lib/utils.ts`: クラス名結合用ユーティリティ（`cn`関数）
+
+**利用可能なコンポーネント**:
+- `Button`: 複数バリアント対応ボタン（default, destructive, outline, secondary, ghost, link）
+- `Card`: カードコンポーネント（Header, Title, Description, Content, Footer）
+- `Input`: 入力フィールドコンポーネント
+
+**依存関係**:
+- `class-variance-authority`: バリアント管理
+- `clsx`: 条件付きクラス名管理
+- `tailwind-merge`: TailwindCSSクラスのマージ
+- `lucide-react`: アイコンライブラリ
+- `@radix-ui/react-slot`: プリミティブコンポーネント
+
+### Firebase設定
+
+**Firebase初期化**: プロジェクトはFirebase App Checkを含むFirebase SDKを統合します：
+
+**設定ファイル**:
+- `src/lib/firebase.ts`: Firebase初期化とApp Check設定
+- `src/app/firebase-init.tsx`: クライアントサイドFirebase初期化コンポーネント
+
+**App Check設定**:
+- reCAPTCHA v3 Providerを使用
+- クライアントサイドでのみ初期化
+- 自動トークンリフレッシュ有効
+
+**必要な環境変数** (`.env.example`参照):
+- `NEXT_PUBLIC_FIREBASE_API_KEY`: Firebase API Key
+- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`: Firebase認証ドメイン
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`: FirebaseプロジェクトID
+- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`: Firebase Storage bucket
+- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`: Firebase Messaging sender ID
+- `NEXT_PUBLIC_FIREBASE_APP_ID`: Firebase App ID
+- `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID`: Google Analytics測定ID
+- `NEXT_PUBLIC_RECAPTCHA_SITE_KEY`: reCAPTCHA Site Key
 
 ### 重要な注意事項
 
