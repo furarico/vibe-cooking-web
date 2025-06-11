@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Vibe Cooking Web',
     short_name: 'VibeCooking',
-    description: 'お料理とレシピのWebアプリ',
+    description: '',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',
