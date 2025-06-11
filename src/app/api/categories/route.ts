@@ -1,11 +1,15 @@
-import { sampleCategories } from '@/lib/mock-data';
+import { withAppCheck } from '@/lib/middleware/app-check';
+import { ServerContainer } from '@/server/di/container';
 import { NextResponse } from 'next/server';
 
 // GET /api/categories - カテゴリ一覧を取得
-export async function GET() {
+async function handleGet() {
   try {
+    const categoryService = ServerContainer.getInstance().categoryService;
+    const categories = await categoryService.getAllCategories();
+
     return NextResponse.json({
-      categories: sampleCategories,
+      categories,
     });
   } catch (error) {
     console.error('カテゴリ一覧取得エラー:', error);
@@ -15,3 +19,6 @@ export async function GET() {
     );
   }
 }
+
+// AppCheck 検証付きのGETハンドラー
+export const GET = withAppCheck(handleGet);

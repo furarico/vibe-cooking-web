@@ -1,13 +1,16 @@
 import { withAppCheck } from '@/lib/middleware/app-check';
-import { sampleRecipes } from '@/lib/mock-data';
+import { ServerContainer } from '@/server/di/container';
 import { NextResponse } from 'next/server';
 
 // GET /api/recipes - レシピ一覧を取得
 async function handleGet() {
   try {
+    const recipeService = ServerContainer.getInstance().recipeService;
+    const recipes = await recipeService.getAllRecipes();
+
     // RecipesGet200Response 形式で返す
     return NextResponse.json({
-      recipes: sampleRecipes,
+      recipes,
     });
   } catch (error) {
     console.error('レシピ一覧取得エラー:', error);
