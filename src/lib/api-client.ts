@@ -21,6 +21,9 @@ export class DefaultApi {
     if (error) {
       throw new Error(`API error: ${error}`);
     }
+    if (!data) {
+      throw new Error('No data received from API');
+    }
     return data;
   }
 
@@ -31,6 +34,9 @@ export class DefaultApi {
     if (error) {
       throw new Error(`API error: ${error}`);
     }
-    return data.recipe;
+    if (!data) {
+      throw new Error('No data received from API');
+    }
+    return data;
   }
 }
