@@ -1,5 +1,5 @@
-import Image from 'next/image';
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
+import Image from 'next/image';
 
 export default function Home() {
   return (

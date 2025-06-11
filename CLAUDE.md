@@ -276,6 +276,40 @@ prisma/                 # Prismaスキーマとマイグレーション
 - `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID`: Google Analytics測定ID
 - `NEXT_PUBLIC_RECAPTCHA_SITE_KEY`: reCAPTCHA Site Key
 
+### Firebase AppCheck セキュリティ
+
+**AppCheck 設定**: プロジェクトはFirebase AppCheckを使用してAPIエンドポイントを保護します：
+
+**サーバーサイド設定**:
+- `src/lib/firebase-admin.ts`: Firebase Admin SDK初期化とAppCheckトークン検証
+- `src/lib/middleware/app-check.ts`: AppCheck検証ミドルウェア
+- 開発環境ではデバッグトークン対応、本番環境では厳密な検証
+
+**AppCheck 検証ミドルウェア**:
+- `withAppCheck()`: HOF（高階関数）でAPIハンドラーをラップ
+- Authorizationヘッダーから`Bearer`トークンを取得
+- Firebase Admin SDKでトークンを検証
+- 検証失敗時は適切なHTTPステータスコードを返却
+
+**必要な環境変数**:
+
+**本番環境**:
+- `GOOGLE_APPLICATION_CREDENTIALS`: サービスアカウントキーファイルのパス（例: `/path/to/service-account-key.json`）
+
+**開発環境（オプション）**:
+- `FIREBASE_DEBUG_TOKENS`: デバッグトークンのカンマ区切りリスト（例: `debug-token-1,debug-token-2`）
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`: FirebaseプロジェクトID（デバッグ時のフォールバック用）
+
+**開発環境の動作**:
+- デバッグトークンが設定されている場合、そのトークンでの検証をスキップ
+- `GOOGLE_APPLICATION_CREDENTIALS`未設定の場合、全てのトークンを有効とする
+- 実際のFirebase AppCheck検証も可能（`GOOGLE_APPLICATION_CREDENTIALS`設定時）
+
+**サービスアカウント設定**:
+- Firebase ConsoleでサービスアカウントキーファイルをJSONでダウンロード
+- Cloud Runにファイルをマウントして`GOOGLE_APPLICATION_CREDENTIALS`にパスを設定
+- または、環境変数でJSONコンテンツを直接設定する方法も可能
+
 ### 重要な注意事項
 
 - プロジェクトはパッケージマネージャーとして**pnpm**を使用（npm/yarnではない）

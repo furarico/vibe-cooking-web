@@ -1,8 +1,9 @@
+import { withAppCheck } from '@/lib/middleware/app-check';
 import { sampleRecipes } from '@/lib/mock-data';
 import { NextResponse } from 'next/server';
 
 // GET /api/recipes - レシピ一覧を取得
-export async function GET() {
+async function handleGet() {
   try {
     // RecipesGet200Response 形式で返す
     return NextResponse.json({
@@ -16,3 +17,6 @@ export async function GET() {
     );
   }
 }
+
+// AppCheck 検証付きのGETハンドラー
+export const GET = withAppCheck(handleGet);
