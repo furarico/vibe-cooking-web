@@ -1,6 +1,7 @@
 import { DIProvider } from '@/client/di/providers';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { FirebaseInit } from './firebase-init';
 import './globals.css';
 
 const geistSans = Geist({
@@ -28,6 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <FirebaseInit />
         <DIProvider>{children}</DIProvider>
       </body>
     </html>
