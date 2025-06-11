@@ -12,7 +12,12 @@ export class RecipeService implements IRecipeService {
   constructor(private readonly recipeRepository: IRecipeRepository) {}
 
   async getAllRecipes(): Promise<RecipeWithDetails[]> {
-    return this.recipeRepository.findAll();
+    const recipes = await this.recipeRepository.findAll();
+    return recipes.map(recipe => ({
+      ...recipe,
+      ingredients: [],
+      instructions: [],
+    }));
   }
 
   async getRecipeById(id: string): Promise<RecipeWithDetails> {
