@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Vibe Cooking Web',
+    name: 'Vibe Cooking',
     short_name: 'VibeCooking',
     description: '',
     start_url: '/',
