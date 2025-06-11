@@ -121,6 +121,9 @@ components:
         step:
           type: integer
           description: 手順番号
+        title:
+          type: string
+          description: 手順のタイトル（例：パスタを茹でる、野菜を炒める）
         description:
           type: string
           description: 手順の説明
@@ -133,4 +136,5 @@ components:
           description: この手順の推定時間（分）
       required:
         - step
+        - title
         - description

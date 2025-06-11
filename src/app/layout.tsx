@@ -17,6 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Vibe Cooking',
   description: 'Vibe Cooking',
+  appleWebApp: true,
 };
 
 export default function RootLayout({
