@@ -1,5 +1,10 @@
-import { initializeAppCheck, ReCaptchaV3Provider } from '@firebase/app-check';
-import { initializeApp } from 'firebase/app';
+import {
+  getToken,
+  initializeAppCheck,
+  ReCaptchaV3Provider,
+  type AppCheck,
+} from '@firebase/app-check';
+import { getApp, getApps, initializeApp } from 'firebase/app';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -11,16 +16,32 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+declare global {
+  interface Window {
+    FIREBASE_APPCHECK_DEBUG_TOKEN: boolean;
+  }
+}
+
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+
+let appCheck: AppCheck | null = null;
 
 // App Checkの初期化
 if (typeof window !== 'undefined') {
-  initializeAppCheck(app, {
+  window.FIREBASE_APPCHECK_DEBUG_TOKEN = process.env.NODE_ENV === 'development';
+
+  appCheck = initializeAppCheck(app, {
     provider: new ReCaptchaV3Provider(
       process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''
     ),
     isTokenAutoRefreshEnabled: true,
   });
+
+  if (process.env.NODE_ENV === 'development') {
+    getToken(appCheck).then(appCheckToken => {
+      console.log('🔐 Firebase App Check:', appCheckToken.token);
+    });
+  }
 }
 
-export { app };
+export { app, appCheck };

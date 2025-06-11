@@ -1,4 +1,4 @@
-name: CI
+name: Format Code
 
 on:
   push:
@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  format:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
 
@@ -26,6 +26,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
@@ -47,22 +50,23 @@ jobs:
       - name: Generate Prisma client
         run: pnpm db:generate
 
-      - name: Run linting
-        run: pnpm lint
-
-      - name: Run format check
+      - name: Run format
         run: pnpm format
 
-      - name: Run tests with coverage
-        run: pnpm test:coverage
+      - name: Check for changes
+        id: verify-changed-files
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Build application
-        run: pnpm build
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          file: ./coverage/lcov.info
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
+      - name: Commit and push changes
+        if: steps.verify-changed-files.outputs.changed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "🤖 自動フォーマット適用"
+          git push

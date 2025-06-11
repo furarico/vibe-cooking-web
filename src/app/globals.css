@@ -112,7 +112,7 @@
 
 @layer base {
   * {
-    @apply border outline-ring/50;
+    @apply outline-ring/50 border;
   }
 
   body {

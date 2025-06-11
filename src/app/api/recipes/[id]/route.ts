@@ -1,9 +1,10 @@
+import { withAppCheck } from '@/lib/middleware/app-check';
 import { sampleRecipes } from '@/lib/mock-data';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // GET /api/recipes/[id] - 特定IDのレシピ詳細を取得
-export async function GET(
-  request: Request,
+async function handleGet(
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -29,3 +30,6 @@ export async function GET(
     );
   }
 }
+
+// AppCheck 検証付きのGETハンドラー
+export const GET = withAppCheck(handleGet);
