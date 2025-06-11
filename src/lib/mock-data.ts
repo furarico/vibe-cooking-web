@@ -52,31 +52,37 @@ export const sampleRecipes = [
     instructions: [
       {
         step: 1,
+        title: '鶏肉の下準備',
         description: '鶏肉を一口大に切り、塩胡椒で下味をつけます。',
         estimatedTime: 5,
       },
       {
         step: 2,
+        title: '野菜を切る',
         description: '玉ねぎを薄切り、にんにくをみじん切りにします。',
         estimatedTime: 5,
       },
       {
         step: 3,
+        title: '鶏肉を炒める',
         description: 'フライパンに油を熱し、鶏肉を焼き色がつくまで炒めます。',
         estimatedTime: 8,
       },
       {
         step: 4,
+        title: '野菜を炒める',
         description: '玉ねぎとにんにくを加えて、しんなりするまで炒めます。',
         estimatedTime: 10,
       },
       {
         step: 5,
+        title: 'スパイスを加える',
         description: 'カレー粉を加えて香りが立つまで炒めます。',
         estimatedTime: 2,
       },
       {
         step: 6,
+        title: 'カレーを煮込む',
         description: 'トマト缶とココナッツミルクを加えて、20分煮込みます。',
         estimatedTime: 20,
       },
@@ -135,21 +141,25 @@ export const sampleRecipes = [
     instructions: [
       {
         step: 1,
+        title: 'パスタを茹でる',
         description: 'パスタを表示時間通りに茹でます。',
         estimatedTime: 8,
       },
       {
         step: 2,
+        title: 'きのこを炒める',
         description: 'きのこ類をフライパンで炒めます。',
         estimatedTime: 5,
       },
       {
         step: 3,
+        title: 'パスタを合わせる',
         description: '茹で上がったパスタと茹で汁を少し加えます。',
         estimatedTime: 1,
       },
       {
         step: 4,
+        title: '味付けして完成',
         description: '醤油とバターで味を調え、海苔をトッピングして完成です。',
         estimatedTime: 2,
       },
@@ -209,31 +219,37 @@ export const sampleRecipes = [
     instructions: [
       {
         step: 1,
+        title: 'オーブン予熱',
         description: 'オーブンを180℃に予熱します。',
         estimatedTime: 5,
       },
       {
         step: 2,
+        title: 'チョコレートを溶かす',
         description: 'チョコレートとバターを湯煎で溶かします。',
         estimatedTime: 5,
       },
       {
         step: 3,
+        title: '卵液を作る',
         description: '卵と砂糖を泡立て器でよく混ぜます。',
         estimatedTime: 3,
       },
       {
         step: 4,
+        title: '生地を混ぜる',
         description: '溶かしたチョコレートと薄力粉を順に加えて混ぜます。',
         estimatedTime: 3,
       },
       {
         step: 5,
+        title: '型に流し入れる',
         description: 'クルミを加えて軽く混ぜ、型に流し込みます。',
         estimatedTime: 2,
       },
       {
         step: 6,
+        title: 'オーブンで焼く',
         description: '180℃のオーブンで25-30分焼きます。',
         estimatedTime: 30,
       },

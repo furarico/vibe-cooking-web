@@ -49,6 +49,7 @@ model Ingredient {
 model Instruction {
   id            String  @id @default(cuid())
   step          Int     // 手順番号
+  title         String  // 手順のタイトル（例：パスタを茹でる、野菜を炒める）
   description   String  // 手順の説明
   imageUrl      String? // 手順の画像URL
   estimatedTime Int?    // この手順の推定時間（分）

@@ -28,32 +28,38 @@ async function main() {
         create: [
           {
             step: 1,
+            title: '野菜を切る',
             description:
               '玉ねぎを薄切りにし、ショウガとニンニクをみじん切りにする',
             estimatedTime: 10,
           },
           {
             step: 2,
+            title: 'チキンを切る',
             description: 'チキンを一口大に切る',
             estimatedTime: 5,
           },
           {
             step: 3,
+            title: 'チキンを炒める',
             description: 'フライパンに油を熱し、チキンを炒めて取り出す',
             estimatedTime: 8,
           },
           {
             step: 4,
+            title: '野菜を炒める',
             description: '同じフライパンで玉ねぎ、ショウガ、ニンニクを炒める',
             estimatedTime: 7,
           },
           {
             step: 5,
+            title: 'スパイスを加える',
             description: 'カレー粉とガラムマサラを加えて香りを出す',
             estimatedTime: 2,
           },
           {
             step: 6,
+            title: 'カレーを煮込む',
             description:
               'トマト缶とココナッツミルクを加え、チキンを戻して煮込む',
             estimatedTime: 20,
@@ -91,27 +97,32 @@ async function main() {
         create: [
           {
             step: 1,
+            title: 'パスタを茹でる',
             description: 'パスタを茹でる（袋の表示時間より1分短く）',
             estimatedTime: 8,
           },
           {
             step: 2,
+            title: 'きのこを炒める',
             description:
               'フライパンにオリーブオイル、ニンニク、鷹の爪を入れて弱火で加熱',
             estimatedTime: 3,
           },
           {
             step: 3,
+            title: 'トマト缶を加えて煮詰める',
             description: 'トマト缶を加えて中火で煮詰める',
             estimatedTime: 5,
           },
           {
             step: 4,
+            title: 'パスタを合わせる',
             description: '茹で上がったパスタとパスタの茹で汁を加えて混ぜる',
             estimatedTime: 2,
           },
           {
             step: 5,
+            title: 'パルメザンチーズとパセリを振りかけて完成',
             description: 'パルメザンチーズとパセリを振りかけて完成',
             estimatedTime: 1,
           },
