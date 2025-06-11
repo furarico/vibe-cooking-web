@@ -1,5 +1,9 @@
-import { initializeAppCheck, ReCaptchaV3Provider } from '@firebase/app-check';
-import { initializeApp } from 'firebase/app';
+import {
+  getToken,
+  initializeAppCheck,
+  ReCaptchaV3Provider,
+} from '@firebase/app-check';
+import { getApp, getApps, initializeApp } from 'firebase/app';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -11,10 +15,18 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+declare global {
+  interface Window {
+    FIREBASE_APPCHECK_DEBUG_TOKEN: boolean;
+  }
+}
+
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 // App Checkの初期化
 if (typeof window !== 'undefined') {
+  window.FIREBASE_APPCHECK_DEBUG_TOKEN = process.env.NODE_ENV === 'development';
+
   const appCheck = initializeAppCheck(app, {
     provider: new ReCaptchaV3Provider(
       process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''
@@ -22,19 +34,9 @@ if (typeof window !== 'undefined') {
     isTokenAutoRefreshEnabled: true,
   });
 
-  // 開発環境でデバッグトークンをコンソールに表示
   if (process.env.NODE_ENV === 'development') {
-    import('@firebase/app-check').then(({ getToken }) => {
-      getToken(appCheck, true)
-        .then(tokenResult => {
-          console.log('🔐 Firebase App Check Debug Token:', tokenResult.token);
-          console.log(
-            '💡 この開発用デバッグトークンをFIREBASE_DEBUG_TOKENS環境変数に追加してください'
-          );
-        })
-        .catch(error => {
-          console.error('❌ App Check debug token取得エラー:', error);
-        });
+    getToken(appCheck).then(appCheckToken => {
+      console.log('🔐 Firebase App Check:', appCheckToken.token);
     });
   }
 }

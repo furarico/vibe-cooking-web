@@ -1,12 +1,7 @@
-import { verifyAppCheckToken } from '@/lib/firebase-admin';
 import { NextRequest, NextResponse } from 'next/server';
+import { appCheck } from '../firebase-admin';
 
-/**
- * AppCheck トークンを検証するミドルウェア
- * @param request Next.js Request オブジェクト
- * @returns 検証結果とエラーレスポンス（検証失敗時）
- */
-export async function verifyAppCheck(
+async function verifyAppCheck(
   request: NextRequest
 ): Promise<{ isValid: boolean; errorResponse?: NextResponse }> {
   try {
@@ -17,7 +12,7 @@ export async function verifyAppCheck(
       return {
         isValid: false,
         errorResponse: NextResponse.json(
-          { error: 'AppCheck トークンが必要です' },
+          { error: 'Unauthorized' },
           { status: 401 }
         ),
       };
@@ -30,20 +25,20 @@ export async function verifyAppCheck(
       return {
         isValid: false,
         errorResponse: NextResponse.json(
-          { error: 'AppCheck トークンが無効です' },
+          { error: 'Unauthorized' },
           { status: 401 }
         ),
       };
     }
 
     // AppCheck トークンを検証
-    const isValidToken = await verifyAppCheckToken(token);
+    const appCheckToken = await appCheck.verifyToken(token);
 
-    if (!isValidToken) {
+    if (!appCheckToken) {
       return {
         isValid: false,
         errorResponse: NextResponse.json(
-          { error: 'AppCheck トークンの検証に失敗しました' },
+          { error: 'Forbidden' },
           { status: 403 }
         ),
       };
@@ -55,7 +50,7 @@ export async function verifyAppCheck(
     return {
       isValid: false,
       errorResponse: NextResponse.json(
-        { error: 'サーバーエラーが発生しました' },
+        { error: 'Internal Server Error' },
         { status: 500 }
       ),
     };
@@ -71,7 +66,6 @@ export function withAppCheck<T extends unknown[]>(
   handler: (request: NextRequest, ...args: T) => Promise<NextResponse>
 ) {
   return async (request: NextRequest, ...args: T): Promise<NextResponse> => {
-    // 開発環境でも AppCheck 検証を実行（デバッグトークン対応）
     const { isValid, errorResponse } = await verifyAppCheck(request);
 
     if (!isValid && errorResponse) {
