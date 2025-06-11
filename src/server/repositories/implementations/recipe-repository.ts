@@ -21,6 +21,18 @@ export class RecipeRepository implements IRecipeRepository {
     });
   }
 
+  async findAllSummary(): Promise<RecipeWithDetails[]> {
+    const recipes = await this.prisma.recipe.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return recipes.map(recipe => ({
+      ...recipe,
+      ingredients: [],
+      instructions: [],
+    }));
+  }
+
   async findById(id: string): Promise<RecipeWithDetails | null> {
     return this.prisma.recipe.findUnique({
       where: { id },
