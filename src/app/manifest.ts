@@ -16,21 +16,5 @@ export default function manifest(): MetadataRoute.Manifest {
         type: 'image/x-icon',
       },
     ],
-    screenshots: [
-      {
-        src: '/screenshot-wide.png',
-        sizes: '1280x720',
-        type: 'image/png',
-        form_factor: 'wide',
-        label: 'Vibe Cooking Web - Desktop View',
-      },
-      {
-        src: '/screenshot-narrow.png',
-        sizes: '390x844',
-        type: 'image/png',
-        form_factor: 'narrow',
-        label: 'Vibe Cooking Web - Mobile View',
-      },
-    ],
   }
 }
