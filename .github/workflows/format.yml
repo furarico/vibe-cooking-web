@@ -70,7 +70,7 @@ jobs:
         if: steps.verify-changed-files.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}
           commit-message: '🤖 自動フォーマット適用'
           title: '🤖 自動フォーマット適用'
           body: |
@@ -89,4 +89,4 @@ jobs:
             *このPRは自動生成されました*
           branch: auto-format/format-${{ github.run_number }}
           delete-branch: true
-          base: main
+          base: ${{ github.ref_name }}
