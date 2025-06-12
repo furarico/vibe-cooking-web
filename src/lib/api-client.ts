@@ -21,11 +21,7 @@ const appCheckInterceptor: Middleware = {
         }
         const appCheckToken = await getToken(appCheck);
         const bearerToken = `Bearer ${appCheckToken.token}`;
-        request.headers.set('Authorization', bearerToken);
-        console.log(
-          'AppCheck token set:',
-          bearerToken.substring(0, 20) + '...'
-        );
+        request.headers.set('X-Firebase-AppCheck', bearerToken);
         return request;
       }
       return request;
