@@ -18,7 +18,8 @@
     "db:seed": "dotenv -e .env.local -- prisma db seed",
     "db:studio": "dotenv -e .env.local -- prisma studio",
     "db:reset": "dotenv -e .env.local -- prisma migrate reset",
-    "deploy:run": "gcloud run deploy vibe-cooking-web --source . --region asia-northeast1 --project furarico-vibe-cooking"
+    "deploy:run": "gcloud run deploy vibe-cooking-web --source . --region asia-northeast1 --project furarico-vibe-cooking",
+    "heroku-prebuild": "pnpm api:generate && pnpm db:generate"
   },
   "dependencies": {
     "@firebase/app-check": "^0.10.0",
