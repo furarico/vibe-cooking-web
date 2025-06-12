@@ -5,6 +5,17 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   // 必要に応じて静的リソースの最適化
   compress: true,
+  // 外部画像ホストの許可
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
 };
 
 export default nextConfig;
