@@ -1,6 +1,15 @@
 import { PrismaClient } from '@prisma/client';
 
-function createPrismaClient(): PrismaClient {
+declare global {
+  // eslint-disable-next-line no-var
+  var prisma: PrismaClient | undefined;
+}
+
+function getPrismaClient(): PrismaClient {
+  if (global.prisma) {
+    return global.prisma;
+  }
+
   try {
     return new PrismaClient({
       datasources: {
@@ -14,4 +23,4 @@ function createPrismaClient(): PrismaClient {
   }
 }
 
-export const getPrismaClient = createPrismaClient();
+export const prisma = getPrismaClient();

@@ -1,4 +1,8 @@
-import { Connector, IpAddressTypes, AuthTypes } from '@google-cloud/cloud-sql-connector';
+import {
+  AuthTypes,
+  Connector,
+  IpAddressTypes,
+} from '@google-cloud/cloud-sql-connector';
 
 export async function getClientOptions() {
   const connector = new Connector();
