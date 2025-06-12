@@ -1,6 +1,9 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { useRecipePresenter } from '@/client/presenters/hooks/use-recipe-presenter';
+import { useDI } from '@/client/di/providers';
+import { Recipe, Instruction } from '@/lib/api-client';
 
 declare global {
   interface Window {
@@ -13,23 +16,30 @@ type RecognitionStatus = 'idle' | 'listening' | 'processing' | 'success' | 'erro
 
 // トリガーワード検知機能
 const detectTriggerWords = (text: string) => {
-  const nextKeywords = ['次', 'つぎ', 'ツギ', '次の', 'つぎの', 'ネクスト', 'next', '進んで'];
+  const nextKeywords = ['次', 'つぎ', 'ツギ', '次の', 'つぎの', 'ネクスト', 'next', '進んで', 'ウィシェフ'];
   const prevKeywords = ['前', 'まえ', 'マエ', '前の', 'まえの', 'バック', 'back', '戻る', 'もどる', 'もどって', '戻って'];
 
   const normalizedText = text.toLowerCase();
+  console.log('🔍 トリガーワード検知中:', { originalText: text, normalizedText });
 
-  const hasNext = nextKeywords.some(keyword =>
-    normalizedText.includes(keyword.toLowerCase())
-  );
+  const hasNext = nextKeywords.some(keyword => {
+    const match = normalizedText.includes(keyword.toLowerCase());
+    if (match) console.log('✅ 「次」キーワード発見:', keyword);
+    return match;
+  });
 
-  const hasPrev = prevKeywords.some(keyword =>
-    normalizedText.includes(keyword.toLowerCase())
-  );
+  const hasPrev = prevKeywords.some(keyword => {
+    const match = normalizedText.includes(keyword.toLowerCase());
+    if (match) console.log('✅ 「前」キーワード発見:', keyword);
+    return match;
+  });
 
+  console.log('🔍 検知結果:', { hasNext, hasPrev });
   return { hasNext, hasPrev };
 };
 
 export default function SpeechToText() {
+  // 既存の音声認識状態
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
@@ -43,6 +53,189 @@ export default function SpeechToText() {
   const chunksRef = useRef<Blob[]>([]);
   const recognitionRef = useRef<any>(null);
   const restartTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // レシピ関連の状態（API使用）
+  const { recipes, loading, error, fetchRecipes } = useRecipePresenter();
+  const { recipeService } = useDI();
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [selectedRecipeLoading, setSelectedRecipeLoading] = useState(false);
+  const [selectedRecipeError, setSelectedRecipeError] = useState<string | null>(null);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [showRecipeSteps, setShowRecipeSteps] = useState(false);
+
+  // 読み上げ機能の状態
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [speechUtterance, setSpeechUtterance] = useState<SpeechSynthesisUtterance | null>(null);
+  const [autoSpeechEnabled, setAutoSpeechEnabled] = useState(true);
+
+    // ステップを読み上げる
+  const speakStep = useCallback((stepTitle: string, stepDescription: string) => {
+    if (!autoSpeechEnabled) return;
+
+    console.log('🔊 ステップ読み上げ開始:', stepTitle);
+
+    // 既存の読み上げを停止
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+    }
+
+    // 音声認識を一時停止
+    if (isRecording) {
+      console.log('⏸️ 読み上げのため音声認識を一時停止');
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        setShouldRestart(false);
+      }
+    }
+
+    const text = `${stepTitle}。${stepDescription}`;
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    // 日本語設定
+    utterance.lang = 'ja-JP';
+    utterance.rate = 0.9; // 少しゆっくり
+    utterance.pitch = 1.0;
+    utterance.volume = 0.8;
+
+    utterance.onstart = () => {
+      console.log('🎤 読み上げ開始');
+      setIsSpeaking(true);
+    };
+
+            utterance.onend = () => {
+      console.log('✅ 読み上げ完了');
+      setIsSpeaking(false);
+      setSpeechUtterance(null);
+    };
+
+    utterance.onerror = (event) => {
+      console.error('❌ 読み上げエラー:', event.error);
+      setIsSpeaking(false);
+      setSpeechUtterance(null);
+    };
+
+    setSpeechUtterance(utterance);
+    speechSynthesis.speak(utterance);
+  }, [autoSpeechEnabled, isRecording, showRecipeSteps]);
+
+  // 読み上げ完了後の自動音声認識再開
+  useEffect(() => {
+    if (!isSpeaking && showRecipeSteps && !isRecording && autoSpeechEnabled) {
+      const timer = setTimeout(() => {
+        console.log('🔄 読み上げ完了後、音声認識を自動再開します');
+        startRecording();
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isSpeaking, showRecipeSteps, isRecording, autoSpeechEnabled]);
+
+  // 読み上げを停止
+  const stopSpeaking = useCallback(() => {
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+      setIsSpeaking(false);
+      setSpeechUtterance(null);
+      console.log('🔇 読み上げを停止しました');
+    }
+  }, []);
+
+  // レシピの選択（IDで詳細取得）
+  const handleSelectRecipe = useCallback(async (recipeId: string) => {
+    console.log('🔍 レシピ詳細を取得開始:', recipeId);
+    setSelectedRecipeLoading(true);
+    setSelectedRecipeError(null);
+
+    try {
+      const recipeDetail = await recipeService.getRecipeById(recipeId);
+      console.log('✅ レシピ詳細取得成功:', recipeDetail);
+
+      if (recipeDetail) {
+        setSelectedRecipe(recipeDetail);
+        setCurrentStepIndex(0);
+        setShowRecipeSteps(true);
+
+        // 最初のステップを読み上げ
+        if (recipeDetail.instructions && recipeDetail.instructions.length > 0 && autoSpeechEnabled) {
+          const firstInstruction = recipeDetail.instructions[0];
+          setTimeout(() => {
+            speakStep(firstInstruction.title, firstInstruction.description);
+          }, 1000); // レシピ表示後少し間を置いて読み上げ開始
+        }
+      } else {
+        setSelectedRecipeError('レシピが見つかりませんでした');
+      }
+    } catch (error) {
+      console.error('❌ レシピ詳細取得エラー:', error);
+      setSelectedRecipeError(
+        error instanceof Error ? error.message : 'レシピ詳細の取得に失敗しました'
+      );
+    } finally {
+      setSelectedRecipeLoading(false);
+    }
+  }, [recipeService, autoSpeechEnabled, speakStep]);
+
+  // 次のステップへ
+  const nextStep = useCallback(() => {
+    console.log('🔄 nextStep関数が呼ばれました');
+    setCurrentStepIndex(prev => {
+      console.log('📊 nextStep - 現在のインデックス:', prev);
+      if (selectedRecipe && selectedRecipe.instructions && prev < selectedRecipe.instructions.length - 1) {
+        console.log('✅ 次のステップに移動:', prev, '->', prev + 1);
+        const newIndex = prev + 1;
+
+        // 新しいステップを読み上げ
+        const instruction = selectedRecipe.instructions[newIndex];
+        if (instruction && autoSpeechEnabled) {
+          setTimeout(() => {
+            speakStep(instruction.title, instruction.description);
+          }, 100); // 少し遅延させて状態更新を待つ
+        }
+
+        return newIndex;
+      } else {
+        console.log('⚠️ 最後のステップなので移動しません');
+        return prev;
+      }
+    });
+  }, [selectedRecipe, autoSpeechEnabled, speakStep]);
+
+  // 前のステップへ
+  const prevStep = useCallback(() => {
+    console.log('🔄 prevStep関数が呼ばれました');
+    setCurrentStepIndex(prev => {
+      console.log('📊 prevStep - 現在のインデックス:', prev);
+      if (prev > 0) {
+        console.log('✅ 前のステップに移動:', prev, '->', prev - 1);
+        const newIndex = prev - 1;
+
+        // 新しいステップを読み上げ
+        if (selectedRecipe && selectedRecipe.instructions && autoSpeechEnabled) {
+          const instruction = selectedRecipe.instructions[newIndex];
+          if (instruction) {
+            setTimeout(() => {
+              speakStep(instruction.title, instruction.description);
+            }, 100); // 少し遅延させて状態更新を待つ
+          }
+        }
+
+        return newIndex;
+      } else {
+        console.log('⚠️ 最初のステップなので移動しません');
+        return prev;
+      }
+    });
+  }, [selectedRecipe, autoSpeechEnabled, speakStep]);
+
+    // レシピ一覧に戻る
+  const backToRecipeList = useCallback(() => {
+    stopSpeaking(); // 読み上げを停止
+    setShowRecipeSteps(false);
+    setSelectedRecipe(null);
+    setSelectedRecipeLoading(false);
+    setSelectedRecipeError(null);
+    setCurrentStepIndex(0);
+  }, [stopSpeaking]);
 
   const startRecording = async () => {
     try {
@@ -77,17 +270,35 @@ export default function SpeechToText() {
 
           // 新しく確定されたテキストがある場合のみ追加
           if (finalText) {
+            console.log('🎤 音声認識結果:', finalText);
+            console.log('📱 現在の状態 - showRecipeSteps:', showRecipeSteps, 'currentStepIndex:', currentStepIndex);
+
             // トリガーワード検知
             const { hasNext, hasPrev } = detectTriggerWords(finalText);
+            console.log('🔍 トリガーワード検知結果:', { hasNext, hasPrev });
 
             let triggerMessage = '';
             if (hasNext) {
               triggerMessage = '「次」を感知しました';
+              console.log('➡️ 次のステップに移動します');
               setTriggerHistory(prev => [...prev, `${new Date().toLocaleTimeString()}: 次トリガー検知 - "${finalText}"`]);
+              // レシピステップ表示中の場合は次のステップへ
+              if (showRecipeSteps) {
+                console.log('📍 nextStep()を実行します');
+                setTimeout(() => nextStep(), 0); // 非同期で実行して状態更新の競合を避ける
+              }
             }
             if (hasPrev) {
               triggerMessage = '「前」を感知しました';
+              console.log('⬅️ 前のステップに移動します');
               setTriggerHistory(prev => [...prev, `${new Date().toLocaleTimeString()}: 前トリガー検知 - "${finalText}"`]);
+              // レシピステップ表示中の場合は前のステップへ
+              if (showRecipeSteps) {
+                console.log('📍 prevStep()を実行します');
+                setTimeout(() => prevStep(), 0); // 非同期で実行して状態更新の競合を避ける
+              } else {
+                console.log('⚠️ showRecipeStepsがfalseのため、prevStep()をスキップします');
+              }
             }
 
             // 前回の文字起こしが完了していた場合は置き換え、そうでなければ追加
@@ -198,44 +409,47 @@ export default function SpeechToText() {
       mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav' });
         await transcribeAudio(audioBlob);
-        stream.getTracks().forEach(track => track.stop());
       };
 
       mediaRecorder.start();
       setIsRecording(true);
+      setStatus('listening');
+      setStatusMessage('録音中...');
     } catch (error) {
-      console.error('Error accessing microphone:', error);
-      alert('マイクへのアクセスが許可されていません。');
+      console.error('Error starting recording:', error);
+      alert('録音の開始に失敗しました。マイクのアクセス許可を確認してください。');
     }
   };
 
   const stopRecording = () => {
-    setShouldRestart(false); // 自動再開を無効にする
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setShouldRestart(false);
+    }
+
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
+    }
+
+    setIsRecording(false);
+    setStatus('processing');
+    setStatusMessage('音声を処理中...');
+    setInterimTranscript(''); // 停止時に中間結果をクリア
 
     // タイムアウトをクリア
     if (restartTimeoutRef.current) {
       clearTimeout(restartTimeoutRef.current);
       restartTimeoutRef.current = null;
     }
-
-    // Web Speech APIを使用している場合
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      setInterimTranscript('');
-      return;
-    }
-
-    // MediaRecorderを使用している場合
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      setIsProcessing(true);
-    }
   };
 
   const transcribeAudio = async (audioBlob: Blob) => {
+    setIsProcessing(true);
+    setStatus('processing');
+    setStatusMessage('音声を文字起こし中...');
+
     try {
-      // Web Speech APIを使用した音声認識
+      // Web Speech APIを使用してリアルタイム処理を試行
       if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
@@ -322,24 +536,25 @@ export default function SpeechToText() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-2xl mx-auto px-4">
+      <div className="max-w-4xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
-          音声文字起こし
+          音声操作レシピナビゲーター
         </h1>
 
+        {/* 音声認識・読み上げコントロール */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex flex-col items-center space-y-4">
             <div className="flex space-x-4">
               <button
                 onClick={startRecording}
-                disabled={isRecording || isProcessing}
+                disabled={isRecording || isProcessing || isSpeaking}
                 className={`px-6 py-3 rounded-lg font-medium ${
-                  isRecording || isProcessing
+                  isRecording || isProcessing || isSpeaking
                     ? 'bg-gray-300 cursor-not-allowed'
                     : 'bg-red-500 hover:bg-red-600 text-white'
                 }`}
               >
-                {isRecording ? '録音中...' : '録音開始'}
+                {isRecording ? '録音中...' : '音声認識開始'}
               </button>
 
               <button
@@ -351,30 +566,242 @@ export default function SpeechToText() {
                     : 'bg-blue-500 hover:bg-blue-600 text-white'
                 }`}
               >
-                録音停止
+                音声認識停止
               </button>
+
+              <button
+                onClick={() => setAutoSpeechEnabled(!autoSpeechEnabled)}
+                className={`px-6 py-3 rounded-lg font-medium ${
+                  autoSpeechEnabled
+                    ? 'bg-green-500 hover:bg-green-600 text-white'
+                    : 'bg-gray-500 hover:bg-gray-600 text-white'
+                }`}
+              >
+                {autoSpeechEnabled ? '🔊 読み上げON' : '🔇 読み上げOFF'}
+              </button>
+
+              {isSpeaking && (
+                <button
+                  onClick={stopSpeaking}
+                  className="px-6 py-3 rounded-lg font-medium bg-orange-500 hover:bg-orange-600 text-white"
+                >
+                  🛑 読み上げ停止
+                </button>
+              )}
             </div>
 
-            {status !== 'idle' && (
-              <div className={`flex items-center space-x-2 font-medium ${getStatusColor()}`}>
-                <span className="text-lg">{getStatusIcon()}</span>
-                <span>{statusMessage}</span>
-                {status === 'listening' && (
-                  <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+            {(status !== 'idle' || isSpeaking) && (
+              <div className="flex items-center space-x-4">
+                {isSpeaking && (
+                  <div className="flex items-center space-x-2 font-medium text-green-600">
+                    <span className="text-lg">🔊</span>
+                    <span>ステップを読み上げ中...</span>
+                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                  </div>
                 )}
-                {status === 'processing' && (
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full animate-spin border-2 border-transparent border-t-yellow-600"></div>
+                {status !== 'idle' && !isSpeaking && (
+                  <div className={`flex items-center space-x-2 font-medium ${getStatusColor()}`}>
+                    <span className="text-lg">{getStatusIcon()}</span>
+                    <span>{statusMessage}</span>
+                    {status === 'listening' && (
+                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                    )}
+                    {status === 'processing' && (
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full animate-spin border-2 border-transparent border-t-yellow-600"></div>
+                    )}
+                  </div>
                 )}
               </div>
             )}
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
+        {/* レシピ一覧またはステップ表示 */}
+        {!showRecipeSteps ? (
+          // レシピ一覧表示
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">レシピ一覧</h2>
+            {loading ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+              </div>
+            ) : error ? (
+              <div className="text-red-600 text-center py-8">
+                <p>エラー: {error}</p>
+                                 <button
+                   onClick={fetchRecipes}
+                   className="mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
+                 >
+                  再試行
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {recipes.map((recipe) => (
+                  <div
+                    key={recipe.id}
+                    className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                                         onClick={() => handleSelectRecipe(recipe.id!)}
+                  >
+                    {recipe.imageUrl && (
+                      <img
+                        src={recipe.imageUrl}
+                        alt={recipe.title}
+                        className="w-full h-48 object-cover"
+                      />
+                    )}
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        {recipe.title || '無題のレシピ'}
+                      </h3>
+                      {recipe.description && (
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                          {recipe.description}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between text-sm text-gray-500">
+                        <div className="flex items-center space-x-4">
+                          {recipe.prepTime && (
+                            <span className="flex items-center">
+                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              {recipe.prepTime}分
+                            </span>
+                          )}
+                          {recipe.servings && (
+                            <span>{recipe.servings}人分</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          // レシピステップ表示
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-semibold text-gray-800">
+                {selectedRecipe ? selectedRecipe.title : 'レシピ詳細'}
+              </h2>
+              <button
+                onClick={backToRecipeList}
+                className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded"
+              >
+                レシピ一覧に戻る
+              </button>
+            </div>
+
+            {/* レシピ詳細のローディング状態 */}
+            {selectedRecipeLoading && (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                <span className="ml-3 text-gray-600">レシピ詳細を読み込み中...</span>
+              </div>
+            )}
+
+            {/* レシピ詳細のエラー状態 */}
+            {selectedRecipeError && (
+              <div className="text-red-600 text-center py-8">
+                <p>エラー: {selectedRecipeError}</p>
+                <button
+                  onClick={backToRecipeList}
+                  className="mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
+                >
+                  レシピ一覧に戻る
+                </button>
+              </div>
+            )}
+
+            {/* レシピ詳細が取得できた場合 */}
+            {selectedRecipe && !selectedRecipeLoading && !selectedRecipeError && (
+              <div>
+
+              {selectedRecipe.instructions && selectedRecipe.instructions.length > 0 ? (
+                <div>
+                  <div className="mb-4">
+                                         <div className="flex items-center justify-between">
+                       <h3 className="text-lg font-medium text-gray-700">
+                         ステップ {currentStepIndex + 1} / {selectedRecipe.instructions.length}
+                       </h3>
+                       <div className="text-sm text-gray-500">
+                         音声で「次」「前」と言ってステップを切り替えられます
+                         <div className="text-xs text-blue-600 mt-1">
+                           デバッグ: showRecipeSteps={showRecipeSteps.toString()}, currentStep={currentStepIndex}
+                         </div>
+                       </div>
+                     </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                      <div
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        style={{
+                          width: `${((currentStepIndex + 1) / selectedRecipe.instructions.length) * 100}%`
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-50 rounded-lg p-6 mb-6">
+                    <h4 className="text-xl font-semibold text-gray-800 mb-3">
+                      {selectedRecipe.instructions[currentStepIndex].title}
+                    </h4>
+                    <p className="text-gray-700 leading-relaxed">
+                      {selectedRecipe.instructions[currentStepIndex].description}
+                    </p>
+                    {selectedRecipe.instructions[currentStepIndex].estimatedTime && (
+                      <div className="mt-3 text-sm text-gray-500">
+                        <span className="flex items-center">
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          推定時間: {selectedRecipe.instructions[currentStepIndex].estimatedTime}分
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex justify-between">
+                    <button
+                      onClick={prevStep}
+                      disabled={currentStepIndex === 0}
+                      className={`px-6 py-3 rounded-lg font-medium ${
+                        currentStepIndex === 0
+                          ? 'bg-gray-300 cursor-not-allowed'
+                          : 'bg-gray-500 hover:bg-gray-600 text-white'
+                      }`}
+                    >
+                      前のステップ
+                    </button>
+                    <button
+                      onClick={nextStep}
+                      disabled={currentStepIndex === selectedRecipe.instructions.length - 1}
+                      className={`px-6 py-3 rounded-lg font-medium ${
+                        currentStepIndex === selectedRecipe.instructions.length - 1
+                          ? 'bg-gray-300 cursor-not-allowed'
+                          : 'bg-blue-500 hover:bg-blue-600 text-white'
+                      }`}
+                    >
+                      次のステップ
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center py-8">このレシピには手順が設定されていません。</p>
+              )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 文字起こし結果表示 */}
+        <div className="bg-white rounded-lg shadow-md p-6 mt-6">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center space-x-3">
               <h2 className="text-xl font-semibold text-gray-800">
-                文字起こし結果
+                音声認識結果
               </h2>
               {status !== 'idle' && (
                 <div className={`flex items-center space-x-1 text-sm ${getStatusColor()}`}>
@@ -420,7 +847,7 @@ export default function SpeechToText() {
           <div className="bg-white rounded-lg shadow-md p-6 mt-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-800">
-                トリガー検知履歴
+                音声コマンド履歴
               </h3>
               <button
                 onClick={() => setTriggerHistory([])}
