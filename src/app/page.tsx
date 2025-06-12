@@ -1,7 +1,6 @@
 'use client';
 
 import { useRecipePresenter } from '@/client/presenters/hooks/use-recipe-presenter';
-import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import Image from 'next/image';
 
 export const dynamic = 'force-dynamic';
