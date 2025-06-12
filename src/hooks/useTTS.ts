@@ -142,8 +142,9 @@ export const useTTS = (options: TTSOptions = {}) => {
 
     utterance.onerror = (event) => {
       clearWatchdog();
-      debugLog(`エラー発生: ${event.error}`);
-      console.error('音声合成エラー詳細:', {
+
+      // エラー情報を即座にオブジェクトとして作成
+      const errorDetails = {
         error: event.error,
         elapsedTime: event.elapsedTime,
         charIndex: event.charIndex,
@@ -152,11 +153,21 @@ export const useTTS = (options: TTSOptions = {}) => {
         chunkIndex: index,
         totalChunks: chunks.length,
         voice: selectedVoice?.name,
-        rate, pitch, volume
-      });
+        rate,
+        pitch,
+        volume
+      };
 
-      if (event.error !== 'canceled' && event.error !== 'interrupted') {
+      debugLog(`エラー発生: ${event.error} (${errorDetails.elapsedTime}ms)`);
+
+      // エラーが "canceled" または "interrupted" の場合は正常な中断として扱う
+      const isNormalInterruption = ['canceled', 'interrupted'].includes(event.error);
+
+      if (!isNormalInterruption) {
+        console.error('音声合成エラー詳細:', errorDetails);
         onError?.(event.error);
+      } else {
+        console.log('音声合成が中断されました:', errorDetails);
       }
 
       setIsPlaying(false);
