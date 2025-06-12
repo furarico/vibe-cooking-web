@@ -1,6 +1,7 @@
 'use client';
 
 import { useRecipePresenter } from '@/client/presenters/hooks/use-recipe-presenter';
+import { RecipeHoverCard } from '@/components/ui/recipe-hover-card';
 import Image from 'next/image';
 
 export const dynamic = 'force-dynamic';
@@ -126,91 +127,28 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="flex flex-wrap gap-6 justify-center">
               {recipes.map(recipe => (
-                <div
+                <RecipeHoverCard
                   key={recipe.id}
-                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                  title={recipe.title || '無題のレシピ'}
+                  description={recipe.description || 'レシピの説明がありません'}
+                  tags={recipe.tags || []}
+                  cookingTime={
+                    recipe.prepTime
+                      ? `${recipe.prepTime}分`
+                      : recipe.cookTime
+                        ? `${recipe.cookTime}分`
+                        : '時間未設定'
+                  }
+                  imageUrl={
+                    recipe.imageUrl ||
+                    'https://picsum.photos/188/98?random=default'
+                  }
+                  imageAlt={recipe.title || 'レシピ画像'}
+                  className="cursor-pointer"
                   onClick={() => selectRecipe(recipe)}
-                >
-                  {recipe.imageUrl && (
-                    <div className="relative h-48 w-full">
-                      <Image
-                        src={recipe.imageUrl}
-                        alt={recipe.title || 'レシピ画像'}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  )}
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                      {recipe.title || '無題のレシピ'}
-                    </h3>
-                    {recipe.description && (
-                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                        {recipe.description}
-                      </p>
-                    )}
-                    <div className="flex items-center justify-between text-sm text-gray-500">
-                      <div className="flex items-center space-x-4">
-                        {recipe.prepTime && (
-                          <span className="flex items-center">
-                            <svg
-                              className="w-4 h-4 mr-1"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                            {recipe.prepTime}分
-                          </span>
-                        )}
-                        {recipe.servings && (
-                          <span className="flex items-center">
-                            <svg
-                              className="w-4 h-4 mr-1"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                              />
-                            </svg>
-                            {recipe.servings}人分
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {recipe.tags && recipe.tags.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-1">
-                        {recipe.tags.slice(0, 3).map((tag, index) => (
-                          <span
-                            key={index}
-                            className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                        {recipe.tags.length > 3 && (
-                          <span className="inline-block text-gray-500 text-xs px-2 py-1">
-                            +{recipe.tags.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                />
               ))}
             </div>
           </>
