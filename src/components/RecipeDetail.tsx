@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { components } from '@/types/api';
 import { useTTS } from '@/hooks/useTTS';
 
@@ -25,11 +25,18 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
 }) => {
   const tts = useTTS({
     onError: (error) => {
-      if (error !== 'canceled') {
+      if (error !== 'canceled' && error !== 'interrupted') {
         console.error('音声合成エラー:', error);
       }
     },
   });
+
+  useEffect(() => {
+    if (recipe?.instructions?.[currentStepIndex]?.description) {
+      tts.stop();
+      tts.speak(recipe.instructions[currentStepIndex].description);
+    }
+  }, [currentStepIndex, recipe?.instructions]);
 
   if (loading) {
     return (
@@ -104,26 +111,24 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
                 <h4 className="text-xl font-semibold text-gray-800">
                   {currentInstruction.title}
                 </h4>
-                <button
-                  onClick={() => tts.speak(currentInstruction.description)}
-                  disabled={tts.isPlaying}
-                  className="ml-4 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center space-x-2 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.9M6.343 9.657L4 12l2.343 2.343a8 8 0 1111.314 0L20 12l-2.343-2.343A8 8 0 006.343 9.657z"
-                    />
-                  </svg>
-                  <span>{tts.isPlaying ? '読み上げ中...' : '読み上げる'}</span>
-                </button>
+                {tts.isPlaying && (
+                  <div className="flex items-center text-green-600 animate-pulse">
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.9M6.343 9.657L4 12l2.343 2.343a8 8 0 1111.314 0L20 12l-2.343-2.343A8 8 0 006.343 9.657z"
+                      />
+                    </svg>
+                    <span>読み上げ中...</span>
+                  </div>
+                )}
               </div>
               <p className="text-gray-700 leading-relaxed mb-4">
                 {currentInstruction.description}
@@ -167,7 +172,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
           <div className="mt-6 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
             <p className="text-sm text-blue-700">
               💡 音声操作: 「次」または「前」と話すとステップを切り替えられます。
-              各ステップの「読み上げる」ボタンを押すと、手順を音声で確認できます。
+              ステップが切り替わると、自動的に手順を読み上げます。
             </p>
           </div>
         </div>

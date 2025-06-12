@@ -143,9 +143,22 @@ export const useTTS = (options: TTSOptions = {}) => {
     utterance.onerror = (event) => {
       clearWatchdog();
       debugLog(`エラー発生: ${event.error}`);
-      if (event.error !== 'canceled') {
+      console.error('音声合成エラー詳細:', {
+        error: event.error,
+        elapsedTime: event.elapsedTime,
+        charIndex: event.charIndex,
+        charLength: event.charLength,
+        utteranceText: chunks[index],
+        chunkIndex: index,
+        totalChunks: chunks.length,
+        voice: selectedVoice?.name,
+        rate, pitch, volume
+      });
+
+      if (event.error !== 'canceled' && event.error !== 'interrupted') {
         onError?.(event.error);
       }
+
       setIsPlaying(false);
       setIsPaused(false);
     };
