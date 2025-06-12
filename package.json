@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@firebase/app-check": "^0.10.0",
+    "@google-cloud/cloud-sql-connector": "^1.8.1",
     "@prisma/client": "^6.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

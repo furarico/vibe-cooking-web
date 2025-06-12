@@ -6,11 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
-  // Cloud Run + Cloud SQL Unix Socket + IAM認証時のサポート
-  // 実際の接続文字列は環境変数またはコード内で動的に生成される
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Recipe {
