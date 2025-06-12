@@ -14,14 +14,14 @@ export async function POST(request: NextRequest) {
 
     // Web Speech API の代替として、ここでは簡単な実装を提供
     // 実際のプロダクションでは、OpenAI Whisper API や Google Speech-to-Text API などを使用
-    
+
     // 音声ファイルをArrayBufferに変換
     const arrayBuffer = await audioFile.arrayBuffer();
-    
+
     // この例では、Web Speech API が利用できない場合のフォールバックとして
     // 簡単なダミーレスポンスを返します
     // 実際の実装では外部APIを使用してください
-    
+
     if (typeof window !== 'undefined' && 'webkitSpeechRecognition' in window) {
       // ブラウザ側でWeb Speech APIを使用する場合の処理
       return NextResponse.json({
