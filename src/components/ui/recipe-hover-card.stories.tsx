@@ -97,3 +97,43 @@ export const QuickRecipe: Story = {
     imageAlt: 'おにぎりの写真',
   },
 };
+
+// 異なる幅でのテスト用ストーリー
+export const SmallWidth: Story = {
+  args: {
+    variant: 'card',
+    title: '小さい幅テスト',
+    description: '幅が小さい場合のレイアウトテストです。',
+    tags: ['テスト'],
+    cookingTime: 20,
+    imageUrl: 'https://picsum.photos/188/98?random=6',
+    imageAlt: 'テスト画像',
+  },
+  decorators: [
+    Story => (
+      <div style={{ width: '120px' }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+export const LargeWidth: Story = {
+  args: {
+    variant: 'card',
+    title: '大きい幅テスト',
+    description:
+      '幅が大きい場合のレイアウトテストです。テキストの折り返しや全体のバランスを確認できます。',
+    tags: ['テスト', '大きい幅'],
+    cookingTime: 25,
+    imageUrl: 'https://picsum.photos/188/98?random=7',
+    imageAlt: 'テスト画像',
+  },
+  decorators: [
+    Story => (
+      <div style={{ width: '400px' }}>
+        <Story />
+      </div>
+    ),
+  ],
+};

@@ -7,11 +7,11 @@ import { cva } from 'class-variance-authority';
 import { Card } from './card';
 
 const recipeCardVariants = cva(
-  'w-full flex gap-4 rounded-md border border-slate-200 bg-white p-4 shadow-md transition-all hover:shadow-lg cursor-pointer',
+  'w-full items-stretch flex gap-4 rounded-md border border-slate-200 bg-white p-4 shadow-md transition-all hover:shadow-lg cursor-pointer',
   {
     variants: {
       variant: {
-        card: 'flex-col',
+        card: 'max-w-[240px] flex-col',
         row: 'flex-row',
       },
     },
@@ -64,21 +64,21 @@ const RecipeCard = React.forwardRef<HTMLDivElement, RecipeCardProps>(
         </div>
 
         {/* Content */}
-        <div className="w-full flex flex-col gap-2">
-          <div className="w-full flex flex-col gap-1">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
             {/* Title */}
-            <div className="w-full text-left text-base font-bold text-slate-900 line-clamp-1">
+            <div className="text-left text-base font-bold text-slate-900 line-clamp-1">
               {title}
             </div>
 
             {/* Description */}
-            <p className="w-full text-left text-xs text-slate-900 line-clamp-2">
+            <p className="text-left text-xs text-slate-900 line-clamp-2">
               {description}
             </p>
           </div>
 
           {/* Tags */}
-          <div className="w-full flex flex-wrap items-center gap-[4px]">
+          <div className="flex flex-wrap items-center gap-[4px]">
             {tags.map((tag, index) => (
               <span key={index} className="text-xs text-slate-500">
                 #{tag}
@@ -87,7 +87,7 @@ const RecipeCard = React.forwardRef<HTMLDivElement, RecipeCardProps>(
           </div>
 
           {/* Cooking Time */}
-          <div className="w-full flex items-center gap-1 ml-[-2px]">
+          <div className="flex items-center gap-1 ml-[-2px]">
             <Timer className="w-4 h-4 stroke-slate-700 stroke-2" />
             <span className="text-xs text-slate-700 mt-[1px]">
               {cookingTime}min
