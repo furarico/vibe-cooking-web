@@ -13,9 +13,6 @@ const mockRecipeService = jest.createMockFromModule<RecipeService>(
 ) as jest.Mocked<RecipeService>;
 mockRecipeService.getAllRecipes = jest.fn<Promise<Recipe[]>, []>();
 mockRecipeService.getRecipeById = jest.fn<Promise<Recipe | null>, [string]>();
-mockRecipeService.searchRecipes = jest.fn<Recipe[], [Recipe[], string]>();
-mockRecipeService.filterByServings = jest.fn<Recipe[], [Recipe[], number]>();
-mockRecipeService.filterByMaxTime = jest.fn<Recipe[], [Recipe[], number]>();
 
 // モックされたuseDI
 const mockUseDI = useDI as jest.MockedFunction<typeof useDI>;
@@ -33,14 +30,14 @@ const mockRecipe: Recipe = {
     { name: '材料2', amount: 200, unit: 'ml' },
   ],
   instructions: [
-    { step: 1, description: '手順1: 材料を準備する' },
-    { step: 2, description: '手順2: 炒める' },
-    { step: 3, description: '手順3: 盛り付ける' },
+    { step: 1, title: '手順1', description: '材料を準備する' },
+    { step: 2, title: '手順2', description: '炒める' },
+    { step: 3, title: '手順3', description: '盛り付ける' },
   ],
   tags: ['テスト'],
   imageUrl: 'test.jpg',
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  createdAt: '2023-01-01T00:00:00.000Z',
+  updatedAt: '2023-01-01T00:00:00.000Z',
 };
 
 describe('useRecipeDetailPresenter', () => {
@@ -50,6 +47,7 @@ describe('useRecipeDetailPresenter', () => {
 
     // useDIのモック設定
     mockUseDI.mockReturnValue({
+      prisma: {} as typeof import('@/lib/database').prisma,
       recipeService: mockRecipeService,
     });
 

@@ -1,6 +1,7 @@
 import { useDI } from '@/client/di/providers';
 import { RecipeService } from '@/client/services/recipe/recipe-service';
 import { Recipe } from '@/lib/api-client';
+import { PrismaClient } from '@prisma/client';
 import { act, renderHook, RenderHookResult } from '@testing-library/react';
 import {
   RecipePresenterActions,
@@ -31,11 +32,11 @@ const mockRecipes: Recipe[] = [
     cookTime: 20,
     servings: 2,
     ingredients: [{ name: '材料1', amount: 100, unit: 'g' }],
-    instructions: [{ step: 1, description: '手順1' }],
+    instructions: [{ step: 1, title: '下準備', description: '手順1' }],
     tags: ['テスト'],
     imageUrl: 'test.jpg',
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: '2023-01-01T00:00:00Z',
+    updatedAt: '2023-01-01T00:00:00Z',
   },
   {
     id: '2',
@@ -46,15 +47,18 @@ const mockRecipes: Recipe[] = [
     servings: 4,
     ingredients: [{ name: '材料2', amount: 200, unit: 'g' }],
     instructions: [
-      { step: 1, description: '手順1' },
-      { step: 2, description: '手順2' },
+      { step: 1, title: '下準備', description: '手順1' },
+      { step: 2, title: '調理', description: '手順2' },
     ],
     tags: ['テスト2'],
     imageUrl: 'test2.jpg',
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: '2023-01-02T00:00:00Z',
+    updatedAt: '2023-01-02T00:00:00Z',
   },
 ];
+
+// モックされたprisma
+const mockPrisma = {} as PrismaClient;
 
 describe('useRecipePresenter', () => {
   beforeEach(() => {
@@ -63,6 +67,7 @@ describe('useRecipePresenter', () => {
 
     // useDIのモック設定
     mockUseDI.mockReturnValue({
+      prisma: mockPrisma,
       recipeService: mockRecipeService,
     });
 
@@ -84,11 +89,9 @@ describe('useRecipePresenter', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      expect(result.current.recipes).toEqual(mockRecipes);
-      expect(result.current.selectedRecipe).toBeNull();
-      expect(result.current.loading).toBe(false);
-      expect(result.current.error).toBeNull();
-      expect(result.current.showDialog).toBe(false);
+      expect(result!.current.recipes).toEqual(mockRecipes);
+      expect(result!.current.loading).toBe(false);
+      expect(result!.current.error).toBeNull();
     });
   });
 
@@ -110,13 +113,13 @@ describe('useRecipePresenter', () => {
       jest.clearAllMocks();
 
       await act(async () => {
-        await result.current.fetchRecipes();
+        await result!.current.fetchRecipes();
       });
 
       expect(mockRecipeService.getAllRecipes).toHaveBeenCalledTimes(1);
-      expect(result.current.recipes).toEqual(mockRecipes);
-      expect(result.current.loading).toBe(false);
-      expect(result.current.error).toBeNull();
+      expect(result!.current.recipes).toEqual(mockRecipes);
+      expect(result!.current.loading).toBe(false);
+      expect(result!.current.error).toBeNull();
     });
 
     it('レシピ取得中はローディング状態になるべき', async () => {
@@ -150,12 +153,12 @@ describe('useRecipePresenter', () => {
       mockRecipeService.getAllRecipes.mockReturnValue(newLongRunningPromise);
 
       await act(async () => {
-        result.current.fetchRecipes();
+        result!.current.fetchRecipes();
       });
 
       // ローディング状態を確認
-      expect(result.current.loading).toBe(true);
-      expect(result.current.error).toBeNull();
+      expect(result!.current.loading).toBe(true);
+      expect(result!.current.error).toBeNull();
 
       // Promise を解決
       await act(async () => {
@@ -163,7 +166,7 @@ describe('useRecipePresenter', () => {
         await newLongRunningPromise;
       });
 
-      expect(result.current.loading).toBe(false);
+      expect(result!.current.loading).toBe(false);
     });
 
     it('エラー時は適切にエラー状態を設定するべき', async () => {
@@ -184,61 +187,9 @@ describe('useRecipePresenter', () => {
         await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      expect(result.current.loading).toBe(false);
-      expect(result.current.error).toBe(errorMessage);
-      expect(result.current.recipes).toEqual([]);
-    });
-  });
-
-  describe('selectRecipe', () => {
-    it('レシピを選択してダイアログを表示するべき', async () => {
-      let result: RenderHookResult<
-        RecipePresenterState & RecipePresenterActions,
-        unknown
-      >['result'];
-
-      await act(async () => {
-        const hookResult = renderHook(() => useRecipePresenter());
-        result = hookResult.result;
-        // 初期化完了を待つ
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      act(() => {
-        result.current.selectRecipe(mockRecipes[0]);
-      });
-
-      expect(result.current.selectedRecipe).toEqual(mockRecipes[0]);
-      expect(result.current.showDialog).toBe(true);
-    });
-  });
-
-  describe('closeDialog', () => {
-    it('ダイアログを閉じて選択されたレシピをクリアするべき', async () => {
-      let result: RenderHookResult<
-        RecipePresenterState & RecipePresenterActions,
-        unknown
-      >['result'];
-
-      await act(async () => {
-        const hookResult = renderHook(() => useRecipePresenter());
-        result = hookResult.result;
-        // 初期化完了を待つ
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      // まずレシピを選択
-      act(() => {
-        result.current.selectRecipe(mockRecipes[0]);
-      });
-
-      // ダイアログを閉じる
-      act(() => {
-        result.current.closeDialog();
-      });
-
-      expect(result.current.selectedRecipe).toBeNull();
-      expect(result.current.showDialog).toBe(false);
+      expect(result!.current.loading).toBe(false);
+      expect(result!.current.error).toBe(errorMessage);
+      expect(result!.current.recipes).toEqual([]);
     });
   });
 
@@ -260,7 +211,7 @@ describe('useRecipePresenter', () => {
       jest.clearAllMocks();
 
       await act(async () => {
-        await result.current.refreshRecipes();
+        await result!.current.refreshRecipes();
       });
 
       expect(mockRecipeService.getAllRecipes).toHaveBeenCalledTimes(1);

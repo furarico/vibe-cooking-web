@@ -48,6 +48,8 @@
 - **テストカバレッジ**: `pnpm test:coverage` (カバレッジレポート付きでテストを実行)
 - **APIクライアント生成**: `pnpm api:generate` (OpenAPI仕様からTypeScript型定義を再生成)
 - **APIドキュメントプレビュー**: `pnpm api:preview` (ブラウザでRedoclyドキュメントを開く)
+- **Storybook開発サーバー**: `pnpm storybook` (コンポーネントライブラリの確認・開発)
+- **Storybookビルド**: `pnpm build-storybook` (Storybookの静的ビルド)
 
 ### データベース関連コマンド
 - **Prismaクライアント生成**: `pnpm db:generate` (Prismaクライアントコード生成)
