@@ -1,4 +1,5 @@
 import { DIProvider } from '@/client/di/providers';
+import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { FirebaseInit } from './firebase-init';
@@ -30,6 +31,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <ServiceWorkerRegistration />
         <FirebaseInit />
         <DIProvider>{children}</DIProvider>
       </body>

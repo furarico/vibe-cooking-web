@@ -28,19 +28,27 @@ let appCheck: AppCheck | null = null;
 
 // App Checkの初期化
 if (typeof window !== 'undefined') {
-  window.FIREBASE_APPCHECK_DEBUG_TOKEN = process.env.NODE_ENV === 'development';
-
-  appCheck = initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider(
-      process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''
-    ),
-    isTokenAutoRefreshEnabled: true,
-  });
-
   if (process.env.NODE_ENV === 'development') {
-    getToken(appCheck).then(appCheckToken => {
-      console.log('🔐 Firebase App Check:', appCheckToken.token);
+    window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+  }
+
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+
+  if (recaptchaSiteKey) {
+    appCheck = initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider(recaptchaSiteKey),
+      isTokenAutoRefreshEnabled: true,
     });
+
+    if (process.env.NODE_ENV === 'development') {
+      getToken(appCheck).then(appCheckToken => {
+        console.log('🔐 Firebase App Check:', appCheckToken.token);
+      });
+    }
+  } else {
+    console.warn(
+      '⚠️ reCAPTCHA Site Key が設定されていません。Firebase App Check が無効です。'
+    );
   }
 }
 
