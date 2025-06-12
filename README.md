@@ -7,8 +7,8 @@
 ## 🚀 クイックスタート
 
 ### 必要な環境
-- **Node.js** 18以上
-- **pnpm** （推奨パッケージマネージャー）
+- **Node.js** 22.x
+- **pnpm** 10.x （推奨パッケージマネージャー）
 
 ### セットアップ
 
@@ -71,20 +71,32 @@ pnpm api:preview
 
 ### データベース関連コマンド
 ```bash
-# Prismaマイグレーション生成・適用
-pnpm db:migrate
-
 # Prismaクライアント生成
 pnpm db:generate
 
-# データベースシード（初期データ投入）
-pnpm db:seed
+# Prismaマイグレーション（開発環境）
+pnpm db:migrate:dev
 
-# Prisma Studio（データベースGUI管理ツール起動）
-pnpm db:studio
+# Prismaマイグレーション（本番環境）
+pnpm db:migrate:prod
 
-# データベース完全リセット
-pnpm db:reset
+# データベースシード（開発環境）
+pnpm db:seed:dev
+
+# データベースシード（本番環境）
+pnpm db:seed:prod
+
+# Prisma Studio（開発環境）
+pnpm db:studio:dev
+
+# Prisma Studio（本番環境）
+pnpm db:studio:prod
+
+# データベース完全リセット（開発環境）
+pnpm db:reset:dev
+
+# データベース完全リセット（本番環境）
+pnpm db:reset:prod
 ```
 
 ## 🏗️ アーキテクチャ概要
@@ -193,8 +205,9 @@ pnpm api:preview
 ブラウザでインタラクティブなAPIドキュメントを表示
 
 ### 現在のAPIエンドポイント
-- `GET /recipes` - レシピ一覧取得
+- `GET /recipes` - レシピ一覧取得（テキスト検索、タグフィルター、カテゴリフィルター対応）
 - `GET /recipes/{id}` - レシピ詳細取得
+- `GET /categories` - カテゴリ一覧取得
 
 ## 🎨 開発ガイドライン
 
@@ -218,14 +231,42 @@ pnpm api:preview
 
 ## 💾 データベース設定
 
-### ローカル開発環境
-ローカル開発では、環境変数でデータベース接続を設定してください。
+### データベース接続設定
 
-### プロダクション環境（Cloud SQL）
-プロダクションではCloud SQLとIAM認証を使用します。
+#### 環境変数設定
+プロジェクトは開発環境と本番環境で異なる環境変数ファイルを使用します：
+- **開発環境**: `.env.development`（`.env.development.example`を参考に作成）
+- **本番環境**: `.env.production`（`.env.production.example`を参考に作成）
+
+#### 必要な環境変数
+```bash
+# データベース接続
+MAIN_DATABASE_URL="postgres://user:pass@host:port/name"
+SHADOW_DATABASE_URL="postgres://user:pass@host:port/name_shadow"
+
+# Firebase設定
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=your_recaptcha_site_key
+
+# Google Cloud設定（本番環境）
+GOOGLE_CLOUD_PROJECT=your_project_id
+GOOGLE_APPLICATION_CREDENTIALS=path/to/service-account-key.json
+```
 
 ### Prisma Schema
 データベーススキーマは `prisma/schema.prisma` で管理し、マイグレーションでバージョン管理しています。
+
+#### 主要なデータモデル
+- **Recipe**: レシピの基本情報、準備時間、調理時間、材料、手順、カテゴリ
+- **Ingredient**: 材料名、分量、単位、備考
+- **Instruction**: 手順番号、タイトル、説明、推定時間、画像URL
+- **Category**: カテゴリ名（ご飯、おかず、デザート、汁物など）
 
 ## 🎨 UIコンポーネントシステム
 
@@ -261,17 +302,8 @@ pnpm api:preview
 - **初期化**: クライアントサイドのみ
 - **自動トークンリフレッシュ**: 有効
 
-#### 必要な環境変数
-```bash
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
-NEXT_PUBLIC_RECAPTCHA_SITE_KEY=your_recaptcha_site_key
-```
+#### Firebase App Check設定
+Firebase App Checkの設定は上記の環境変数セクションを参照してください。
 
 ## 🚀 デプロイメント
 
@@ -285,6 +317,9 @@ docker build -t vibe-cooking .
 
 # ローカルテスト
 docker run -p 3000:3000 vibe-cooking
+
+# Google Cloud Runデプロイ
+pnpm deploy:gcr
 ```
 
 ## 🚨 重要な注意点
