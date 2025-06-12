@@ -1,6 +1,7 @@
 import { useDI } from '@/client/di/providers';
 import { RecipeService } from '@/client/services/recipe/recipe-service';
 import { Recipe } from '@/lib/api-client';
+import { PrismaClient } from '@prisma/client';
 import { act, renderHook, RenderHookResult } from '@testing-library/react';
 import {
   RecipePresenterActions,
@@ -57,7 +58,7 @@ const mockRecipes: Recipe[] = [
 ];
 
 // モックされたprisma
-const mockPrisma = {} as any;
+const mockPrisma = {} as PrismaClient;
 
 describe('useRecipePresenter', () => {
   beforeEach(() => {
