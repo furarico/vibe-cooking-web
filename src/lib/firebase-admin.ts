@@ -21,6 +21,6 @@ const getFirebaseAdminApp = () => {
   });
 };
 
-const app = getApps().length === 0 ? initializeApp() : getApp();
+const app = getFirebaseAdminApp();
 
 export { app };
