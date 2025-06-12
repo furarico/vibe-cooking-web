@@ -5,10 +5,10 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 interface RecipeHoverCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   tags: string[];
-  cookingTime: string;
+  cookingTime: number;
   imageUrl: string;
   imageAlt?: string;
 }
@@ -54,14 +54,12 @@ const RecipeHoverCard = React.forwardRef<HTMLDivElement, RecipeHoverCardProps>(
         </h3>
 
         {/* Description */}
-        <p className="text-left text-sm leading-[1.43] text-slate-900">
-          {description}
-        </p>
+        <p className="text-left text-sm text-slate-900">{description}</p>
 
         {/* Tags */}
         <div className="flex items-center gap-2">
           {tags.map((tag, index) => (
-            <span key={index} className="text-xs leading-[1.33] text-slate-500">
+            <span key={index} className="text-xs text-slate-500">
               {tag}
             </span>
           ))}
@@ -70,9 +68,7 @@ const RecipeHoverCard = React.forwardRef<HTMLDivElement, RecipeHoverCardProps>(
         {/* Cooking Time */}
         <div className="flex items-center gap-1">
           <Timer className="h-4 w-4 stroke-slate-700 stroke-2" />
-          <span className="text-xs leading-[1.33] text-slate-700">
-            {cookingTime}
-          </span>
+          <span className="text-xs text-slate-700">{cookingTime}分</span>
         </div>
       </div>
     </div>
