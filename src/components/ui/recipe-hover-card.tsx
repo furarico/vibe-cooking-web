@@ -3,8 +3,26 @@ import Image from 'next/image';
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
+import { cva } from 'class-variance-authority';
+import { Card } from './card';
 
-interface RecipeHoverCardProps extends React.HTMLAttributes<HTMLDivElement> {
+const recipeCardVariants = cva(
+  'w-full flex gap-4 rounded-md border border-slate-200 bg-white p-4 shadow-md transition-all hover:shadow-lg cursor-pointer',
+  {
+    variants: {
+      variant: {
+        card: 'flex-col',
+        row: 'flex-row',
+      },
+    },
+    defaultVariants: {
+      variant: 'card',
+    },
+  }
+);
+
+interface RecipeCardProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: 'card' | 'row';
   title?: string;
   description?: string;
   tags: string[];
@@ -13,10 +31,11 @@ interface RecipeHoverCardProps extends React.HTMLAttributes<HTMLDivElement> {
   imageAlt?: string;
 }
 
-const RecipeHoverCard = React.forwardRef<HTMLDivElement, RecipeHoverCardProps>(
+const RecipeCard = React.forwardRef<HTMLDivElement, RecipeCardProps>(
   (
     {
       className,
+      variant,
       title,
       description,
       tags,
@@ -26,56 +45,61 @@ const RecipeHoverCard = React.forwardRef<HTMLDivElement, RecipeHoverCardProps>(
       ...props
     },
     ref
-  ) => (
-    <div
-      ref={ref}
-      className={cn(
-        'flex w-fit max-w-[220px] flex-col gap-4 rounded-md border border-slate-200 bg-white p-4 shadow-md transition-all hover:shadow-lg',
-        className
-      )}
-      {...props}
-    >
-      {/* Recipe Image */}
-      <div className="relative h-[98px] w-[188px] overflow-hidden rounded">
-        <Image
-          src={imageUrl}
-          alt={imageAlt}
-          fill
-          className="object-cover"
-          sizes="188px"
-        />
-      </div>
+  ) => {
+    return (
+      <Card
+        className={cn(recipeCardVariants({ variant, className }))}
+        ref={ref}
+        {...props}
+      >
+        {/* Recipe Image */}
+        <div className="w-full h-[100px] rounded relative overflow-hidden">
+          <Image
+            src={imageUrl}
+            alt={imageAlt}
+            fill
+            sizes="200px"
+            className="object-cover"
+          />
+        </div>
 
-      {/* Content */}
-      <div className="flex w-[188px] flex-col gap-1">
-        {/* Title */}
-        <h3 className="text-left text-base font-bold leading-6 text-slate-900">
-          {title}
-        </h3>
+        {/* Content */}
+        <div className="w-full flex flex-col gap-2">
+          <div className="w-full flex flex-col gap-1">
+            {/* Title */}
+            <div className="w-full text-left text-base font-bold text-slate-900 line-clamp-1">
+              {title}
+            </div>
 
-        {/* Description */}
-        <p className="text-left text-sm text-slate-900">{description}</p>
+            {/* Description */}
+            <p className="w-full text-left text-xs text-slate-900 line-clamp-2">
+              {description}
+            </p>
+          </div>
 
-        {/* Tags */}
-        <div className="flex items-center gap-2">
-          {tags.map((tag, index) => (
-            <span key={index} className="text-xs text-slate-500">
-              {tag}
+          {/* Tags */}
+          <div className="w-full flex flex-wrap items-center gap-[4px]">
+            {tags.map((tag, index) => (
+              <span key={index} className="text-xs text-slate-500">
+                #{tag}
+              </span>
+            ))}
+          </div>
+
+          {/* Cooking Time */}
+          <div className="w-full flex items-center gap-1 ml-[-2px]">
+            <Timer className="w-4 h-4 stroke-slate-700 stroke-2" />
+            <span className="text-xs text-slate-700 mt-[1px]">
+              {cookingTime}min
             </span>
-          ))}
+          </div>
         </div>
-
-        {/* Cooking Time */}
-        <div className="flex items-center gap-1">
-          <Timer className="h-4 w-4 stroke-slate-700 stroke-2" />
-          <span className="text-xs text-slate-700">{cookingTime}分</span>
-        </div>
-      </div>
-    </div>
-  )
+      </Card>
+    );
+  }
 );
 
-RecipeHoverCard.displayName = 'RecipeHoverCard';
+export type { RecipeCardProps };
+RecipeCard.displayName = 'RecipeCard';
 
-export { RecipeHoverCard };
-export type { RecipeHoverCardProps };
+export { RecipeCard, recipeCardVariants };

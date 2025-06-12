@@ -2,7 +2,7 @@
 
 import { useRecipePresenter } from '@/client/presenters/hooks/use-recipe-presenter';
 import { Button } from '@/components/ui/button';
-import { RecipeHoverCard } from '@/components/ui/recipe-hover-card';
+import { RecipeCard } from '@/components/ui/recipe-hover-card';
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
@@ -68,7 +68,7 @@ export default function Home() {
                   className="flex justify-center"
                   href={`/recipes/${recipe.id}`}
                 >
-                  <RecipeHoverCard
+                  <RecipeCard
                     title={recipe.title}
                     description={
                       recipe.description || 'レシピの説明がありません'

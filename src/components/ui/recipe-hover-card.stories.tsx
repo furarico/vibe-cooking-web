@@ -1,14 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import { RecipeHoverCard } from './recipe-hover-card';
+import { RecipeCard } from './recipe-hover-card';
 
-const meta: Meta<typeof RecipeHoverCard> = {
-  title: 'UI/RecipeHoverCard',
-  component: RecipeHoverCard,
+const meta: Meta<typeof RecipeCard> = {
+  title: 'UI/RecipeCard',
+  component: RecipeCard,
   parameters: {
     layout: 'centered',
   },
   tags: ['autodocs'],
   argTypes: {
+    variant: {
+      control: 'select',
+      options: ['card', 'row'],
+    },
     title: {
       control: 'text',
     },
@@ -35,6 +39,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
+    variant: 'card',
     title: '美味しいパスタ',
     description: 'トマトとバジルの香りが食欲をそそる定番のパスタレシピです。',
     tags: ['イタリアン', 'パスタ'],
@@ -46,6 +51,7 @@ export const Default: Story = {
 
 export const LongTitle: Story = {
   args: {
+    variant: 'card',
     title: '本格的なイタリアンボロネーゼパスタ',
     description: 'じっくり煮込んだミートソースが絶品のボロネーゼです。',
     tags: ['イタリアン', 'パスタ', 'ミート'],
@@ -57,6 +63,7 @@ export const LongTitle: Story = {
 
 export const LongDescription: Story = {
   args: {
+    variant: 'card',
     title: 'カレーライス',
     description:
       'スパイスから作る本格的なカレーライス。野菜とお肉がたっぷり入って栄養満点です。家族みんなで楽しめる定番の味です。',
@@ -69,6 +76,7 @@ export const LongDescription: Story = {
 
 export const ManyTags: Story = {
   args: {
+    variant: 'card',
     title: 'ヘルシーサラダ',
     description: '新鮮な野菜をたっぷり使ったヘルシーなサラダです。',
     tags: ['ヘルシー', 'サラダ', 'ベジタリアン', '低カロリー', 'ビタミン'],
@@ -80,6 +88,7 @@ export const ManyTags: Story = {
 
 export const QuickRecipe: Story = {
   args: {
+    variant: 'row',
     title: '簡単おにぎり',
     description: '忙しい朝にも簡単に作れるおにぎりです。',
     tags: ['和食', '簡単'],

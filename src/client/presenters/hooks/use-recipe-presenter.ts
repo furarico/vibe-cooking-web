@@ -21,7 +21,7 @@ export const useRecipePresenter = (): RecipePresenterState &
 
   const [state, setState] = useState<RecipePresenterState>({
     recipes: [],
-    loading: false,
+    loading: true,
     error: null,
   });
 
