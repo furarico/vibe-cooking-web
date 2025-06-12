@@ -6,16 +6,12 @@ import { useCallback, useEffect, useState } from 'react';
 
 export interface RecipePresenterState {
   recipes: Recipe[];
-  selectedRecipe: Recipe | null;
   loading: boolean;
   error: string | null;
-  showDialog: boolean;
 }
 
 export interface RecipePresenterActions {
   fetchRecipes: () => Promise<void>;
-  selectRecipe: (recipe: Recipe) => void;
-  closeDialog: () => void;
   refreshRecipes: () => Promise<void>;
 }
 
@@ -25,10 +21,8 @@ export const useRecipePresenter = (): RecipePresenterState &
 
   const [state, setState] = useState<RecipePresenterState>({
     recipes: [],
-    selectedRecipe: null,
     loading: false,
     error: null,
-    showDialog: false,
   });
 
   // レシピ一覧取得
@@ -52,24 +46,6 @@ export const useRecipePresenter = (): RecipePresenterState &
     }
   }, [recipeService]);
 
-  // レシピ選択
-  const selectRecipe = useCallback((recipe: Recipe) => {
-    setState(prev => ({
-      ...prev,
-      selectedRecipe: recipe,
-      showDialog: true,
-    }));
-  }, []);
-
-  // ダイアログを閉じる
-  const closeDialog = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      selectedRecipe: null,
-      showDialog: false,
-    }));
-  }, []);
-
   // リフレッシュ
   const refreshRecipes = useCallback(async () => {
     await fetchRecipes();
@@ -83,8 +59,6 @@ export const useRecipePresenter = (): RecipePresenterState &
   return {
     ...state,
     fetchRecipes,
-    selectRecipe,
-    closeDialog,
     refreshRecipes,
   };
 };

@@ -3,20 +3,12 @@
 import { useRecipePresenter } from '@/client/presenters/hooks/use-recipe-presenter';
 import { Button } from '@/components/ui/button';
 import { RecipeHoverCard } from '@/components/ui/recipe-hover-card';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
 export default function Home() {
-  const {
-    recipes,
-    selectedRecipe,
-    loading,
-    error,
-    showDialog,
-    selectRecipe,
-    closeDialog,
-    refreshRecipes,
-  } = useRecipePresenter();
+  const { recipes, loading, error, refreshRecipes } = useRecipePresenter();
 
   if (loading) {
     return (
@@ -71,7 +63,11 @@ export default function Home() {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
               {recipes.map(recipe => (
-                <div key={recipe.id} className="flex justify-center">
+                <Link
+                  key={recipe.id}
+                  className="flex justify-center"
+                  href={`/recipes/${recipe.id}`}
+                >
                   <RecipeHoverCard
                     title={recipe.title}
                     description={
@@ -87,9 +83,8 @@ export default function Home() {
                     }
                     imageAlt={recipe.title}
                     className="cursor-pointer"
-                    onClick={() => selectRecipe(recipe)}
                   />
-                </div>
+                </Link>
               ))}
             </div>
           </>
