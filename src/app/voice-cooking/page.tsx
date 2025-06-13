@@ -3,19 +3,23 @@
 import { useDI } from '@/client/di/providers';
 import { useRecipePresenter } from '@/client/presenters/hooks/use-recipe-presenter';
 import { useVoiceCookingPresenter } from '@/client/presenters/voice-cooking-presenter';
+import { AudioControl } from '@/components/audio-control';
 import { RecipeDetail } from '@/components/recipe-detail';
 import { RecipeList } from '@/components/recipe-list';
 import { SpeechControl } from '@/components/speech-control';
 import { SpeechTranscript } from '@/components/speech-transcript';
 
 export default function VoiceCooking() {
-  const { voiceCookingService } = useDI();
+  const { voiceCookingService, audioPlayerService } = useDI();
 
   // レシピ一覧のデータ
   const { recipes, loading, error, fetchRecipes } = useRecipePresenter();
 
   // 音声クッキングのプレゼンター
-  const { state, actions } = useVoiceCookingPresenter(voiceCookingService);
+  const { state, actions } = useVoiceCookingPresenter(
+    voiceCookingService,
+    audioPlayerService
+  );
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
@@ -32,6 +36,14 @@ export default function VoiceCooking() {
           statusMessage={state.speechStatus.statusMessage}
           onStartRecording={actions.startSpeechRecognition}
           onStopRecording={actions.stopSpeechRecognition}
+        />
+
+        {/* 音声再生コントロール */}
+        <AudioControl
+          isPlaying={state.audioStatus.isPlaying}
+          onPlay={actions.playTestAudio}
+          onStop={actions.stopAudio}
+          onPause={actions.pauseAudio}
         />
 
         {/* 音声認識結果とトリガー履歴 */}

@@ -4,6 +4,10 @@ import {
   SpeechRecognitionRepository,
   WebSpeechRecognitionRepository,
 } from '@/client/repositories/speech-recognition-repository';
+import {
+  AudioPlayerService,
+  AudioPlayerServiceImpl,
+} from '@/client/services/audio-player-service';
 import { RecipeService } from '@/client/services/recipe/recipe-service';
 import {
   VoiceCookingService,
@@ -17,6 +21,7 @@ export interface DIContainer {
   recipeService: RecipeService;
   voiceCookingService: VoiceCookingService;
   speechRecognitionRepository: SpeechRecognitionRepository;
+  audioPlayerService: AudioPlayerService;
 }
 
 export const createDIContainer = (): DIContainer => {
@@ -35,9 +40,11 @@ export const createDIContainer = (): DIContainer => {
 
   // Service の作成
   const recipeService = new RecipeService(recipeRepository);
+  const audioPlayerService = new AudioPlayerServiceImpl();
   const voiceCookingService = new VoiceCookingServiceImpl({
     speechRecognitionRepository,
     recipeService,
+    audioPlayerService,
   });
 
   return {
@@ -45,5 +52,6 @@ export const createDIContainer = (): DIContainer => {
     recipeService,
     voiceCookingService,
     speechRecognitionRepository,
+    audioPlayerService,
   };
 };
