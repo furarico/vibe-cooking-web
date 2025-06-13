@@ -2,7 +2,9 @@
 
 import { useRecipePresenter } from '@/client/presenters/hooks/use-recipe-presenter';
 import { Button } from '@/components/ui/button';
-import { RecipeHoverCard } from '@/components/ui/recipe-hover-card';
+import { Input } from '@/components/ui/input';
+import { RecipeCard } from '@/components/ui/recipe-card';
+import { SearchIcon } from 'lucide-react';
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
@@ -49,9 +51,19 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="w-full max-w-6xl mx-auto min-h-screen">
       {/* ヘッダー */}
-      <header className="bg-white shadow-sm border-b"></header>
+      <header className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+        <div className="flex items-center gap-2 w-full">
+          <Input
+            className="placeholder:text-gray-400"
+            placeholder="レシピを検索"
+          />
+          <Button>
+            <SearchIcon className="w-4 h-4" />
+          </Button>
+        </div>
+      </header>
 
       {/* メインコンテンツ */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -68,7 +80,7 @@ export default function Home() {
                   className="flex justify-center"
                   href={`/recipes/${recipe.id}`}
                 >
-                  <RecipeHoverCard
+                  <RecipeCard
                     title={recipe.title}
                     description={
                       recipe.description || 'レシピの説明がありません'
