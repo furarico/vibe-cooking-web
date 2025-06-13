@@ -6,12 +6,14 @@ import { useCallback, useEffect, useState } from 'react';
 
 export interface RecipePresenterState {
   recipes: Recipe[];
+  searchQuery: string;
   loading: boolean;
   error: string | null;
 }
 
 export interface RecipePresenterActions {
   fetchRecipes: () => Promise<void>;
+  setSearchQuery: (query: string) => Promise<void>;
   refreshRecipes: () => Promise<void>;
 }
 
@@ -21,6 +23,7 @@ export const useRecipePresenter = (): RecipePresenterState &
 
   const [state, setState] = useState<RecipePresenterState>({
     recipes: [],
+    searchQuery: '',
     loading: true,
     error: null,
   });
@@ -46,6 +49,10 @@ export const useRecipePresenter = (): RecipePresenterState &
     }
   }, [recipeService]);
 
+  const setSearchQuery = useCallback(async (query: string) => {
+    setState(prev => ({ ...prev, searchQuery: query }));
+  }, []);
+
   // リフレッシュ
   const refreshRecipes = useCallback(async () => {
     await fetchRecipes();
@@ -59,6 +66,7 @@ export const useRecipePresenter = (): RecipePresenterState &
   return {
     ...state,
     fetchRecipes,
+    setSearchQuery,
     refreshRecipes,
   };
 };
