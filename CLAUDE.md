@@ -31,6 +31,12 @@
 ### 📁 ファイル命名規則
 - **TypeScript**: `.ts`および`.tsx` のファイル名は、`kebab-case` で命名すること
 
+### 💻 TypeScript コーディング規則
+- **必須**: `any`型の使用を禁止すること
+- **必須**: 型の安全性を保つため、具体的な型定義を使用すること
+- **推奨**: `unknown`、`object`、`Record<string, unknown>`等の適切な型を使用すること
+- **例外**: 既存のライブラリの型定義が不完全な場合のみ、`// eslint-disable-next-line @typescript-eslint/no-explicit-any`コメントと共に一時的に許可
+
 ## 開発コマンド
 
 - **開発サーバー**: `pnpm dev` (高速ビルドのためTurbopackを使用)
@@ -42,17 +48,24 @@
 - **テストカバレッジ**: `pnpm test:coverage` (カバレッジレポート付きでテストを実行)
 - **APIクライアント生成**: `pnpm api:generate` (OpenAPI仕様からTypeScript型定義を再生成)
 - **APIドキュメントプレビュー**: `pnpm api:preview` (ブラウザでRedoclyドキュメントを開く)
+- **Storybook開発サーバー**: `pnpm storybook` (コンポーネントライブラリの確認・開発)
+- **Storybookビルド**: `pnpm build-storybook` (Storybookの静的ビルド)
 
 ### データベース関連コマンド
-- **Prismaマイグレーション生成**: `pnpm db:migrate` (開発環境用マイグレーション作成・適用)
 - **Prismaクライアント生成**: `pnpm db:generate` (Prismaクライアントコード生成)
-- **データベースシード**: `pnpm db:seed` (初期データ投入)
-- **Prisma Studio**: `pnpm db:studio` (データベースGUI管理ツール起動)
-- **データベースリセット**: `pnpm db:reset` (データベース完全リセット)
+- **Prismaマイグレーション（開発）**: `pnpm db:migrate:dev` (開発環境用マイグレーション作成・適用)
+- **Prismaマイグレーション（本番）**: `pnpm db:migrate:prod` (本番環境用マイグレーション適用)
+- **データベースシード（開発）**: `pnpm db:seed:dev` (開発環境用初期データ投入)
+- **データベースシード（本番）**: `pnpm db:seed:prod` (本番環境用初期データ投入)
+- **Prisma Studio（開発）**: `pnpm db:studio:dev` (開発環境用データベースGUI管理ツール起動)
+- **Prisma Studio（本番）**: `pnpm db:studio:prod` (本番環境用データベースGUI管理ツール起動)
+- **データベースリセット（開発）**: `pnpm db:reset:dev` (開発環境用データベース完全リセット)
+- **データベースリセット（本番）**: `pnpm db:reset:prod` (本番環境用データベース完全リセット)
 
 ### Cloud Run関連
 - **Dockerビルド**: `docker build -t vibe-cooking .`
 - **ローカルテスト**: `docker run -p 3000:3000 vibe-cooking`
+- **Google Cloud Runデプロイ**: `pnpm deploy:gcr` (Cloud Runに自動デプロイ)
 
 ## アーキテクチャ概要
 
@@ -68,8 +81,9 @@
 - Recipe、Ingredient、Instruction等の型安全なインターフェース
 
 **現在のAPIエンドポイント**:
-- `GET /recipes` - 全レシピを取得（フィルタリング・ページネーションなし）
+- `GET /recipes` - レシピ一覧を取得（テキスト検索、タグフィルター、カテゴリフィルター対応）
 - `GET /recipes/{id}` - IDで特定のレシピを取得
+- `GET /categories` - カテゴリ一覧を取得
 
 ### クライアントサイドアーキテクチャ
 
@@ -185,11 +199,13 @@ prisma/                 # Prismaスキーマとマイグレーション
 
 ### コアデータモデル
 
-**Recipeスキーマ**: 基本情報（id、title、description）、時間（prepTime、cookTime、servings）、コンテンツ配列（ingredients、instructions）、メタデータ（tags、imageUrl、timestamps）を含みます。
+**Recipeスキーマ**: 基本情報（id、title、description）、時間（prepTime、cookTime、servings）、コンテンツ配列（ingredients、instructions）、カテゴリ関連（category、categoryId）、メタデータ（tags、imageUrl、timestamps）を含みます。
 
 **Ingredientスキーマ**: name、amount、unit（すべて必須）と、オプションのnotesで構成されています。
 
-**Instructionスキーマ**: step number、description（両方必須）と、オプションのimageUrlとestimatedTimeを持つ順次ステップです。
+**Instructionスキーマ**: step number、title、description（すべて必須）と、オプションのimageUrlとestimatedTimeを持つ順次ステップです。
+
+**Categoryスキーマ**: id、name（両方必須）で構成され、複数のレシピを関連付けるカテゴリ情報です。
 
 ### プロジェクト構造の詳細
 
@@ -204,14 +220,14 @@ prisma/                 # Prismaスキーマとマイグレーション
 
 1. **API変更**: `openapi/openapi.yaml`を修正 → `pnpm api:generate`を実行 → 仕様と生成された型定義をコミット
 2. **APIドキュメントプレビュー**: 開発中にAPIドキュメントを表示するために`pnpm api:preview`を使用
-3. **データベーススキーマ変更**: `prisma/schema.prisma`を修正 → `pnpm db:migrate`を実行 → マイグレーションファイルをコミット
+3. **データベーススキーマ変更**: `prisma/schema.prisma`を修正 → `pnpm db:migrate:dev`（開発環境）または`pnpm db:migrate:prod`（本番環境）を実行 → マイグレーションファイルをコミット
 4. **フォント最適化**: プロジェクトは自動最適化のために`next/font`経由でGeistフォントを使用
 
 ### Cloud SQL接続設定
 
 **データベース接続**: プロジェクトは環境に応じて異なるデータベース接続方式をサポートします：
 
-1. **ローカル開発**: 従来のURL接続文字列を使用（`DATABASE_URL`環境変数）
+1. **ローカル開発**: 従来のURL接続文字列を使用（`MAIN_DATABASE_URL`および`SHADOW_DATABASE_URL`環境変数）
 2. **Cloud Run本番環境**: Unix Socket + IAM認証を使用
 
 **Cloud SQL IAM認証設定**:
@@ -220,12 +236,21 @@ prisma/                 # Prismaスキーマとマイグレーション
 - Unix Socketパス: `/cloudsql/<PROJECT_ID>:<REGION>:<INSTANCE_NAME>`
 - IAM認証用ユーザー名: サービスアカウントメールアドレス
 
-**必要な環境変数** (`.env.example`参照):
-- `CLOUD_SQL_PROJECT_ID`: GCPプロジェクトID
-- `CLOUD_SQL_REGION`: Cloud SQLインスタンスのリージョン
-- `CLOUD_SQL_INSTANCE_NAME`: Cloud SQLインスタンス名
-- `CLOUD_SQL_DATABASE_NAME`: データベース名
-- `CLOUD_SQL_IAM_USER`: IAM認証用サービスアカウント
+**必要な環境変数** (`.env.development.example`/`.env.production.example`参照):
+- `MAIN_DATABASE_URL`: メインデータベース接続URL
+- `SHADOW_DATABASE_URL`: シャドウデータベース接続URL（マイグレーション用）
+- `GOOGLE_CLOUD_PROJECT`: GCPプロジェクトID
+- `GOOGLE_APPLICATION_CREDENTIALS`: サービスアカウントキーファイルのパス
+
+**Firebase関連環境変数**:
+- `NEXT_PUBLIC_FIREBASE_API_KEY`: Firebase API Key
+- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`: Firebase認証ドメイン
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`: FirebaseプロジェクトID
+- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`: Firebase Storage bucket
+- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`: Firebase Messaging sender ID
+- `NEXT_PUBLIC_FIREBASE_APP_ID`: Firebase App ID
+- `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID`: Google Analytics測定ID
+- `NEXT_PUBLIC_RECAPTCHA_SITE_KEY`: reCAPTCHA Site Key
 
 **Cloud Runデプロイ要件**:
 - Cloud SQL接続設定が必要（`--set-cloudsql-instances`フラグ）
@@ -266,15 +291,7 @@ prisma/                 # Prismaスキーマとマイグレーション
 - クライアントサイドでのみ初期化
 - 自動トークンリフレッシュ有効
 
-**必要な環境変数** (`.env.example`参照):
-- `NEXT_PUBLIC_FIREBASE_API_KEY`: Firebase API Key
-- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`: Firebase認証ドメイン
-- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`: FirebaseプロジェクトID
-- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`: Firebase Storage bucket
-- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`: Firebase Messaging sender ID
-- `NEXT_PUBLIC_FIREBASE_APP_ID`: Firebase App ID
-- `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID`: Google Analytics測定ID
-- `NEXT_PUBLIC_RECAPTCHA_SITE_KEY`: reCAPTCHA Site Key
+**Firebase環境変数の設定** (上記のFirebase関連環境変数セクションを参照)
 
 ### Firebase AppCheck セキュリティ
 
