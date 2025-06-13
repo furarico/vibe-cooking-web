@@ -1,6 +1,5 @@
-import { useTTS } from '@/hooks/use-tts';
 import { components } from '@/types/api';
-import React, { useEffect } from 'react';
+import React from 'react';
 
 type Recipe = components['schemas']['Recipe'];
 
@@ -23,29 +22,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
   onNextStep,
   onPrevStep,
 }) => {
-  const tts = useTTS({
-    onError: error => {
-      if (error !== 'canceled' && error !== 'interrupted') {
-        console.error('音声合成エラー:', error);
-      }
-    },
-  });
 
-  useEffect(() => {
-    if (recipe?.instructions?.[currentStepIndex]?.description) {
-      tts.stop();
-      // 少し遅延を入れて前の音声が完全に停止してから新しい音声を開始
-      const timer = setTimeout(() => {
-        if (recipe?.instructions?.[currentStepIndex]?.description) {
-          tts.speak(recipe.instructions[currentStepIndex].description);
-        }
-      }, 100);
-
-      return () => {
-        clearTimeout(timer);
-      };
-    }
-  }, [currentStepIndex, recipe?.instructions]);
 
   if (loading) {
     return (
@@ -120,24 +97,6 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
                 <h4 className="text-xl font-semibold text-gray-800">
                   {currentInstruction.title}
                 </h4>
-                {tts.isPlaying && (
-                  <div className="flex items-center text-green-600 animate-pulse">
-                    <svg
-                      className="w-5 h-5 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.9M6.343 9.657L4 12l2.343 2.343a8 8 0 1111.314 0L20 12l-2.343-2.343A8 8 0 006.343 9.657z"
-                      />
-                    </svg>
-                    <span>読み上げ中...</span>
-                  </div>
-                )}
               </div>
               <p className="text-gray-700 leading-relaxed mb-4">
                 {currentInstruction.description}
@@ -192,7 +151,6 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
             <p className="text-sm text-blue-700">
               💡 音声操作:
               「次」または「前」と話すとステップを切り替えられます。
-              ステップが切り替わると、自動的に手順を読み上げます。
             </p>
           </div>
         </div>
