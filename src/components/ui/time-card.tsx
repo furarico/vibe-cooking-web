@@ -23,10 +23,15 @@ const TimeCard = React.forwardRef<HTMLDivElement, TimeCardProps>(
   ) => {
     return (
       <Card
-        className={cn("'w-full items-stretch flex gap-4 rounded-md border border-slate-200 bg-white p-4 shadow-md transition-all hover:shadow-lg cursor-pointer max-w-[240px] flex-col'")}
+        className={cn("w-full items-center flex gap-0 rounded-md border border-slate-200 bg-white px-4 py-2 shadow-md transition-all hover:shadow-lg cursor-pointer flex-col")}
         ref={ref}
         {...props}
       >
+         {/* タイトルを表示 */}
+        {title && <p className="text-m font-Medium text-slate-500">{title}</p>}
+        {/* タイトルを表示 */}
+        {label && <p className="text-lg font-semibold text-slate-900">{label}</p>}
+
       </Card>
     );
   }
