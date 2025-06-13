@@ -51,11 +51,17 @@ export interface ErrorState {
 export interface VoiceCookingServiceDependencies {
   speechRecognitionRepository: import('@/client/repositories/speech-recognition-repository').SpeechRecognitionRepository;
   recipeService: import('@/client/services/recipe/recipe-service').RecipeService;
+  audioPlayerService: import('@/client/services/audio-player-service').AudioPlayerService;
 }
 
 export class VoiceCookingServiceImpl implements VoiceCookingService {
   private speechRecognitionRepository: import('@/client/repositories/speech-recognition-repository').SpeechRecognitionRepository;
   private recipeService: import('@/client/services/recipe/recipe-service').RecipeService;
+  private audioPlayerService: import('@/client/services/audio-player-service').AudioPlayerService;
+
+  // テスト用の固定音声URL
+  private readonly TEST_AUDIO_URL =
+    'https://r2.dev.vibe-cooking.furari.co/instructions/cmbupoqed0000vs5x1xxjgb1w/5omL6aCG-1749813349586.mp3';
 
   // 音声認識状態
   private isRecording = false;
@@ -79,6 +85,7 @@ export class VoiceCookingServiceImpl implements VoiceCookingService {
   constructor(dependencies: VoiceCookingServiceDependencies) {
     this.speechRecognitionRepository = dependencies.speechRecognitionRepository;
     this.recipeService = dependencies.recipeService;
+    this.audioPlayerService = dependencies.audioPlayerService;
   }
 
   // イベントリスナー管理
@@ -276,6 +283,8 @@ export class VoiceCookingServiceImpl implements VoiceCookingService {
         this.selectedRecipe = recipeDetail;
         this.currentStepIndex = 0;
         this.showRecipeSteps = true;
+        // 最初のステップの音声を再生（テスト用固定URL）
+        this.playTestAudio();
       } else {
         this.recipeError = 'レシピが見つかりませんでした';
       }
@@ -323,6 +332,7 @@ export class VoiceCookingServiceImpl implements VoiceCookingService {
         this.currentStepIndex + 1
       );
       this.currentStepIndex++;
+      this.playTestAudio();
       this.notifyListeners();
     } else {
       console.log('⚠️ 最後のステップなので移動しません');
@@ -339,6 +349,7 @@ export class VoiceCookingServiceImpl implements VoiceCookingService {
         this.currentStepIndex - 1
       );
       this.currentStepIndex--;
+      this.playTestAudio();
       this.notifyListeners();
     } else {
       console.log('⚠️ 最初のステップなので移動しません');
@@ -346,6 +357,7 @@ export class VoiceCookingServiceImpl implements VoiceCookingService {
   }
 
   backToRecipeList(): void {
+    this.audioPlayerService.stopAudio();
     this.showRecipeSteps = false;
     this.selectedRecipe = null;
     this.isRecipeLoading = false;
@@ -368,5 +380,15 @@ export class VoiceCookingServiceImpl implements VoiceCookingService {
     return {
       recipeError: this.recipeError,
     };
+  }
+
+  // 音声再生関連のプライベートメソッド
+  private async playTestAudio(): Promise<void> {
+    try {
+      await this.audioPlayerService.playAudio(this.TEST_AUDIO_URL);
+      console.log('🎵 テスト音声を再生開始:', this.TEST_AUDIO_URL);
+    } catch (error) {
+      console.error('テスト音声の再生に失敗しました:', error);
+    }
   }
 }
