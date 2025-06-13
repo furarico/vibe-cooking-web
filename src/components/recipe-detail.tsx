@@ -1,4 +1,5 @@
 import { components } from '@/types/api';
+import Image from 'next/image';
 import React from 'react';
 
 type Recipe = components['schemas']['Recipe'];
@@ -118,9 +119,11 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
                 </div>
               )}
               {currentInstruction.imageUrl && (
-                <img
+                <Image
                   src={currentInstruction.imageUrl}
-                  alt={currentInstruction.title}
+                  alt={currentInstruction.title || 'ステップ画像'}
+                  width={800}
+                  height={256}
                   className="w-full h-64 object-cover rounded-lg mt-4"
                 />
               )}
