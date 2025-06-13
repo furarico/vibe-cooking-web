@@ -54,7 +54,10 @@ export const useRecipeNavigation = () => {
     setCurrentStepIndex(prev => {
       console.log('📊 nextStep - 現在のインデックス:', prev);
       console.log('📊 selectedRecipe:', selectedRecipe);
-      console.log('📊 instructions length:', selectedRecipe?.instructions?.length);
+      console.log(
+        '📊 instructions length:',
+        selectedRecipe?.instructions?.length
+      );
       if (
         selectedRecipe &&
         selectedRecipe.instructions &&
