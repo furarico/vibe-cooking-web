@@ -69,5 +69,3 @@ model Category {
 
   @@map("categories")
 }
-
-
