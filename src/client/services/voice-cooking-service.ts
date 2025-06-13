@@ -385,7 +385,8 @@ export class VoiceCookingServiceImpl implements VoiceCookingService {
   // 音声再生関連のプライベートメソッド
   private async playTestAudio(): Promise<void> {
     try {
-      await this.audioPlayerService.playAudio(this.TEST_AUDIO_URL);
+      // ステップ切り替え時は強制的に再生し直す
+      await this.audioPlayerService.playAudio(this.TEST_AUDIO_URL, true);
       console.log('🎵 テスト音声を再生開始:', this.TEST_AUDIO_URL);
     } catch (error) {
       console.error('テスト音声の再生に失敗しました:', error);

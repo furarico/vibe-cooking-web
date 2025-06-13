@@ -1,5 +1,5 @@
 export interface AudioPlayerService {
-  playAudio(audioUrl: string): Promise<void>;
+  playAudio(audioUrl: string, forceRestart?: boolean): Promise<void>;
   stopAudio(): void;
   pauseAudio(): void;
   resumeAudio(): void;
@@ -16,9 +16,13 @@ export class AudioPlayerServiceImpl implements AudioPlayerService {
   private isCurrentlyPlaying = false;
   private listeners: Set<() => void> = new Set();
 
-  async playAudio(audioUrl: string): Promise<void> {
-    // 既に同じ音声が再生中の場合は何もしない
-    if (this.currentAudioUrl === audioUrl && this.isCurrentlyPlaying) {
+  async playAudio(audioUrl: string, forceRestart = false): Promise<void> {
+    // 強制再開フラグがfalseで、既に同じ音声が再生中の場合は何もしない
+    if (
+      !forceRestart &&
+      this.currentAudioUrl === audioUrl &&
+      this.isCurrentlyPlaying
+    ) {
       return;
     }
 
