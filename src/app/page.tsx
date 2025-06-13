@@ -3,7 +3,7 @@
 import { useRecipePresenter } from '@/client/presenters/hooks/use-recipe-presenter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { RecipeCard } from '@/components/ui/recipe-hover-card';
+import { RecipeCard } from '@/components/ui/recipe-card';
 import { SearchIcon } from 'lucide-react';
 import Link from 'next/link';
 

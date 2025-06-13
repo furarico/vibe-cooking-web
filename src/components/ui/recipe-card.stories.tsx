@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import { RecipeCard } from './recipe-hover-card';
+import { RecipeCard } from './recipe-card';
 
 const meta: Meta<typeof RecipeCard> = {
   title: 'UI/RecipeCard',
