@@ -22,8 +22,6 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
   onNextStep,
   onPrevStep,
 }) => {
-
-
   if (loading) {
     return (
       <div className="bg-white rounded-lg shadow-md p-6">
