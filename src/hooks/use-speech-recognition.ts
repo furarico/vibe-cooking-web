@@ -1,18 +1,91 @@
-import { useState, useRef, useCallback } from 'react';
+import { useCallback, useRef, useState } from 'react';
+
+interface SpeechRecognitionConstructor {
+  new (): SpeechRecognition;
+}
+
+interface SpeechRecognition extends EventTarget {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  maxAlternatives: number;
+  start(): void;
+  stop(): void;
+  abort(): void;
+  onstart: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onresult:
+    | ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => void)
+    | null;
+  onerror:
+    | ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => void)
+    | null;
+  onend: ((this: SpeechRecognition, ev: Event) => void) | null;
+}
+
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  length: number;
+  isFinal: boolean;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
 
 declare global {
   interface Window {
-    SpeechRecognition: any;
-    webkitSpeechRecognition: any;
+    SpeechRecognition: SpeechRecognitionConstructor;
+    webkitSpeechRecognition: SpeechRecognitionConstructor;
   }
 }
 
-type RecognitionStatus = 'idle' | 'listening' | 'processing' | 'success' | 'error';
+type RecognitionStatus =
+  | 'idle'
+  | 'listening'
+  | 'processing'
+  | 'success'
+  | 'error';
 
 // トリガーワード検知機能
 const detectTriggerWords = (text: string) => {
-  const nextKeywords = ['次', 'つぎ', 'ツギ', '次の', 'つぎの', 'ネクスト', 'next', '進んで'];
-  const prevKeywords = ['前', 'まえ', 'マエ', '前の', 'まえの', 'バック', 'back', '戻る', 'もどる', 'もどって', '戻って'];
+  const nextKeywords = [
+    '次',
+    'つぎ',
+    'ツギ',
+    '次の',
+    'つぎの',
+    'ネクスト',
+    'next',
+    '進んで',
+  ];
+  const prevKeywords = [
+    '前',
+    'まえ',
+    'マエ',
+    '前の',
+    'まえの',
+    'バック',
+    'back',
+    '戻る',
+    'もどる',
+    'もどって',
+    '戻って',
+  ];
 
   const normalizedText = text.toLowerCase();
 
@@ -33,7 +106,9 @@ interface UseSpeechRecognitionOptions {
   showRecipeSteps?: boolean;
 }
 
-export const useSpeechRecognition = (options: UseSpeechRecognitionOptions = {}) => {
+export const useSpeechRecognition = (
+  options: UseSpeechRecognitionOptions = {}
+) => {
   const { onNextTrigger, onPrevTrigger, showRecipeSteps = false } = options;
 
   // 音声認識の状態
@@ -50,14 +125,18 @@ export const useSpeechRecognition = (options: UseSpeechRecognitionOptions = {}) 
   // refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const restartTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const startRecording = useCallback(async () => {
     try {
       // Web Speech APIを直接使用する場合
-      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (
+        'webkitSpeechRecognition' in window ||
+        'SpeechRecognition' in window
+      ) {
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
 
         recognition.lang = 'ja-JP';
@@ -71,7 +150,7 @@ export const useSpeechRecognition = (options: UseSpeechRecognitionOptions = {}) 
           setStatusMessage('音声を聞いています...');
         };
 
-        recognition.onresult = (event: { resultIndex: any; results: string | any[]; }) => {
+        recognition.onresult = (event: SpeechRecognitionEvent) => {
           let finalText = '';
           let interimText = '';
 
@@ -97,7 +176,10 @@ export const useSpeechRecognition = (options: UseSpeechRecognitionOptions = {}) 
             if (hasNext) {
               triggerMessage = '「次」を感知しました';
               console.log('➡️ 次のステップに移動します');
-              setTriggerHistory(prev => [...prev, `${new Date().toLocaleTimeString()}: 次トリガー検知 - "${finalText}"`]);
+              setTriggerHistory(prev => [
+                ...prev,
+                `${new Date().toLocaleTimeString()}: 次トリガー検知 - "${finalText}"`,
+              ]);
               // レシピステップ表示中の場合は次のステップへ
               if (showRecipeSteps && onNextTrigger) {
                 console.log('📍 nextStep()を実行します');
@@ -107,7 +189,10 @@ export const useSpeechRecognition = (options: UseSpeechRecognitionOptions = {}) 
             if (hasPrev) {
               triggerMessage = '「前」を感知しました';
               console.log('⬅️ 前のステップに移動します');
-              setTriggerHistory(prev => [...prev, `${new Date().toLocaleTimeString()}: 前トリガー検知 - "${finalText}"`]);
+              setTriggerHistory(prev => [
+                ...prev,
+                `${new Date().toLocaleTimeString()}: 前トリガー検知 - "${finalText}"`,
+              ]);
               // レシピステップ表示中の場合は前のステップへ
               if (showRecipeSteps && onPrevTrigger) {
                 console.log('📍 prevStep()を実行します');
@@ -146,7 +231,7 @@ export const useSpeechRecognition = (options: UseSpeechRecognitionOptions = {}) 
           }
         };
 
-        recognition.onerror = (event: { error: string; }) => {
+        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
           console.error('Speech recognition error:', event.error);
 
           // no-speechエラーの場合は自動的に再開を試行
@@ -213,7 +298,7 @@ export const useSpeechRecognition = (options: UseSpeechRecognitionOptions = {}) 
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
 
-      mediaRecorder.ondataavailable = (event) => {
+      mediaRecorder.ondataavailable = event => {
         if (event.data.size > 0) {
           chunksRef.current.push(event.data);
         }
@@ -231,7 +316,15 @@ export const useSpeechRecognition = (options: UseSpeechRecognitionOptions = {}) 
       console.error('Error accessing microphone:', error);
       alert('マイクへのアクセスが許可されていません。');
     }
-  }, [shouldRestart, isRecording, status, isTranscriptCompleted, showRecipeSteps, onNextTrigger, onPrevTrigger]);
+  }, [
+    shouldRestart,
+    isRecording,
+    status,
+    isTranscriptCompleted,
+    showRecipeSteps,
+    onNextTrigger,
+    onPrevTrigger,
+  ]);
 
   const stopRecording = useCallback(() => {
     setShouldRestart(false);
@@ -260,8 +353,12 @@ export const useSpeechRecognition = (options: UseSpeechRecognitionOptions = {}) 
   const transcribeAudio = useCallback(async (audioBlob: Blob) => {
     try {
       // Web Speech APIを使用した音声認識
-      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (
+        'webkitSpeechRecognition' in window ||
+        'SpeechRecognition' in window
+      ) {
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
 
         recognition.lang = 'ja-JP';
@@ -269,14 +366,14 @@ export const useSpeechRecognition = (options: UseSpeechRecognitionOptions = {}) 
         recognition.interimResults = false;
 
         return new Promise((resolve, reject) => {
-          recognition.onresult = (event: { results: { transcript: any; }[][]; }) => {
+          recognition.onresult = (event: SpeechRecognitionEvent) => {
             const transcript = event.results[0][0].transcript;
             setTranscript(transcript);
             setIsProcessing(false);
             resolve(transcript);
           };
 
-          recognition.onerror = (event: { error: string; }) => {
+          recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
             console.error('Speech recognition error:', event.error);
             setIsProcessing(false);
             reject(new Error('音声認識エラー: ' + event.error));

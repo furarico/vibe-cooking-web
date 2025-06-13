@@ -1,6 +1,6 @@
-import { useState, useCallback } from 'react';
-import { components } from '@/types/api';
 import { useDI } from '@/client/di/providers';
+import { components } from '@/types/api';
+import { useCallback, useState } from 'react';
 
 type Recipe = components['schemas']['Recipe'];
 
@@ -10,43 +10,54 @@ export const useRecipeNavigation = () => {
   // レシピ関連の状態
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [selectedRecipeLoading, setSelectedRecipeLoading] = useState(false);
-  const [selectedRecipeError, setSelectedRecipeError] = useState<string | null>(null);
+  const [selectedRecipeError, setSelectedRecipeError] = useState<string | null>(
+    null
+  );
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [showRecipeSteps, setShowRecipeSteps] = useState(false);
 
   // レシピの選択（IDで詳細取得）
-  const handleSelectRecipe = useCallback(async (recipeId: string) => {
-    console.log('🔍 レシピ詳細を取得開始:', recipeId);
-    setSelectedRecipeLoading(true);
-    setSelectedRecipeError(null);
+  const handleSelectRecipe = useCallback(
+    async (recipeId: string) => {
+      console.log('🔍 レシピ詳細を取得開始:', recipeId);
+      setSelectedRecipeLoading(true);
+      setSelectedRecipeError(null);
 
-    try {
-      const recipeDetail = await recipeService.getRecipeById(recipeId);
-      console.log('✅ レシピ詳細取得成功:', recipeDetail);
+      try {
+        const recipeDetail = await recipeService.getRecipeById(recipeId);
+        console.log('✅ レシピ詳細取得成功:', recipeDetail);
 
-      if (recipeDetail) {
-        setSelectedRecipe(recipeDetail);
-        setCurrentStepIndex(0);
-        setShowRecipeSteps(true);
-      } else {
-        setSelectedRecipeError('レシピが見つかりませんでした');
+        if (recipeDetail) {
+          setSelectedRecipe(recipeDetail);
+          setCurrentStepIndex(0);
+          setShowRecipeSteps(true);
+        } else {
+          setSelectedRecipeError('レシピが見つかりませんでした');
+        }
+      } catch (error) {
+        console.error('❌ レシピ詳細取得エラー:', error);
+        setSelectedRecipeError(
+          error instanceof Error
+            ? error.message
+            : 'レシピ詳細の取得に失敗しました'
+        );
+      } finally {
+        setSelectedRecipeLoading(false);
       }
-    } catch (error) {
-      console.error('❌ レシピ詳細取得エラー:', error);
-      setSelectedRecipeError(
-        error instanceof Error ? error.message : 'レシピ詳細の取得に失敗しました'
-      );
-    } finally {
-      setSelectedRecipeLoading(false);
-    }
-  }, [recipeService]);
+    },
+    [recipeService]
+  );
 
   // 次のステップへ
   const nextStep = useCallback(() => {
     console.log('🔄 nextStep関数が呼ばれました');
     setCurrentStepIndex(prev => {
       console.log('📊 nextStep - 現在のインデックス:', prev);
-      if (selectedRecipe && selectedRecipe.instructions && prev < selectedRecipe.instructions.length - 1) {
+      if (
+        selectedRecipe &&
+        selectedRecipe.instructions &&
+        prev < selectedRecipe.instructions.length - 1
+      ) {
         console.log('✅ 次のステップに移動:', prev, '->', prev + 1);
         const newIndex = prev + 1;
         return newIndex;
@@ -55,7 +66,7 @@ export const useRecipeNavigation = () => {
         return prev;
       }
     });
-  }, [selectedRecipe]);
+  }, []);
 
   // 前のステップへ
   const prevStep = useCallback(() => {
@@ -71,7 +82,7 @@ export const useRecipeNavigation = () => {
         return prev;
       }
     });
-  }, [selectedRecipe]);
+  }, []);
 
   // レシピ一覧に戻る
   const backToRecipeList = useCallback(() => {
@@ -84,7 +95,10 @@ export const useRecipeNavigation = () => {
 
   // 現在のステップを取得
   const getCurrentStep = useCallback(() => {
-    if (!selectedRecipe?.instructions || currentStepIndex >= selectedRecipe.instructions.length) {
+    if (
+      !selectedRecipe?.instructions ||
+      currentStepIndex >= selectedRecipe.instructions.length
+    ) {
       return null;
     }
     return selectedRecipe.instructions[currentStepIndex];

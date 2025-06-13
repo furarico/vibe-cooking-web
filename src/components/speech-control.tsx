@@ -11,21 +11,31 @@ interface SpeechControlProps {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'listening': return 'text-blue-600';
-    case 'processing': return 'text-yellow-600';
-    case 'success': return 'text-green-600';
-    case 'error': return 'text-red-600';
-    default: return 'text-gray-500';
+    case 'listening':
+      return 'text-blue-600';
+    case 'processing':
+      return 'text-yellow-600';
+    case 'success':
+      return 'text-green-600';
+    case 'error':
+      return 'text-red-600';
+    default:
+      return 'text-gray-500';
   }
 };
 
 const getStatusIcon = (status: string) => {
   switch (status) {
-    case 'listening': return '🎤';
-    case 'processing': return '⏳';
-    case 'success': return '✅';
-    case 'error': return '❌';
-    default: return '💬';
+    case 'listening':
+      return '🎤';
+    case 'processing':
+      return '⏳';
+    case 'success':
+      return '✅';
+    case 'error':
+      return '❌';
+    default:
+      return '💬';
   }
 };
 
@@ -68,7 +78,9 @@ export const SpeechControl: React.FC<SpeechControlProps> = ({
 
         {status !== 'idle' && (
           <div className="flex items-center space-x-4">
-            <div className={`flex items-center space-x-2 font-medium ${getStatusColor(status)}`}>
+            <div
+              className={`flex items-center space-x-2 font-medium ${getStatusColor(status)}`}
+            >
               <span className="text-lg">{getStatusIcon(status)}</span>
               <span>{statusMessage}</span>
               {status === 'listening' && (

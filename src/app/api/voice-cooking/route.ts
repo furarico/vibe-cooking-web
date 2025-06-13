@@ -15,8 +15,8 @@ export async function POST(request: NextRequest) {
     // Web Speech API の代替として、ここでは簡単な実装を提供
     // 実際のプロダクションでは、OpenAI Whisper API や Google Speech-to-Text API などを使用
 
-    // 音声ファイルをArrayBufferに変換
-    const arrayBuffer = await audioFile.arrayBuffer();
+    // 音声ファイルをArrayBufferに変換（将来の実装で使用予定）
+    // const arrayBuffer = await audioFile.arrayBuffer();
 
     // この例では、Web Speech API が利用できない場合のフォールバックとして
     // 簡単なダミーレスポンスを返します
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     if (typeof window !== 'undefined' && 'webkitSpeechRecognition' in window) {
       // ブラウザ側でWeb Speech APIを使用する場合の処理
       return NextResponse.json({
-        transcript: 'ブラウザのWeb Speech APIを使用してください'
+        transcript: 'ブラウザのWeb Speech APIを使用してください',
       });
     }
 
@@ -49,9 +49,9 @@ export async function POST(request: NextRequest) {
 
     // デモ用のレスポンス
     return NextResponse.json({
-      transcript: '音声の文字起こし機能はまだ実装されていません。実際の音声認識APIを統合してください。'
+      transcript:
+        '音声の文字起こし機能はまだ実装されていません。実際の音声認識APIを統合してください。',
     });
-
   } catch (error) {
     console.error('Speech-to-text error:', error);
     return NextResponse.json(

@@ -1,13 +1,12 @@
 'use client';
 
-import React from 'react';
 import { useRecipePresenter } from '@/client/presenters/hooks/use-recipe-presenter';
-import { useSpeechRecognition } from '@/hooks/use-speech-recognition';
-import { useRecipeNavigation } from '@/hooks/use-recipe-navigation';
+import { RecipeDetail } from '@/components/recipe-detail';
+import { RecipeList } from '@/components/recipe-list';
 import { SpeechControl } from '@/components/speech-control';
 import { SpeechTranscript } from '@/components/speech-transcript';
-import { RecipeList } from '@/components/recipe-list';
-import { RecipeDetail } from '@/components/recipe-detail';
+import { useRecipeNavigation } from '@/hooks/use-recipe-navigation';
+import { useSpeechRecognition } from '@/hooks/use-speech-recognition';
 
 export default function VoiceCooking() {
   // レシピ一覧のデータ

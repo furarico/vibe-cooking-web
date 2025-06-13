@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { components } from '@/types/api';
 import { useTTS } from '@/hooks/use-tts';
+import { components } from '@/types/api';
+import React, { useEffect } from 'react';
 
 type Recipe = components['schemas']['Recipe'];
 
@@ -24,7 +24,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
   onPrevStep,
 }) => {
   const tts = useTTS({
-    onError: (error) => {
+    onError: error => {
       if (error !== 'canceled' && error !== 'interrupted') {
         console.error('音声合成エラー:', error);
       }
@@ -36,7 +36,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
       tts.stop();
       tts.speak(recipe.instructions[currentStepIndex].description);
     }
-  }, [currentStepIndex, recipe?.instructions]);
+  }, [currentStepIndex, recipe?.instructions, tts]);
 
   if (loading) {
     return (
@@ -99,7 +99,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
               <div
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                 style={{
-                  width: `${((currentStepIndex + 1) / recipe.instructions.length) * 100}%`
+                  width: `${((currentStepIndex + 1) / recipe.instructions.length) * 100}%`,
                 }}
               ></div>
             </div>
@@ -135,8 +135,18 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
               </p>
               {currentInstruction.estimatedTime && (
                 <div className="flex items-center text-sm text-gray-600">
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   推定時間: {currentInstruction.estimatedTime}分
                 </div>
@@ -171,7 +181,8 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
           {/* 音声操作のヒント */}
           <div className="mt-6 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
             <p className="text-sm text-blue-700">
-              💡 音声操作: 「次」または「前」と話すとステップを切り替えられます。
+              💡 音声操作:
+              「次」または「前」と話すとステップを切り替えられます。
               ステップが切り替わると、自動的に手順を読み上げます。
             </p>
           </div>

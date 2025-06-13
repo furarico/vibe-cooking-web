@@ -27,7 +27,9 @@ export const SpeechTranscript: React.FC<SpeechTranscriptProps> = ({
       {(transcript || interimTranscript) && (
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">音声認識結果</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              音声認識結果
+            </h2>
             <button
               onClick={onClearTranscript}
               className="px-4 py-2 text-sm bg-gray-500 hover:bg-gray-600 text-white rounded"
@@ -35,13 +37,19 @@ export const SpeechTranscript: React.FC<SpeechTranscriptProps> = ({
               クリア
             </button>
           </div>
-          <div className={`rounded p-4 border-2 ${
-            status === 'error' ? 'bg-red-50 border-red-200' :
-            status === 'success' ? 'bg-green-50 border-green-200' :
-            status === 'processing' ? 'bg-yellow-50 border-yellow-200' :
-            status === 'listening' ? 'bg-blue-50 border-blue-200' :
-            'bg-gray-50 border-gray-200'
-          }`}>
+          <div
+            className={`rounded p-4 border-2 ${
+              status === 'error'
+                ? 'bg-red-50 border-red-200'
+                : status === 'success'
+                  ? 'bg-green-50 border-green-200'
+                  : status === 'processing'
+                    ? 'bg-yellow-50 border-yellow-200'
+                    : status === 'listening'
+                      ? 'bg-blue-50 border-blue-200'
+                      : 'bg-gray-50 border-gray-200'
+            }`}
+          >
             <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
               {transcript}
               {interimTranscript && (
@@ -69,14 +77,17 @@ export const SpeechTranscript: React.FC<SpeechTranscriptProps> = ({
             </button>
           </div>
           <div className="space-y-2 max-h-60 overflow-y-auto">
-            {triggerHistory.slice(-10).reverse().map((item, index) => (
-              <div
-                key={index}
-                className="p-3 bg-gray-50 rounded border-l-4 border-blue-400"
-              >
-                <p className="text-sm text-gray-700 font-mono">{item}</p>
-              </div>
-            ))}
+            {triggerHistory
+              .slice(-10)
+              .reverse()
+              .map((item, index) => (
+                <div
+                  key={index}
+                  className="p-3 bg-gray-50 rounded border-l-4 border-blue-400"
+                >
+                  <p className="text-sm text-gray-700 font-mono">{item}</p>
+                </div>
+              ))}
           </div>
         </div>
       )}

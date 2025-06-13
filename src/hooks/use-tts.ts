@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface TTSOptions {
   rate?: number;
@@ -18,11 +18,12 @@ export const useTTS = (options: TTSOptions = {}) => {
     onStart,
     onEnd,
     onError,
-    debug = false
+    debug = false,
   } = options;
 
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
+  const [selectedVoice, setSelectedVoice] =
+    useState<SpeechSynthesisVoice | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const watchdogTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -38,7 +39,9 @@ export const useTTS = (options: TTSOptions = {}) => {
       const availableVoices = speechSynthesis.getVoices();
       setVoices(availableVoices);
 
-      const japaneseVoice = availableVoices.find(voice => voice.lang.startsWith('ja'));
+      const japaneseVoice = availableVoices.find(voice =>
+        voice.lang.startsWith('ja')
+      );
       if (japaneseVoice) {
         setSelectedVoice(japaneseVoice);
       } else if (availableVoices.length > 0) {
@@ -60,7 +63,10 @@ export const useTTS = (options: TTSOptions = {}) => {
     }
   };
 
-  const splitTextIntoChunks = (text: string, maxLength: number = 300): string[] => {
+  const splitTextIntoChunks = (
+    text: string,
+    maxLength: number = 300
+  ): string[] => {
     const chunks: string[] = [];
     let currentChunk = '';
 
@@ -98,7 +104,9 @@ export const useTTS = (options: TTSOptions = {}) => {
       return;
     }
 
-    debugLog(`チャンク${index + 1}/${chunks.length}開始 (${chunks[index].length}文字)`);
+    debugLog(
+      `チャンク${index + 1}/${chunks.length}開始 (${chunks[index].length}文字)`
+    );
     const utterance = new SpeechSynthesisUtterance(chunks[index]);
 
     if (selectedVoice) {
@@ -140,7 +148,7 @@ export const useTTS = (options: TTSOptions = {}) => {
       }
     };
 
-    utterance.onerror = (event) => {
+    utterance.onerror = event => {
       clearWatchdog();
 
       // エラー情報を即座にオブジェクトとして作成
@@ -155,13 +163,15 @@ export const useTTS = (options: TTSOptions = {}) => {
         voice: selectedVoice?.name,
         rate,
         pitch,
-        volume
+        volume,
       };
 
       debugLog(`エラー発生: ${event.error} (${errorDetails.elapsedTime}ms)`);
 
       // エラーが "canceled" または "interrupted" の場合は正常な中断として扱う
-      const isNormalInterruption = ['canceled', 'interrupted'].includes(event.error);
+      const isNormalInterruption = ['canceled', 'interrupted'].includes(
+        event.error
+      );
 
       if (!isNormalInterruption) {
         console.error('音声合成エラー詳細:', errorDetails);
@@ -178,7 +188,9 @@ export const useTTS = (options: TTSOptions = {}) => {
     speechSynthesis.speak(utterance);
 
     watchdogTimerRef.current = setTimeout(() => {
-      debugLog('ウォッチドッグ: onstartが発火しませんでした。エンジンを再起動します。');
+      debugLog(
+        'ウォッチドッグ: onstartが発火しませんでした。エンジンを再起動します。'
+      );
       speechSynthesis.pause();
       speechSynthesis.resume();
     }, 1500);
