@@ -108,7 +108,9 @@ export class VoiceCookingServiceImpl implements VoiceCookingService {
         onEnd: this.handleSpeechEnd.bind(this),
       });
     } catch (error) {
-      this.handleSpeechError(error instanceof Error ? error : new Error(String(error)));
+      this.handleSpeechError(
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }
 
