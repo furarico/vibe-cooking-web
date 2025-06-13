@@ -1,4 +1,5 @@
 import { components } from '@/types/api';
+import Image from 'next/image';
 import React from 'react';
 
 type Recipe = components['schemas']['Recipe'];
@@ -45,9 +46,11 @@ export const RecipeList: React.FC<RecipeListProps> = ({
               onClick={() => recipe.id && onSelectRecipe(recipe.id)}
             >
               {recipe.imageUrl && (
-                <img
+                <Image
                   src={recipe.imageUrl}
-                  alt={recipe.title}
+                  alt={recipe.title || 'レシピ画像'}
+                  width={400}
+                  height={192}
                   className="w-full h-48 object-cover"
                 />
               )}
