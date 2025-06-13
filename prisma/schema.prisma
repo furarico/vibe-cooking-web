@@ -52,6 +52,7 @@ model Instruction {
   title         String  @default("") // 手順のタイトル（例：パスタを茹でる、野菜を炒める）
   description   String  @default("") // 手順の説明
   imageUrl      String? // 手順の画像URL
+  audioUrl      String // 手順の音声URL（必須）
   estimatedTime Int? // この手順の推定時間（分）
 
   // リレーション
@@ -68,3 +69,5 @@ model Category {
 
   @@map("categories")
 }
+
+
