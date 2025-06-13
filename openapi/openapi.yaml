@@ -176,6 +176,10 @@ components:
           type: string
           format: uri
           description: 手順の画像URL
+        audioUrl:
+          type: string
+          format: uri
+          description: 手順の音声URL
         estimatedTime:
           type: integer
           description: この手順の推定時間（分）
