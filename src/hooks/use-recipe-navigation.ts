@@ -53,6 +53,8 @@ export const useRecipeNavigation = () => {
     console.log('🔄 nextStep関数が呼ばれました');
     setCurrentStepIndex(prev => {
       console.log('📊 nextStep - 現在のインデックス:', prev);
+      console.log('📊 selectedRecipe:', selectedRecipe);
+      console.log('📊 instructions length:', selectedRecipe?.instructions?.length);
       if (
         selectedRecipe &&
         selectedRecipe.instructions &&
@@ -66,7 +68,7 @@ export const useRecipeNavigation = () => {
         return prev;
       }
     });
-  }, []);
+  }, [selectedRecipe]);
 
   // 前のステップへ
   const prevStep = useCallback(() => {

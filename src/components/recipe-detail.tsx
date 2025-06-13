@@ -34,9 +34,18 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
   useEffect(() => {
     if (recipe?.instructions?.[currentStepIndex]?.description) {
       tts.stop();
-      tts.speak(recipe.instructions[currentStepIndex].description);
+      // 少し遅延を入れて前の音声が完全に停止してから新しい音声を開始
+      const timer = setTimeout(() => {
+        if (recipe?.instructions?.[currentStepIndex]?.description) {
+          tts.speak(recipe.instructions[currentStepIndex].description);
+        }
+      }, 100);
+
+      return () => {
+        clearTimeout(timer);
+      };
     }
-  }, [currentStepIndex, recipe?.instructions, tts]);
+  }, [currentStepIndex, recipe?.instructions]);
 
   if (loading) {
     return (
