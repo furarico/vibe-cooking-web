@@ -2,12 +2,12 @@
 
 import React from 'react';
 import { useRecipePresenter } from '@/client/presenters/hooks/use-recipe-presenter';
-import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
-import { useRecipeNavigation } from '@/hooks/useRecipeNavigation';
-import { SpeechControl } from '@/components/SpeechControl';
-import { SpeechTranscript } from '@/components/SpeechTranscript';
-import { RecipeList } from '@/components/RecipeList';
-import { RecipeDetail } from '@/components/RecipeDetail';
+import { useSpeechRecognition } from '@/hooks/use-speech-recognition';
+import { useRecipeNavigation } from '@/hooks/use-recipe-navigation';
+import { SpeechControl } from '@/components/speech-control';
+import { SpeechTranscript } from '@/components/speech-transcript';
+import { RecipeList } from '@/components/recipe-list';
+import { RecipeDetail } from '@/components/recipe-detail';
 
 export default function VoiceCooking() {
   // レシピ一覧のデータ

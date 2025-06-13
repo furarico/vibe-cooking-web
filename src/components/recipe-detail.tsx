@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { components } from '@/types/api';
-import { useTTS } from '@/hooks/useTTS';
+import { useTTS } from '@/hooks/use-tts';
 
 type Recipe = components['schemas']['Recipe'];
 
