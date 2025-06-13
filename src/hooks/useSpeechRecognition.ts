@@ -289,7 +289,7 @@ export const useSpeechRecognition = (options: UseSpeechRecognitionOptions = {}) 
         const formData = new FormData();
         formData.append('audio', audioBlob, 'audio.wav');
 
-        const response = await fetch('/api/speech-to-text', {
+        const response = await fetch('/api/voice-cooking', {
           method: 'POST',
           body: formData,
         });

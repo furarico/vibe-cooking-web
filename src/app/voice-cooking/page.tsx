@@ -9,7 +9,7 @@ import { SpeechTranscript } from '@/components/SpeechTranscript';
 import { RecipeList } from '@/components/RecipeList';
 import { RecipeDetail } from '@/components/RecipeDetail';
 
-export default function SpeechToText() {
+export default function VoiceCooking() {
   // レシピ一覧のデータ
   const { recipes, loading, error, fetchRecipes } = useRecipePresenter();
 
@@ -49,7 +49,7 @@ export default function SpeechToText() {
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-6xl mx-auto px-4">
         <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-          音声認識レシピナビゲーター
+          音声クッキング
         </h1>
 
         {/* 音声認識コントロール */}
