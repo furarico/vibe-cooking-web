@@ -26,8 +26,9 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    title: '調理時間',
-    description: '30分',
+    title: 'アサリの味噌汁',
+    description:
+      'アサリの味噌汁は、シンプルで美味しい和食の一品です。アサリの旨味が味噌と絶妙に絡み、心温まる一杯になります。',
     tags: ['和食', '簡単'],
   },
 };
