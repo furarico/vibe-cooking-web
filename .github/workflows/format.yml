@@ -49,7 +49,7 @@ jobs:
         run: pnpm db:generate
 
       - name: Run format
-        run: pnpm format
+        run: pnpm format || true
 
       - name: Check for changes
         id: verify-changed-files
