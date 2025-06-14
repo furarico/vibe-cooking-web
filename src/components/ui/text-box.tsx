@@ -16,14 +16,16 @@ const TextBox = React.forwardRef<HTMLDivElement, TextBoxProps>(
         {...props}
       >
         {/* タイトルを表示 */}
-        <h2 className="text-xl font-semibold text-slate-900">{title ?? ''}</h2>
+        <p className="text-xl font-semibold text-slate-900">{title ?? ''}</p>
         {/* 説明を表示 */}
-        <p className="text-m font-medium text-slate-900">{description ?? ''}</p>
+        <p className="text-sm font-medium text-slate-900">
+          {description ?? ''}
+        </p>
         {/* タグを表示 */}
-        {tags && tags.length > 0 && (
+        {tags?.length && (
           <div className="flex flex-wrap gap-2 mt-2">
-            {tags.map(tag => (
-              <span key={tag} className="text-sm text-slate-600">
+            {tags.map((tag, index) => (
+              <span key={`${tag}-${index}`} className="text-sm text-slate-600">
                 {tag}
               </span>
             ))}
