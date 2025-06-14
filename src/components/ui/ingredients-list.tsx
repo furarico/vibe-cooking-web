@@ -18,8 +18,9 @@ const IngredientsList: React.FC<IngredientsListProps> = ({
 }) => {
   return (
     <div
-      className={`w-full max-w-[600px] flex flex-col gap-4 p-4 bg-white rounded-md border border-slate-200${className}`}
+      className={`w-full max-w-[600px] flex items-center flex-col gap-4  p-4 bg-white rounded-md border border-slate-200 text-center${className}`}
     >
+      <h2 className="text-xl font-bold text-slate-600">材料</h2>
       {ingredients.map((ingredient, index) => (
         <IngredientItem
           key={index}
