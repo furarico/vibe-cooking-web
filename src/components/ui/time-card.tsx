@@ -13,7 +13,7 @@ const TimeCard = React.forwardRef<HTMLDivElement, TimeCardProps>(
     return (
       <Card
         className={cn(
-          'w-full items-center flex gap-0 rounded-md border border-slate-200 bg-white px-4 py-2 shadow-md transition-all hover:shadow-lg cursor-pointer flex-col',
+          'w-full items-center flex gap-0 rounded-md border border-slate-200 bg-white px-4 py-2 flex-col',
           className
         )}
         ref={ref}
