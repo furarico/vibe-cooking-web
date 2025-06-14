@@ -11,22 +11,19 @@ const TextBox = React.forwardRef<HTMLDivElement, TextBoxProps>(
   ({ className, title, description, tags, ...props }, ref) => {
     return (
       <div
-        className={cn(
-          'w-full items-left flex gap-0  px-4 py-2 flex-col',
-          className
-        )}
+        className={cn('w-full items-start flex px-4 py-2 flex-col', className)}
         ref={ref}
         {...props}
       >
         {/* タイトルを表示 */}
-        <p className="text-xl font-semibold text-slate-900">{title ?? ''}</p>
+        <h2 className="text-xl font-semibold text-slate-900">{title ?? ''}</h2>
         {/* 説明を表示 */}
         <p className="text-m font-medium text-slate-900">{description ?? ''}</p>
         {/* タグを表示 */}
         {tags && tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-2">
-            {tags.map((tag, index) => (
-              <span key={index} className="text-sm text-slate-600">
+            {tags.map(tag => (
+              <span key={tag} className="text-sm text-slate-600">
                 {tag}
               </span>
             ))}
