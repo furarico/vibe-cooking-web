@@ -4,6 +4,7 @@ import { Ingredients } from '@/components/ui/ingredients';
 import { RecipeDetailHeader } from '@/components/ui/recipe-detail-header';
 import { TimeCard } from '@/components/ui/time-card';
 import { DefaultApi, Recipe } from '@/lib/api-client';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 interface PageProps {
@@ -78,9 +79,27 @@ export default function Page({ params }: PageProps) {
       note: ingredient.notes || '',
     })) || [];
 
+  // 画像URLの処理（デフォルト画像を設定）
+  const imageUrl =
+    recipe.imageUrl && recipe.imageUrl.length > 0
+      ? recipe.imageUrl
+      : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png';
+
   return (
     <div className="w-full max-w-[600px] mx-auto min-h-screen">
       <div className="flex flex-col gap-8">
+        {/* レシピ画像 */}
+        <div className="w-full">
+          <Image
+            src={imageUrl}
+            alt={recipe.title || 'レシピ画像'}
+            width={600}
+            height={300}
+            className="w-full h-[300px] object-cover rounded-lg"
+            priority
+          />
+        </div>
+
         <div className="items-center justify-center">
           <RecipeDetailHeader
             title={recipe.title || ''}
