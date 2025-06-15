@@ -3,9 +3,9 @@
 import { useRecipeListPresenter } from '@/client/presenters/hooks/use-recipe-list-presenter';
 import { RecipeCard } from '@/components/ui/recipe-card';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
+import { Suspense, useEffect, useMemo } from 'react';
 
-export default function Page() {
+function RecipeListContent() {
   const searchParams = useSearchParams();
 
   const filters = useMemo(
@@ -66,5 +66,19 @@ export default function Page() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">読み込み中...</div>
+        </div>
+      }
+    >
+      <RecipeListContent />
+    </Suspense>
   );
 }
