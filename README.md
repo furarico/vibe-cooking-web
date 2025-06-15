@@ -80,11 +80,6 @@ pnpm db:migrate:dev
 # Prismaマイグレーション（本番環境）
 pnpm db:migrate:prod
 
-# データベースシード（開発環境）
-pnpm db:seed:dev
-
-# データベースシード（本番環境）
-pnpm db:seed:prod
 
 # Prisma Studio（開発環境）
 pnpm db:studio:dev
@@ -164,8 +159,7 @@ vibe-cooking-web/
 │   └── openapi.yaml           # OpenAPI仕様書
 ├── prisma/                     # データベーススキーマとマイグレーション
 │   ├── schema.prisma
-│   ├── migrations/
-│   └── seed.ts
+│   └── migrations/
 ├── components.json             # shadcn/ui設定
 ├── tailwind.config.ts         # Tailwind CSS設定
 └── public/                     # 静的ファイル

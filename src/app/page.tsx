@@ -10,7 +10,14 @@ import Link from 'next/link';
 export const dynamic = 'force-dynamic';
 
 export default function Home() {
-  const { recipes, loading, error, refreshRecipes } = useRecipePresenter();
+  const {
+    recipes,
+    loading,
+    error,
+    refreshRecipes,
+    searchQuery,
+    setSearchQuery,
+  } = useRecipePresenter();
 
   if (loading) {
     return (
@@ -58,9 +65,13 @@ export default function Home() {
           <Input
             className="placeholder:text-gray-400"
             placeholder="レシピを検索"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
           />
-          <Button>
-            <SearchIcon className="w-4 h-4" />
+          <Button asChild>
+            <Link href={`/recipes?q=${searchQuery}`}>
+              <SearchIcon className="w-4 h-4" />
+            </Link>
           </Button>
         </div>
       </header>
@@ -81,19 +92,18 @@ export default function Home() {
                   href={`/recipes/${recipe.id}`}
                 >
                   <RecipeCard
-                    title={recipe.title}
-                    description={
-                      recipe.description || 'レシピの説明がありません'
-                    }
-                    tags={recipe.tags || []}
+                    title={recipe.title ?? ''}
+                    description={recipe.description ?? ''}
+                    tags={recipe.tags ?? []}
                     cookingTime={
                       (recipe.prepTime ?? 0) + (recipe.cookTime ?? 0)
                     }
                     imageUrl={
-                      recipe.imageUrl ||
-                      'https://picsum.photos/188/98?random=default'
+                      recipe.imageUrl && recipe.imageUrl.length > 0
+                        ? recipe.imageUrl
+                        : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png'
                     }
-                    imageAlt={recipe.title}
+                    imageAlt={recipe.title ?? ''}
                     className="cursor-pointer"
                   />
                 </Link>
