@@ -1,8 +1,5 @@
 import React from 'react';
 
-// テスト用：意図的なリントエラー（未使用変数）
-const unusedTestVariable = 'this will cause lint error ';
-
 interface AudioControlProps {
   isPlaying: boolean;
   onPlay: () => void;
