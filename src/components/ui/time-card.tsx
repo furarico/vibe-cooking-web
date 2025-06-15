@@ -21,7 +21,7 @@ const TimeCard = React.forwardRef<HTMLDivElement, TimeCardProps>(
       >
         {/* タイトルを表示 */}
         <p className="text-m font-Medium text-slate-500">{title ?? ''}</p>
-        {/* タイトルを表示 */}
+        {/* 時間や人前を表示 */}
         <p className="text-lg font-semibold text-slate-900">{label ?? ''}</p>
       </Card>
     );
