@@ -55,7 +55,7 @@ export default function Page({ params }: PageProps) {
 
   // APIから取得したデータを材料コンポーネント用に変換
   const ingredientsData =
-    recipe.ingredients?.map((ingredient, index) => ({
+    recipe.ingredients?.map(ingredient => ({
       name: ingredient.name || '',
       amount: ingredient.amount || '',
       unit: ingredient.unit || '',
