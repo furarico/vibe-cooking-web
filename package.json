@@ -18,6 +18,8 @@
     "db:migrate:prod": "dotenv -e .env.production -- prisma migrate deploy",
     "db:studio:dev": "dotenv -e .env.development -- prisma studio",
     "db:studio:prod": "dotenv -e .env.production -- prisma studio",
+    "db:seed:dev": "dotenv -e .env.development -- prisma db seed",
+    "db:seed:prod": "dotenv -e .env.production -- prisma db seed",
     "db:reset:dev": "dotenv -e .env.development -- prisma migrate reset",
     "db:reset:prod": "dotenv -e .env.production -- prisma migrate reset",
     "deploy:gcr": "gcloud run deploy vibe-cooking-web --source . --region asia-northeast1 --project furarico-vibe-cooking",
@@ -72,6 +74,9 @@
     "tailwindcss": "^4.1.8",
     "tsx": "^4.20.1",
     "typescript": "^5.8.3"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "engines": {
     "node": "22.x",

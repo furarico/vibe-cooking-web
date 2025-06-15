@@ -55,6 +55,8 @@
 - **Prismaクライアント生成**: `pnpm db:generate` (Prismaクライアントコード生成)
 - **Prismaマイグレーション（開発）**: `pnpm db:migrate:dev` (開発環境用マイグレーション作成・適用)
 - **Prismaマイグレーション（本番）**: `pnpm db:migrate:prod` (本番環境用マイグレーション適用)
+- **データベースシード（開発）**: `pnpm db:seed:dev` (開発環境用初期データ投入)
+- **データベースシード（本番）**: `pnpm db:seed:prod` (本番環境用初期データ投入)
 - **Prisma Studio（開発）**: `pnpm db:studio:dev` (開発環境用データベースGUI管理ツール起動)
 - **Prisma Studio（本番）**: `pnpm db:studio:prod` (本番環境用データベースGUI管理ツール起動)
 - **データベースリセット（開発）**: `pnpm db:reset:dev` (開発環境用データベース完全リセット)
@@ -191,7 +193,8 @@ src/server/
 
 prisma/                 # Prismaスキーマとマイグレーション
 ├── schema.prisma
-└── migrations/
+├── migrations/
+└── seed.ts
 ```
 
 ### コアデータモデル

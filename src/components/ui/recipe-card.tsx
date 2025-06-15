@@ -23,12 +23,12 @@ const recipeCardVariants = cva(
 
 interface RecipeCardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'card' | 'row';
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   tags: string[];
   cookingTime: number;
   imageUrl: string;
-  imageAlt: string;
+  imageAlt?: string;
 }
 
 const RecipeCard = React.forwardRef<HTMLDivElement, RecipeCardProps>(
@@ -41,7 +41,7 @@ const RecipeCard = React.forwardRef<HTMLDivElement, RecipeCardProps>(
       tags,
       cookingTime,
       imageUrl,
-      imageAlt,
+      imageAlt = '',
       ...props
     },
     ref
@@ -66,7 +66,7 @@ const RecipeCard = React.forwardRef<HTMLDivElement, RecipeCardProps>(
             alt={imageAlt}
             fill
             sizes="200px"
-            className="object-cover border-2 border-slate-200"
+            className="object-cover"
           />
         </div>
 
