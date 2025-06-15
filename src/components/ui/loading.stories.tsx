@@ -18,7 +18,7 @@ const meta = {
     text: {
       control: 'text',
       description: 'ローディング時に表示するテキスト',
-      defaultValue: '読みこみちゅ！お腹すいたなぁ...',
+      defaultValue: '読み込み中...',
     },
     className: {
       control: 'text',
