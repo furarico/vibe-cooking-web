@@ -85,7 +85,7 @@ jobs:
             *このPRは自動生成されました*
           branch: auto-format/format-${{ github.run_number }}-${{ github.sha }}
           delete-branch: true
-          base: ${{ github.ref_name }}
+          base: ${{ github.base_ref || github.ref_name }}
           author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
           committer: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
           branch-suffix: timestamp
