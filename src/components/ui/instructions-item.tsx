@@ -10,7 +10,7 @@ const InstructionsItem: React.FC<InstructionsItemProps> = ({
   description,
 }) => {
   return (
-    <div className="w-full max-w-[600px] flex items-center gap-4">
+    <div className="flex items-center gap-4">
       <div className="flex-shrink-0">
         <span className="inline-flex items-center justify-center w-8 h-8 bg-slate-600 text-white rounded-full font-bold">
           {step}

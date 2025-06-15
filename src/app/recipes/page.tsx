@@ -30,9 +30,7 @@ function RecipeListContent() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">レシピ一覧</h1>
-
+    <>
       {recipes.length === 0 ? (
         <div className="text-center text-gray-600">
           レシピが見つかりませんでした
@@ -53,19 +51,13 @@ function RecipeListContent() {
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 }
 
 export default function Page() {
   return (
-    <Suspense
-      fallback={
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">読み込み中...</div>
-        </div>
-      }
-    >
+    <Suspense fallback={<Loading />}>
       <RecipeListContent />
     </Suspense>
   );

@@ -1,4 +1,5 @@
 import { DIProvider } from '@/client/di/providers';
+import { Header } from '@/components/header';
 import ServiceWorkerRegistration from '@/components/service-worker-registration';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
@@ -35,7 +36,8 @@ export default function RootLayout({
         <DIProvider>
           <ServiceWorkerRegistration />
           <FirebaseInit />
-          {children}
+          <Header />
+          <main className="w-full px-4 sm:px-6 lg:px-8 py-8">{children}</main>
           <Toaster />
         </DIProvider>
       </body>

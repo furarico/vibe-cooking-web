@@ -20,7 +20,7 @@ const ProgressBar: React.FC<ProgressStepProps> = ({ steps, currentStep }) => {
       : 0;
 
   return (
-    <div className="w-full max-w-[600px] flex items-center gap-4">
+    <div className="flex items-center gap-4">
       <Progress
         value={progressValue}
         className="flex-1 h-2 bg-slate-200 [&>div]:bg-slate-600"
