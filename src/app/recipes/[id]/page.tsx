@@ -55,7 +55,9 @@ export default function Page({ params }: PageProps) {
   const instructionsData =
     recipe.instructions?.map(instruction => ({
       step: instruction.step || 0,
+      title: instruction.title || '',
       description: instruction.description || '',
+      imageUrl: instruction.imageUrl || '',
     })) || [];
 
   // 画像URLの処理（デフォルト画像を設定）

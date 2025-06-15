@@ -1,18 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import { ProgressBar, ProgressStep } from './instruction-progress';
-
-const steps: ProgressStep[] = [
-  { step: 1 },
-  { step: 2 },
-  { step: 3 },
-  { step: 4 },
-  { step: 5 },
-  { step: 6 },
-  { step: 7 },
-  { step: 8 },
-  { step: 9 },
-  { step: 10 },
-];
+import { ProgressBar } from './instruction-progress';
 
 const meta: Meta<typeof ProgressBar> = {
   title: 'UI/ProgressBar',
@@ -33,21 +20,21 @@ type Story = StoryObj<typeof ProgressBar>;
 
 export const Default: Story = {
   args: {
-    steps,
+    totalSteps: 10,
     currentStep: 5,
   },
 };
 
 export const Completed: Story = {
   args: {
-    steps,
+    totalSteps: 10,
     currentStep: 10,
   },
 };
 
 export const Start: Story = {
   args: {
-    steps,
+    totalSteps: 10,
     currentStep: 1,
   },
 };

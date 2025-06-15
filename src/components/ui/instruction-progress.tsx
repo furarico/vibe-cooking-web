@@ -3,24 +3,22 @@
 import { Progress } from '@/components/ui/progress';
 import * as React from 'react';
 
-interface ProgressStep {
-  step: number;
-}
-
 interface ProgressStepProps {
-  steps: ProgressStep[];
+  totalSteps: number;
   currentStep: number;
 }
 
-const ProgressBar: React.FC<ProgressStepProps> = ({ steps, currentStep }) => {
-  const totalSteps = steps.length;
+const ProgressBar: React.FC<ProgressStepProps> = ({
+  totalSteps,
+  currentStep,
+}) => {
   const progressValue =
     totalSteps > 0
       ? Math.min(Math.max((currentStep / totalSteps) * 100, 0), 100)
       : 0;
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="w-full flex flex-row items-center gap-2">
       <Progress
         value={progressValue}
         className="flex-1 h-2 bg-slate-200 [&>div]:bg-slate-600"
@@ -33,4 +31,4 @@ const ProgressBar: React.FC<ProgressStepProps> = ({ steps, currentStep }) => {
 };
 
 export { ProgressBar };
-export type { ProgressStep, ProgressStepProps };
+export type { ProgressStepProps };

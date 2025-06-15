@@ -33,6 +33,7 @@
     "@radix-ui/react-progress": "^1.1.7",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "embla-carousel-react": "^8.6.0",
     "firebase": "^11.9.1",
     "firebase-admin": "^13.4.0",
     "lucide-react": "^0.514.0",
