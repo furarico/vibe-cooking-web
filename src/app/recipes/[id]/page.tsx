@@ -36,7 +36,7 @@ export default function Page({ params }: PageProps) {
 
   if (!recipe) {
     return (
-      <div className="w-full max-w-[600px] mx-auto min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center">
         <p className="text-lg text-gray-600">レシピが見つかりません</p>
       </div>
     );
@@ -65,40 +65,39 @@ export default function Page({ params }: PageProps) {
       : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png';
 
   return (
-    <div className="w-full max-w-[600px] mx-auto min-h-screen mb-20">
-      <div className="flex flex-col gap-8">
-        {/* レシピ画像 */}
-        <div className="w-full">
-          <Image
-            src={imageUrl}
-            alt={recipe.title || 'レシピ画像'}
-            width={600}
-            height={300}
-            className="w-full h-[300px] object-cover rounded-lg"
-            priority
-          />
-        </div>
-
-        <div className="items-center justify-center">
-          <RecipeDetailHeader
-            title={recipe.title || ''}
-            description={recipe.description || ''}
-            tags={recipe.tags || []}
-          />
-        </div>
-        {/* 調理時間カード */}
-        <div className="flex flex-row items-center justify-center gap-2">
-          <TimeCard title="準備時間" label={`${recipe.prepTime || 0}分`} />
-          <TimeCard title="調理時間" label={`${recipe.cookTime || 0}分`} />
-          <TimeCard title="人前" label={`${recipe.servings || 0}人前`} />
-        </div>
-
-        {/* 材料リスト */}
-        <Ingredients ingredients={ingredientsData} />
-
-        {/* 作成手順 */}
-        <Instructions steps={instructionsData} />
+    <div className="mb-16 flex flex-col gap-8">
+      {/* レシピ画像 */}
+      <div className="w-full">
+        <Image
+          src={imageUrl}
+          alt={recipe.title || 'レシピ画像'}
+          width={600}
+          height={300}
+          className="w-full h-[300px] object-cover rounded-lg"
+          priority
+        />
       </div>
+
+      <div className="items-center justify-center">
+        <RecipeDetailHeader
+          title={recipe.title || ''}
+          description={recipe.description || ''}
+          tags={recipe.tags || []}
+        />
+      </div>
+
+      {/* 調理時間カード */}
+      <div className="flex flex-row items-center justify-center gap-2">
+        <TimeCard title="準備時間" label={`${recipe.prepTime || '-'}分`} />
+        <TimeCard title="調理時間" label={`${recipe.cookTime || '-'}分`} />
+        <TimeCard title="人前" label={`${recipe.servings || '-'}人前`} />
+      </div>
+
+      {/* 材料リスト */}
+      <Ingredients ingredients={ingredientsData} />
+
+      {/* 作成手順 */}
+      <Instructions steps={instructionsData} />
     </div>
   );
 }
