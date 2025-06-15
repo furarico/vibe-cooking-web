@@ -14,7 +14,7 @@ interface ProgressStepProps {
 
 const ProgressBar: React.FC<ProgressStepProps> = ({ steps, currentStep }) => {
   const totalSteps = steps.length;
-  const progressValue = totalSteps > 0 ? (currentStep / totalSteps) * 100 : 0;
+  const progressValue = totalSteps > 0 ? Math.min(Math.max((currentStep / totalSteps) * 100, 0), 100) : 0;
 
   return (
     <div className="w-full max-w-[600px] flex items-center gap-4">
