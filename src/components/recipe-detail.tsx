@@ -3,6 +3,7 @@
 import { components } from '@/types/api';
 import Image from 'next/image';
 import React from 'react';
+import Loading from './ui/loading';
 
 type Recipe = components['schemas']['Recipe'];
 
@@ -26,14 +27,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
   onPrevStep,
 }) => {
   if (loading) {
-    return (
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-          <span className="ml-3 text-gray-600">レシピ詳細を読み込み中...</span>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {

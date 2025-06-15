@@ -7,7 +7,7 @@ interface InstructionsProps {
 
 const Instructions: React.FC<InstructionsProps> = ({ steps }) => {
   return (
-    <div className="w-full max-w-[600px]">
+    <div className="w-full">
       <h2 className="text-lg font-bold mb-4">作り方 / 手順</h2>
       <div className="space-y-2">
         {steps.map(stepItem => (
