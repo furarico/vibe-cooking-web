@@ -50,13 +50,13 @@ export interface ErrorState {
 
 export interface VoiceCookingServiceDependencies {
   speechRecognitionRepository: import('@/client/repositories/speech-recognition-repository').SpeechRecognitionRepository;
-  recipeService: import('@/client/services/recipe/recipe-service').RecipeService;
+  recipeService: import('@/client/services/recipe-service').RecipeService;
   audioPlayerService: import('@/client/services/audio-player-service').AudioPlayerService;
 }
 
 export class VoiceCookingServiceImpl implements VoiceCookingService {
   private speechRecognitionRepository: import('@/client/repositories/speech-recognition-repository').SpeechRecognitionRepository;
-  private recipeService: import('@/client/services/recipe/recipe-service').RecipeService;
+  private recipeService: import('@/client/services/recipe-service').RecipeService;
   private audioPlayerService: import('@/client/services/audio-player-service').AudioPlayerService;
 
   // テスト用の固定音声URL

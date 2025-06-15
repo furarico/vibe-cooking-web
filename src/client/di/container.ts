@@ -9,9 +9,9 @@ import {
   AudioPlayerService,
   AudioPlayerServiceImpl,
 } from '@/client/services/audio-player-service';
-import { CategoryService } from '@/client/services/category/category-service';
-import { RecipeListService } from '@/client/services/recipe-list/recipe-list-service';
-import { RecipeService } from '@/client/services/recipe/recipe-service';
+import { CategoryService } from '@/client/services/category-service';
+import { RecipeListService } from '@/client/services/recipe-list-service';
+import { RecipeService } from '@/client/services/recipe-service';
 import {
   VoiceCookingService,
   VoiceCookingServiceImpl,

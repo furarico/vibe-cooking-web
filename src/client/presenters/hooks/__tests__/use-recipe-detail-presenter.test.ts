@@ -1,5 +1,5 @@
 import { useDI } from '@/client/di/providers';
-import { RecipeService } from '@/client/services/recipe/recipe-service';
+import { RecipeService } from '@/client/services/recipe-service';
 import { Recipe } from '@/lib/api-client';
 import { act, renderHook } from '@testing-library/react';
 import { useRecipeDetailPresenter } from '../use-recipe-detail-presenter';
@@ -9,7 +9,7 @@ jest.mock('@/client/di/providers');
 
 // モックされたレシピサービス
 const mockRecipeService = jest.createMockFromModule<RecipeService>(
-  '@/client/services/recipe/recipe-service'
+  '@/client/services/recipe-service'
 ) as jest.Mocked<RecipeService>;
 mockRecipeService.getAllRecipes = jest.fn<Promise<Recipe[]>, []>();
 mockRecipeService.getRecipeById = jest.fn<Promise<Recipe | null>, [string]>();

@@ -2,8 +2,8 @@ import {
   IRecipeRepository,
   RecipeListFilters,
 } from '@/client/repositories/interfaces/i-recipe-repository';
+import { RecipeListService } from '@/client/services/recipe-list-service';
 import { Recipe } from '@/lib/api-client';
-import { RecipeListService } from '../recipe-list-service';
 
 describe('RecipeListService', () => {
   let recipeListService: RecipeListService;
