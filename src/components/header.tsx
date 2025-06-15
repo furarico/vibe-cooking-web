@@ -20,7 +20,7 @@ const Header: React.FC = () => {
       >
         <Input
           className="placeholder:text-gray-400"
-          placeholder="レシピを検索"
+          placeholder="バイブスを言葉に"
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
         />

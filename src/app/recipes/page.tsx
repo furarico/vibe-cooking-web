@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo } from 'react';
 
-function RecipeListContent() {
+export default function Page() {
   const searchParams = useSearchParams();
 
   const filters = useMemo(
@@ -31,39 +31,32 @@ function RecipeListContent() {
   }
 
   return (
-    <>
+    <Suspense fallback={<Loading />}>
       {recipes.length === 0 ? (
         <div className="text-center text-gray-600">
           レシピが見つかりませんでした
         </div>
       ) : (
-        <Link href={`/recipes/${recipes[0].id}`} className="space-y-4">
+        <div className="flex flex-col gap-4">
           {recipes.map(recipe => (
-            <RecipeCard
-              key={recipe.id}
-              variant="row"
-              title={recipe.title || ''}
-              description={recipe.description || ''}
-              tags={recipe.tags || []}
-              cookingTime={(recipe.cookTime || 0) + (recipe.prepTime || 0)}
-              imageUrl={
-                recipe.imageUrl && recipe.imageUrl.length > 0
-                  ? recipe.imageUrl
-                  : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png'
-              }
-              imageAlt={recipe.title || 'レシピ画像'}
-            />
+            <Link key={recipe.id} href={`/recipes/${recipe.id}`}>
+              <RecipeCard
+                variant="row"
+                title={recipe.title || ''}
+                description={recipe.description || ''}
+                tags={recipe.tags || []}
+                cookingTime={(recipe.cookTime || 0) + (recipe.prepTime || 0)}
+                imageUrl={
+                  recipe.imageUrl && recipe.imageUrl.length > 0
+                    ? recipe.imageUrl
+                    : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png'
+                }
+                imageAlt={recipe.title || 'レシピ画像'}
+              />
+            </Link>
           ))}
-        </Link>
+        </div>
       )}
-    </>
-  );
-}
-
-export default function Page() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <RecipeListContent />
     </Suspense>
   );
 }

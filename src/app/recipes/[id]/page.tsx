@@ -7,7 +7,7 @@ import Loading from '@/components/ui/loading';
 import { RecipeDetailHeader } from '@/components/ui/recipe-detail-header';
 import { TimeCard } from '@/components/ui/time-card';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -65,35 +65,37 @@ export default function Page({ params }: PageProps) {
       : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png';
 
   return (
-    <div className="mb-16 flex flex-col gap-8">
-      {/* レシピ画像 */}
-      <Image
-        src={imageUrl}
-        alt={recipe.title || 'レシピ画像'}
-        width={600}
-        height={300}
-        className="w-full h-[300px] object-cover rounded-lg border-2 border-slate-200"
-        priority
-      />
+    <Suspense fallback={<Loading />}>
+      <div className="mb-16 flex flex-col gap-8">
+        {/* レシピ画像 */}
+        <Image
+          src={imageUrl}
+          alt={recipe.title || 'レシピ画像'}
+          width={600}
+          height={300}
+          className="w-full h-[300px] object-cover rounded-lg border-2 border-slate-200"
+          priority
+        />
 
-      <RecipeDetailHeader
-        title={recipe.title || ''}
-        description={recipe.description || ''}
-        tags={recipe.tags || []}
-      />
+        <RecipeDetailHeader
+          title={recipe.title || ''}
+          description={recipe.description || ''}
+          tags={recipe.tags || []}
+        />
 
-      {/* 調理時間カード */}
-      <div className="flex flex-row items-center justify-center gap-2">
-        <TimeCard title="準備時間" label={`${recipe.prepTime || '-'}分`} />
-        <TimeCard title="調理時間" label={`${recipe.cookTime || '-'}分`} />
-        <TimeCard title="人前" label={`${recipe.servings || '-'}人前`} />
+        {/* 調理時間カード */}
+        <div className="flex flex-row items-center justify-center gap-2">
+          <TimeCard title="準備時間" label={`${recipe.prepTime || '-'}分`} />
+          <TimeCard title="調理時間" label={`${recipe.cookTime || '-'}分`} />
+          <TimeCard title="人前" label={`${recipe.servings || '-'}人前`} />
+        </div>
+
+        {/* 材料リスト */}
+        <Ingredients ingredients={ingredientsData} />
+
+        {/* 作成手順 */}
+        <Instructions steps={instructionsData} />
       </div>
-
-      {/* 材料リスト */}
-      <Ingredients ingredients={ingredientsData} />
-
-      {/* 作成手順 */}
-      <Instructions steps={instructionsData} />
-    </div>
+    </Suspense>
   );
 }
