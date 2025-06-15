@@ -30,9 +30,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
@@ -87,8 +84,9 @@ jobs:
 
             ---
             *このPRは自動生成されました*
-          branch: auto-format/format-${{ github.run_number }}
+          branch: auto-format/format-${{ github.run_number }}-${{ github.sha }}
           delete-branch: true
-          base: ${{ github.ref_name }}
+          base: ${{ github.event.repository.default_branch }}
           author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
           committer: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+          branch-suffix: timestamp
