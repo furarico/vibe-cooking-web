@@ -65,8 +65,6 @@ jobs:
 
       - name: Create Pull Request
         if: steps.verify-changed-files.outputs.changed == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # 現在のブランチ名を取得（作業ブランチ）
           CURRENT_BRANCH="${{ github.head_ref || github.ref_name }}"
