@@ -1,29 +1,31 @@
 import * as React from 'react';
-import { InstructionsItem, InstructionsItemProps } from './instructions-item';
+import { InstructionsItemProps } from './instructions-item';
 
-interface RecipeInstructionProps {
-  step: number; //
-  description: string; // 手順の説明
+interface InstructionsProps {
+  steps: InstructionsItemProps[]; // 複数の手順を受け取る
 }
 
-const InstructionSteps: React.FC<InstructionsItemProps> = ({
-  step,
-  description,
-}) => {
+const Instructions: React.FC<InstructionsProps> = ({ steps }) => {
   return (
-    <div className="w-full max-w-[600px] flex items-center gap-2">
-      <div className="flex-shrink-0">
-        <span className="inline-flex items-center justify-center w-8 h-8 bg-slate-600 text-white rounded-full font-bold">
-          {step}
-        </span>
-      </div>
-      <div className="flex-wrap text-gray-900">
-        <p className="text-sm">{description}</p>
+    <div className="w-full max-w-[600px]">
+      <h2 className="text-lg font-bold mb-4">作り方 / 手順</h2>
+      <div className="space-y-2">
+        {steps.map(stepItem => (
+          <div key={stepItem.step} className="flex items-center gap-2">
+            <div className="flex-shrink-0">
+              <span className="inline-flex items-center justify-center w-8 h-8 bg-slate-600 text-white rounded-full font-bold">
+                {stepItem.step}
+              </span>
+            </div>
+            <div className="flex-wrap text-gray-900">
+              <p className="text-sm">{stepItem.description}</p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-export type { InstructionsItemProps };
-InstructionsItem.displayName = 'InstructionSteps';
-export { InstructionSteps };
+export { Instructions };
+export type { InstructionsProps };
