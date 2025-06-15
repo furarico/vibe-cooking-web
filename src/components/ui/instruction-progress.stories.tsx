@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import { ProgressBar, ProgressStep } from './Instruction-progress';
+import { ProgressBar, ProgressStep } from './instruction-progress';
 
 const steps: ProgressStep[] = [
   { step: 1 },
