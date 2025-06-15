@@ -29,7 +29,7 @@ export const useCookingPresenter = (): CookingPresenterState &
   const [state, setState] = useState<CookingPresenterState>({
     recipe: null,
     loading: false,
-    currentStep: 0,
+    currentStep: 1,
     totalSteps: 0,
     isCompleted: false,
   });
