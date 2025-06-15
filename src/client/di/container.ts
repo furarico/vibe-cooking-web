@@ -10,6 +10,7 @@ import {
   AudioPlayerServiceImpl,
 } from '@/client/services/audio-player-service';
 import { CategoryService } from '@/client/services/category/category-service';
+import { RecipeListService } from '@/client/services/recipe-list/recipe-list-service';
 import { RecipeService } from '@/client/services/recipe/recipe-service';
 import {
   VoiceCookingService,
@@ -22,6 +23,7 @@ export interface DIContainer {
   prisma: typeof prisma;
   recipeService: RecipeService;
   categoryService: CategoryService;
+  recipeListService: RecipeListService;
   voiceCookingService: VoiceCookingService;
   speechRecognitionRepository: SpeechRecognitionRepository;
   audioPlayerService: AudioPlayerService;
@@ -45,6 +47,7 @@ export const createDIContainer = (): DIContainer => {
   // Service の作成
   const recipeService = new RecipeService(recipeRepository);
   const categoryService = new CategoryService(categoryRepository);
+  const recipeListService = new RecipeListService(recipeRepository);
   const audioPlayerService = new AudioPlayerServiceImpl();
   const voiceCookingService = new VoiceCookingServiceImpl({
     speechRecognitionRepository,
@@ -56,6 +59,7 @@ export const createDIContainer = (): DIContainer => {
     prisma,
     recipeService,
     categoryService,
+    recipeListService,
     voiceCookingService,
     speechRecognitionRepository,
     audioPlayerService,
