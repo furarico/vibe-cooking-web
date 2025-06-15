@@ -84,31 +84,53 @@ export default function Home() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-              {recipes.map(recipe => (
-                <Link
-                  key={recipe.id}
-                  className="flex justify-center"
-                  href={`/recipes/${recipe.id}`}
-                >
-                  <RecipeCard
-                    title={recipe.title ?? ''}
-                    description={recipe.description ?? ''}
-                    tags={recipe.tags ?? []}
-                    cookingTime={
-                      (recipe.prepTime ?? 0) + (recipe.cookTime ?? 0)
-                    }
-                    imageUrl={
-                      recipe.imageUrl && recipe.imageUrl.length > 0
-                        ? recipe.imageUrl
-                        : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png'
-                    }
-                    imageAlt={recipe.title ?? ''}
-                    className="cursor-pointer"
-                  />
-                </Link>
-              ))}
-            </div>
+            {/* カテゴリ別にレシピを分類 */}
+            {Object.entries(
+              recipes.reduce(
+                (acc, recipe) => {
+                  const categoryName = recipe.category?.name ?? 'その他';
+                  if (!acc[categoryName]) {
+                    acc[categoryName] = [];
+                  }
+                  acc[categoryName].push(recipe);
+                  return acc;
+                },
+                {} as Record<string, typeof recipes>
+              )
+            ).map(([categoryName, categoryRecipes]) => (
+              <div key={categoryName} className="mb-8">
+                <h2 className="text-2xl font-bold mb-4 text-gray-900">
+                  {categoryName}
+                </h2>
+                <div className="overflow-x-auto">
+                  <div className="flex gap-6 pb-4">
+                    {categoryRecipes.map(recipe => (
+                      <Link
+                        key={recipe.id}
+                        href={`/recipes/${recipe.id}`}
+                        className="flex-shrink-0 w-72"
+                      >
+                        <RecipeCard
+                          title={recipe.title ?? ''}
+                          description={recipe.description ?? ''}
+                          tags={recipe.tags ?? []}
+                          cookingTime={
+                            (recipe.prepTime ?? 0) + (recipe.cookTime ?? 0)
+                          }
+                          imageUrl={
+                            recipe.imageUrl && recipe.imageUrl.length > 0
+                              ? recipe.imageUrl
+                              : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png'
+                          }
+                          imageAlt={recipe.title ?? ''}
+                          className="cursor-pointer h-full"
+                        />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
           </>
         )}
       </main>
