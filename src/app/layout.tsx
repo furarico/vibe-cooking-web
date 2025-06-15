@@ -1,5 +1,5 @@
-import ServiceWorkerRegistration from '@/components/service-worker-registration';
 import { DIProvider } from '@/client/di/providers';
+import ServiceWorkerRegistration from '@/components/service-worker-registration';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { FirebaseInit } from './firebase-init';
