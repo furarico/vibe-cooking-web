@@ -3,6 +3,7 @@
 import { useRecipePresenter } from '@/client/presenters/hooks/use-recipe-presenter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import Loading from '@/components/ui/loading';
 import { RecipeCard } from '@/components/ui/recipe-card';
 import { SearchIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -20,19 +21,12 @@ export default function Home() {
   } = useRecipePresenter();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p className="text-gray-600">レシピを読み込み中...</p>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-500 mb-4">
             <svg
@@ -58,9 +52,9 @@ export default function Home() {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto min-h-screen">
+    <div className="w-full ">
       {/* ヘッダー */}
-      <header className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+      <header className="w-full px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <div className="flex items-center gap-2 w-full">
           <Input
             className="placeholder:text-gray-400"
@@ -77,7 +71,7 @@ export default function Home() {
       </header>
 
       {/* メインコンテンツ */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-full px-4 sm:px-6 lg:px-8 py-8">
         {recipes.length === 0 ? (
           <div className="text-center py-12 text-gray-900">
             レシピがみつかりませんでした
@@ -103,12 +97,12 @@ export default function Home() {
                   {categoryName}
                 </h2>
                 <div className="overflow-x-auto">
-                  <div className="flex gap-6 pb-4">
+                  <div className="flex gap-4 pb-4">
                     {categoryRecipes.map(recipe => (
                       <Link
                         key={recipe.id}
                         href={`/recipes/${recipe.id}`}
-                        className="flex-shrink-0 w-72"
+                        className="flex-shrink-0"
                       >
                         <RecipeCard
                           title={recipe.title ?? ''}

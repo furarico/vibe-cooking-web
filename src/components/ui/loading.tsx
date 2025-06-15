@@ -3,7 +3,7 @@ interface LoadingProps {
   className?: string;
 }
 
-const Loading = ({ text = '読み込み中...', className = '' }: LoadingProps) => {
+const Loading = ({ text = '', className = '' }: LoadingProps) => {
   return (
     <div
       className={`flex flex-col justify-center items-center gap-6 mt-10 ${className}`}

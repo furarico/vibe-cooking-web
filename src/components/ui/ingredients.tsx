@@ -20,7 +20,7 @@ const Ingredients: React.FC<IngredientsProps> = ({
   return (
     <div
       className={cn(
-        'w-full max-w-[600px] flex items-center flex-col gap-4 p-4 bg-white rounded-md border border-slate-200 text-center',
+        'w-full flex items-center flex-col gap-4 p-4 bg-white rounded-md border border-slate-200 text-center',
         className
       )}
     >
