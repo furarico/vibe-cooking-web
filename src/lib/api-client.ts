@@ -40,8 +40,15 @@ export class DefaultApi {
     this.client.use(appCheckInterceptor);
   }
 
-  async recipesGet(): Promise<RecipesGet200Response> {
-    const { data, error } = await this.client.GET('/recipes');
+  async recipesGet(params?: {
+    q?: string;
+    tag?: string;
+    category?: string;
+    categoryId?: string;
+  }): Promise<RecipesGet200Response> {
+    const { data, error } = await this.client.GET('/recipes', {
+      params: { query: params },
+    });
     if (error) {
       throw new Error(`API error: ${error}`);
     }
