@@ -2,7 +2,7 @@ name: Format Code
 
 on:
   push:
-    branches: ['main']
+    branches: [main]
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
@@ -17,6 +17,7 @@ concurrency:
 jobs:
   format:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
     permissions:
       contents: write
       pull-requests: write
@@ -87,7 +88,7 @@ jobs:
           # ブランチをプッシュ
           git push origin "$NEW_BRANCH"
 
-          # PRを作成
+                    # PRを作成
           gh pr create \
             --title "🤖 自動フォーマット適用" \
             --body "## 概要
@@ -105,3 +106,7 @@ jobs:
           *このPRは自動生成されました*" \
             --base "$CURRENT_BRANCH" \
             --head "$NEW_BRANCH"
+
+          # フォーマットが必要だったことを示すため異常終了
+          echo "フォーマットPRが作成されました。コードの確認とマージを行ってください。"
+          exit 1
