@@ -1,33 +1,27 @@
+import { useRecipesByCategoryPresenter } from '@/client/presenters/hooks/use-recipes-by-category-presenter';
+import Loading from '@/components/ui/loading';
 import { RecipeCardList } from '@/components/ui/recipe-card-list';
-import { Recipe } from '@/lib/api-client';
+import { Category } from '@/lib/api-client';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
-interface Category {
-  id: string;
-  name: string;
-}
+export function CategoryRecipeSection({ category }: { category: Category }) {
+  const { recipes, loading } = useRecipesByCategoryPresenter(category.id);
 
-interface CategoryRecipeSectionProps {
-  category: Category;
-  recipes: Recipe[];
-}
-
-export function CategoryRecipeSection({
-  category,
-  recipes,
-}: CategoryRecipeSectionProps) {
-  if (recipes.length === 0) {
-    return null;
+  if (recipes.length === 0 && !loading) {
+    return <></>;
   }
 
   return (
-    <div className="mb-8">
-      <Link href={`/recipes?category=${category.name}`}>
-        <h2 className="text-2xl font-bold mb-4 text-gray-900">
-          {category.name}
-        </h2>
-      </Link>
-      <RecipeCardList recipes={recipes} />
-    </div>
+    <Suspense fallback={<Loading />}>
+      <div className="mb-8">
+        <Link href={`/recipes?category=${category.name}`}>
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">
+            {category.name}
+          </h2>
+        </Link>
+        {loading ? <Loading /> : <RecipeCardList recipes={recipes} />}
+      </div>
+    </Suspense>
   );
 }
