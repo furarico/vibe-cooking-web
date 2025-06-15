@@ -1,20 +1,13 @@
 import { cn } from '@/lib/utils';
 import * as React from 'react';
-import { IngredientItem } from './ingredient-item';
+import { IngredientsItem, IngredientsItemProps } from './ingredients-item';
 
-interface Ingredient {
-  name: string;
-  amount: number | string;
-  unit: string;
-  note?: string;
-}
-
-interface IngredientsListProps {
-  ingredients: Ingredient[];
+interface IngredientsProps {
+  ingredients: IngredientsItemProps[];
   className?: string;
 }
 
-const IngredientsList: React.FC<IngredientsListProps> = ({
+const Ingredients: React.FC<IngredientsProps> = ({
   ingredients,
   className,
 }) => {
@@ -33,7 +26,7 @@ const IngredientsList: React.FC<IngredientsListProps> = ({
     >
       <h2 className="text-xl font-bold text-slate-600">材料</h2>
       {ingredientsWithId.map(ingredient => (
-        <IngredientItem
+        <IngredientsItem
           key={ingredient.id} // 生成したidをkeyに使う
           name={ingredient.name}
           amount={ingredient.amount}
@@ -45,7 +38,7 @@ const IngredientsList: React.FC<IngredientsListProps> = ({
   );
 };
 
-export type { IngredientsListProps };
-IngredientsList.displayName = 'IngredientsList';
+export type { IngredientsProps };
+Ingredients.displayName = 'Ingredients';
 
-export { IngredientsList };
+export { Ingredients };

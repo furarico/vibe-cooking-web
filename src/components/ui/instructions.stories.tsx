@@ -1,36 +1,42 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import { InstructionsItem } from './instructions-item';
+import { Instructions } from './instructions';
 
-const meta: Meta<typeof InstructionsItem> = {
-  title: 'UI/InstructionStep',
-  component: InstructionsItem,
+const meta: Meta<typeof Instructions> = {
+  title: 'UI/Instructions',
+  component: Instructions,
   tags: ['autodocs'],
 };
 
 export default meta;
 
-type Story = StoryObj<typeof InstructionsItem>;
+type Story = StoryObj<typeof Instructions>;
 
 export const Default: Story = {
   args: {
-    step: 1,
-    description:
-      '玉ねぎはみじん切りにし、ミニトマトは4等分に切る。レタスはひと口大にちぎり、トルティーヤチップスは粗く砕く。',
+    steps: [
+      {
+        step: 1,
+        description:
+          '玉ねぎはみじん切りにし、ミニトマトは4等分に切る。レタスはひと口大にちぎり、トルティーヤチップスは粗く砕く。',
+      },
+    ],
   },
 };
 
 export const MultipleSteps: Story = {
   render: () => (
-    <div className="space-y-2">
-      <InstructionsItem
-        step={1}
-        description="玉ねぎはみじん切りにし、ミニトマトは4等分に切る。"
-      />
-      <InstructionsItem step={2} description="レタスはひと口大にちぎる。" />
-      <InstructionsItem
-        step={3}
-        description="トルティーヤチップスは粗く砕く。"
-      />
-    </div>
+    <Instructions
+      steps={[
+        {
+          step: 1,
+          description: '玉ねぎはみじん切りにし、ミニトマトは4等分に切る。',
+        },
+        {
+          step: 2,
+          description:
+            'レタスはひと口大にちぎり、トルティーヤチップスは粗く砕く。',
+        },
+      ]}
+    />
   ),
 };

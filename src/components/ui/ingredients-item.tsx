@@ -1,13 +1,13 @@
 import * as React from 'react';
 
-interface IngredientItemProps {
+interface IngredientsItemProps {
   name: string;
   amount: number | string;
   unit: string;
   note?: string;
 }
 
-const IngredientItem: React.FC<IngredientItemProps> = ({
+const IngredientsItem: React.FC<IngredientsItemProps> = ({
   name,
   amount,
   unit,
@@ -26,4 +26,7 @@ const IngredientItem: React.FC<IngredientItemProps> = ({
   );
 };
 
-export { IngredientItem };
+export type { IngredientsItemProps };
+IngredientsItem.displayName = 'IngredientsItem';
+
+export { IngredientsItem };

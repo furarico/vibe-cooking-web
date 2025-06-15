@@ -1,3 +1,5 @@
+// Trial
+
 import { VoiceCookingService } from '@/client/services/voice-cooking-service';
 import { components } from '@/types/api';
 import { useCallback, useEffect, useState } from 'react';

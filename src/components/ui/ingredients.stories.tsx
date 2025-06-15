@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import { IngredientsList } from './ingredients-list';
+import { Ingredients } from './ingredients';
 
-const meta: Meta<typeof IngredientsList> = {
-  title: 'UI/IngredientsList',
-  component: IngredientsList,
+const meta: Meta<typeof Ingredients> = {
+  title: 'UI/Ingredients',
+  component: Ingredients,
   tags: ['autodocs'],
 };
 
 export default meta;
 
-type Story = StoryObj<typeof IngredientsList>;
+type Story = StoryObj<typeof Ingredients>;
 
 export const Default: Story = {
   args: {

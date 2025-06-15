@@ -1,15 +1,15 @@
-// IngredientItem.stories.tsx
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import { IngredientItem } from './ingredient-item';
+import { IngredientsItem } from './ingredients-item';
 
-const meta: Meta<typeof IngredientItem> = {
-  title: 'UI/IngredientItem',
-  component: IngredientItem,
+const meta: Meta<typeof IngredientsItem> = {
+  title: 'UI/IngredientsItem',
+  component: IngredientsItem,
   tags: ['autodocs'],
 };
 
 export default meta;
-type Story = StoryObj<typeof IngredientItem>;
+
+type Story = StoryObj<typeof IngredientsItem>;
 
 export const Default: Story = {
   args: {
