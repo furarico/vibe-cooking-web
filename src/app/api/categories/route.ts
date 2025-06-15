@@ -11,8 +11,7 @@ async function handleGet() {
     return NextResponse.json({
       categories,
     });
-  } catch (error) {
-    console.error('カテゴリ一覧取得エラー:', error);
+  } catch {
     return NextResponse.json(
       { error: 'カテゴリの取得に失敗しました' },
       { status: 500 }

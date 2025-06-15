@@ -31,7 +31,7 @@ const appCheckInterceptor: Middleware = {
       }
       return request;
     } catch (error) {
-      console.error('AppCheck error:', error);
+      console.error(error);
       return request;
     }
   },

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCategoryPresenter } from '@/client/presenters/hooks/use-category-presenter';
+import { useCategoryPresenter } from '@/client/presenters/use-category-presenter';
 import { CategoryRecipeSection } from '@/components/category-recipe-section';
 import Loading from '@/components/ui/loading';
 import { Suspense } from 'react';

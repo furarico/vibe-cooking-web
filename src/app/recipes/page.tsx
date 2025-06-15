@@ -1,6 +1,6 @@
 'use client';
 
-import { useRecipeListPresenter } from '@/client/presenters/hooks/use-recipe-list-presenter';
+import { useRecipeListPresenter } from '@/client/presenters/use-recipe-list-presenter';
 import Loading from '@/components/ui/loading';
 import { RecipeCard } from '@/components/ui/recipe-card';
 import Link from 'next/link';

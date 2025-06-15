@@ -23,9 +23,8 @@ export const useCategoryPresenter = (): CategoryPresenterState &
     try {
       const fetchedCategories = await categoryService.getAllCategories();
       setCategories(fetchedCategories);
-    } catch (err) {
+    } catch {
       toast.error('カテゴリの取得に失敗しました');
-      console.error('カテゴリ取得エラー:', err);
     } finally {
       setLoading(false);
     }

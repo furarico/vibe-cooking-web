@@ -1,8 +1,8 @@
+import { useRecipeListPresenter } from '@/client/presenters/use-recipe-list-presenter';
 import { RecipeListFilters } from '@/client/repositories/interfaces/i-recipe-repository';
 import { RecipeListService } from '@/client/services/recipe-list-service';
 import { Recipe } from '@/lib/api-client';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { useRecipeListPresenter } from '../use-recipe-list-presenter';
 
 jest.mock('@/client/di/providers', () => ({
   useDI: () => ({

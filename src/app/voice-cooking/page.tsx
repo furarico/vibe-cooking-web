@@ -1,8 +1,8 @@
 'use client';
 
 import { useDI } from '@/client/di/providers';
-import { useRecipePresenter } from '@/client/presenters/hooks/use-recipe-presenter';
-import { useVoiceCookingPresenter } from '@/client/presenters/voice-cooking-presenter';
+import { useRecipePresenter } from '@/client/presenters/use-recipe-presenter';
+import { useVoiceCookingPresenter } from '@/client/presenters/use-voice-cooking-presenter';
 import { AudioControl } from '@/components/audio-control';
 import { RecipeDetail } from '@/components/recipe-detail';
 import { RecipeList } from '@/components/recipe-list';

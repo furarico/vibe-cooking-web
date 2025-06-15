@@ -38,7 +38,7 @@ export const useRecipesByCategoryPresenter = (
 
   useEffect(() => {
     fetchRecipesByCategory(categoryId);
-  }, [fetchRecipesByCategory]);
+  }, [fetchRecipesByCategory, categoryId]);
 
   return {
     recipes,

@@ -9,7 +9,6 @@ export class CategoryRepository implements ICategoryRepository {
       const response = await this.apiClient.categoriesGet();
       return response.categories ?? [];
     } catch (error) {
-      console.error('Failed to fetch categories:', error);
       throw error;
     }
   }

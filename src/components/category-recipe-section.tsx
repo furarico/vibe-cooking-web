@@ -1,4 +1,4 @@
-import { useRecipesByCategoryPresenter } from '@/client/presenters/hooks/use-recipes-by-category-presenter';
+import { useRecipesByCategoryPresenter } from '@/client/presenters/use-recipes-by-category-presenter';
 import Loading from '@/components/ui/loading';
 import { RecipeCardList } from '@/components/ui/recipe-card-list';
 import { Category } from '@/lib/api-client';

@@ -70,7 +70,6 @@ export class AudioPlayerServiceImpl implements AudioPlayerService {
       // 音声を再生
       await this.audio.play();
     } catch (error) {
-      console.error('音声再生に失敗しました:', error);
       this.isCurrentlyPlaying = false;
       this.currentAudioUrl = null;
       this.notifyListeners();

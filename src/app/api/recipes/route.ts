@@ -35,8 +35,7 @@ async function handleGet(request: NextRequest) {
     return NextResponse.json({
       recipes,
     });
-  } catch (error) {
-    console.error('レシピ一覧取得エラー:', error);
+  } catch {
     return NextResponse.json(
       { error: 'レシピの取得に失敗しました' },
       { status: 500 }

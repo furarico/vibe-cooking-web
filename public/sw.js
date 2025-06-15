@@ -1,11 +1,9 @@
 // 最小限のService Worker - PWAインストール用
 self.addEventListener('install', function(event) {
-  console.log('Service Worker: インストール中...');
   self.skipWaiting();
 });
 
 self.addEventListener('activate', function(event) {
-  console.log('Service Worker: アクティベート中...');
   event.waitUntil(self.clients.claim());
 });
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRecipeDetailPresenter } from '@/client/presenters/hooks/use-recipe-detail-presenter';
+import { useRecipeDetailPresenter } from '@/client/presenters/use-recipe-detail-presenter';
 import { Ingredients } from '@/components/ui/ingredients';
 import { Instructions } from '@/components/ui/instructions';
 import Loading from '@/components/ui/loading';

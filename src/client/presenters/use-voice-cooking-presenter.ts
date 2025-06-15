@@ -1,8 +1,7 @@
-// Trial
-
 import { VoiceCookingService } from '@/client/services/voice-cooking-service';
 import { components } from '@/types/api';
 import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 type Recipe = components['schemas']['Recipe'];
 
@@ -117,6 +116,7 @@ export const useVoiceCookingPresenter = (
         await voiceCookingService.startSpeechRecognition();
       } catch (error) {
         console.error('音声認識の開始に失敗しました:', error);
+        toast.error('音声認識の開始に失敗しました');
       }
     }, [voiceCookingService]),
 
@@ -138,6 +138,7 @@ export const useVoiceCookingPresenter = (
           await voiceCookingService.selectRecipe(recipeId);
         } catch (error) {
           console.error('レシピの選択に失敗しました:', error);
+          toast.error('レシピの選択に失敗しました');
         }
       },
       [voiceCookingService]
@@ -162,6 +163,7 @@ export const useVoiceCookingPresenter = (
         );
       } catch (error) {
         console.error('テスト音声再生に失敗しました:', error);
+        toast.error('テスト音声再生に失敗しました');
       }
     }, [audioPlayerService]),
 
