@@ -12,7 +12,15 @@ const Header: React.FC = () => {
   const pathname = usePathname();
 
   const handleGoBack = () => {
-    router.back();
+    const pathSegments = pathname.split('/').filter(Boolean);
+    if (pathSegments.length > 0) {
+      pathSegments.pop(); // 最後のセグメントを削除
+      const parentPath =
+        pathSegments.length > 0 ? `/${pathSegments.join('/')}` : '/';
+      router.push(parentPath);
+    } else {
+      router.push('/');
+    }
   };
 
   return (

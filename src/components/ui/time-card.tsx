@@ -1,15 +1,16 @@
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
+import { ClockIcon, UsersIcon } from 'lucide-react';
 import { Card } from './card';
 
 interface TimeCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  title?: string;
-  label?: string;
+  variant: 'prep' | 'cook' | 'servings';
+  number: number;
 }
 
 const TimeCard = React.forwardRef<HTMLDivElement, TimeCardProps>(
-  ({ className, title, label, ...props }, ref) => {
+  ({ className, variant, number, ...props }, ref) => {
     return (
       <Card
         className={cn(
@@ -20,9 +21,31 @@ const TimeCard = React.forwardRef<HTMLDivElement, TimeCardProps>(
         {...props}
       >
         {/* タイトルを表示 */}
-        <p className="text-m font-Medium text-slate-500">{title ?? ''}</p>
+        <div className="flex flex-row items-center gap-2">
+          {variant === 'prep' && (
+            <>
+              <ClockIcon className="w-4 h-4 text-slate-500" />
+              <div className="text-sm font-medium text-slate-500">準備時間</div>
+            </>
+          )}
+          {variant === 'cook' && (
+            <>
+              <ClockIcon className="w-4 h-4 text-slate-500" />
+              <div className="text-sm font-medium text-slate-500">調理時間</div>
+            </>
+          )}
+          {variant === 'servings' && (
+            <>
+              <UsersIcon className="w-4 h-4 text-slate-500" />
+              <div className="text-sm font-medium text-slate-500">分量</div>
+            </>
+          )}
+        </div>
         {/* 時間や人前を表示 */}
-        <p className="text-lg font-semibold text-slate-900">{label ?? ''}</p>
+        <p className="text-lg font-semibold text-slate-900">
+          {number} {variant === 'servings' && '人前'}{' '}
+          {variant === 'prep' && '分'} {variant === 'cook' && '分'}
+        </p>
       </Card>
     );
   }

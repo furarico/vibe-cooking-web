@@ -88,9 +88,9 @@ export default function Page({ params }: PageProps) {
 
         {/* 調理時間カード */}
         <div className="flex flex-row items-center justify-center gap-2">
-          <TimeCard title="準備時間" label={`${recipe.prepTime || '-'}分`} />
-          <TimeCard title="調理時間" label={`${recipe.cookTime || '-'}分`} />
-          <TimeCard title="人前" label={`${recipe.servings || '-'}人前`} />
+          <TimeCard variant="prep" number={recipe.prepTime || 0} />
+          <TimeCard variant="cook" number={recipe.cookTime || 0} />
+          <TimeCard variant="servings" number={recipe.servings || 0} />
         </div>
 
         {/* 材料リスト */}

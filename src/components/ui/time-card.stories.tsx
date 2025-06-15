@@ -9,11 +9,12 @@ const meta: Meta<typeof TimeCard> = {
   },
   tags: ['autodocs'],
   argTypes: {
-    title: {
-      control: 'text',
+    variant: {
+      control: 'select',
+      options: ['prep', 'cook', 'servings'],
     },
-    label: {
-      control: 'text',
+    number: {
+      control: 'number',
     },
   },
 };
@@ -23,7 +24,28 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    title: '調理時間',
-    label: '30分',
+    variant: 'cook',
+    number: 30,
+  },
+};
+
+export const Prep: Story = {
+  args: {
+    variant: 'prep',
+    number: 10,
+  },
+};
+
+export const Cook: Story = {
+  args: {
+    variant: 'cook',
+    number: 30,
+  },
+};
+
+export const Servings: Story = {
+  args: {
+    variant: 'servings',
+    number: 4,
   },
 };

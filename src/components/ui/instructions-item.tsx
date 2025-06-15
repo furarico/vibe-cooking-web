@@ -2,22 +2,32 @@ import * as React from 'react';
 import { StepBadge } from './step-badge';
 
 interface InstructionsItemProps {
-  step: number; //
-  description: string; // 手順の説明
+  step: number;
+  title?: string;
+  description: string;
 }
 
 const InstructionsItem: React.FC<InstructionsItemProps> = ({
   step,
+  title,
   description,
 }) => {
+  if (!title) {
+    return (
+      <div className="flex flex-row items-center gap-2">
+        <StepBadge className="flex-shrink-0" step={step} />
+        <div className="text-sm flex-wrap text-gray-900">{description}</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex items-center gap-4">
-      <div className="flex-shrink-0">
-        <StepBadge step={step} />
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row items-center gap-2">
+        <StepBadge className="flex-shrink-0" step={step} />
+        <div className="text-lg font-bold text-gray-900">{title}</div>
       </div>
-      <div className="flex-wrap text-gray-900">
-        <p className="text-sm">{description}</p>
-      </div>
+      <div className="ml-10 text-sm flex-wrap text-gray-900">{description}</div>
     </div>
   );
 };
