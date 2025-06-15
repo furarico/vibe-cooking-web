@@ -2,7 +2,7 @@ name: Format Code
 
 on:
   push:
-    branches: ['**']
+    branches: ['main']
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
