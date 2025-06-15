@@ -1,4 +1,5 @@
 import { Ingredients } from '@/components/ui/ingredients';
+import { RecipeDetailHeader } from '@/components/ui/recipe-detail-header';
 import { TimeCard } from '@/components/ui/time-card';
 
 export default function Page() {
@@ -14,9 +15,16 @@ export default function Page() {
 
   return (
     <div className="w-full max-w-[600px] mx-auto min-h-screen">
-      <div>
+      <div className="flex flex-col gap-8">
+        <div className="items-center justify-center">
+          <RecipeDetailHeader
+            title="kantacky"
+            description="ore"
+            tags={['tag1', 'tag2', 'tag3']}
+          />
+        </div>
         {/* 調理時間カード */}
-        <div className="flex flex-row items-center justify-center">
+        <div className="flex flex-row items-center justify-center gap-2">
           <TimeCard title="準備時間" label="30分" />
           <TimeCard title="調理時間" label="30分" />
           <TimeCard title="人前" label="4人前" />
