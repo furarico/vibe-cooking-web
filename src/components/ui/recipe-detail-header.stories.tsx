@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import { TextBox } from './text-box';
+import { RecipeDetailHeader } from './recipe-detail-header';
 
-const meta: Meta<typeof TextBox> = {
-  title: 'UI/TextBox',
-  component: TextBox,
+const meta: Meta<typeof RecipeDetailHeader> = {
+  title: 'UI/RecipeDetailHeader',
+  component: RecipeDetailHeader,
   parameters: {
     layout: 'centered',
   },
