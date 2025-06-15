@@ -1,10 +1,10 @@
 'use client';
 
+import { useRecipeDetailPresenter } from '@/client/presenters/hooks/use-recipe-detail-presenter';
 import { Ingredients } from '@/components/ui/ingredients';
 import { Instructions } from '@/components/ui/instructions';
 import { RecipeDetailHeader } from '@/components/ui/recipe-detail-header';
 import { TimeCard } from '@/components/ui/time-card';
-import { DefaultApi, Recipe } from '@/lib/api-client';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
@@ -13,10 +13,8 @@ interface PageProps {
 }
 
 export default function Page({ params }: PageProps) {
-  const [recipe, setRecipe] = useState<Recipe | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [recipeId, setRecipeId] = useState<string>('');
+  const { recipe, loading, error, fetchRecipe } = useRecipeDetailPresenter();
 
   useEffect(() => {
     const fetchRecipeId = async () => {
@@ -28,24 +26,8 @@ export default function Page({ params }: PageProps) {
 
   useEffect(() => {
     if (!recipeId) return;
-
-    const fetchRecipe = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const apiClient = new DefaultApi();
-        const recipeData = await apiClient.recipesIdGet(recipeId);
-        setRecipe(recipeData);
-      } catch (err) {
-        console.error('レシピ取得エラー:', err);
-        setError('レシピの取得に失敗しました');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRecipe();
-  }, [recipeId]);
+    fetchRecipe(recipeId);
+  }, [recipeId, fetchRecipe]);
 
   if (loading) {
     return (
