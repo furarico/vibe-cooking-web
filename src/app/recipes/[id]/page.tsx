@@ -1,6 +1,7 @@
 'use client';
 
 import { Ingredients } from '@/components/ui/ingredients';
+import { Instructions } from '@/components/ui/instructions';
 import { RecipeDetailHeader } from '@/components/ui/recipe-detail-header';
 import { TimeCard } from '@/components/ui/time-card';
 import { DefaultApi, Recipe } from '@/lib/api-client';
@@ -79,6 +80,13 @@ export default function Page({ params }: PageProps) {
       note: ingredient.notes || '',
     })) || [];
 
+  // APIから取得したデータを手順コンポーネント用に変換
+  const instructionsData =
+    recipe.instructions?.map(instruction => ({
+      step: instruction.step || 0,
+      description: instruction.description || '',
+    })) || [];
+
   // 画像URLの処理（デフォルト画像を設定）
   const imageUrl =
     recipe.imageUrl && recipe.imageUrl.length > 0
@@ -86,7 +94,7 @@ export default function Page({ params }: PageProps) {
       : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png';
 
   return (
-    <div className="w-full max-w-[600px] mx-auto min-h-screen">
+    <div className="w-full max-w-[600px] mx-auto min-h-screen mb-20">
       <div className="flex flex-col gap-8">
         {/* レシピ画像 */}
         <div className="w-full">
@@ -116,6 +124,9 @@ export default function Page({ params }: PageProps) {
 
         {/* 材料リスト */}
         <Ingredients ingredients={ingredientsData} />
+
+        {/* 作成手順 */}
+        <Instructions steps={instructionsData} />
       </div>
     </div>
   );
