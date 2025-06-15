@@ -1,5 +1,8 @@
 import { DefaultApi, Recipe, RecipesGet200Response } from '@/lib/api-client';
-import { IRecipeRepository } from '../interfaces/i-recipe-repository';
+import {
+  IRecipeRepository,
+  RecipeListFilters,
+} from '../interfaces/i-recipe-repository';
 
 export class RecipeRepository implements IRecipeRepository {
   constructor(private apiClient: DefaultApi) {}
@@ -34,6 +37,22 @@ export class RecipeRepository implements IRecipeRepository {
       }
       console.error('レシピ詳細取得エラー:', error);
       throw new Error('レシピ詳細の取得に失敗しました');
+    }
+  }
+
+  async findWithFilters(filters?: RecipeListFilters): Promise<Recipe[]> {
+    try {
+      console.log('📡 フィルター付きレシピ取得開始:', filters);
+      const response: RecipesGet200Response =
+        await this.apiClient.recipesGet(filters);
+      console.log('✅ フィルター付きレシピ取得成功:', response);
+      return response.recipes || [];
+    } catch (error) {
+      console.error('❌ フィルター付きレシピ取得エラー:', error);
+      if (error instanceof Error) {
+        throw new Error(`レシピの取得に失敗しました: ${error.message}`);
+      }
+      throw new Error('レシピの取得に失敗しました');
     }
   }
 }

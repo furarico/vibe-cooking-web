@@ -1,44 +1,29 @@
 'use client';
 
+import { useRecipeListPresenter } from '@/client/presenters/hooks/use-recipe-list-presenter';
 import { RecipeCard } from '@/components/ui/recipe-card';
-import { DefaultApi, Recipe } from '@/lib/api-client';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-
-const api = new DefaultApi();
+import { useEffect, useMemo } from 'react';
 
 export default function Page() {
   const searchParams = useSearchParams();
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
+  const filters = useMemo(
+    () => ({
+      q: searchParams.get('q') || undefined,
+      tag: searchParams.get('tag') || undefined,
+      category: searchParams.get('category') || undefined,
+      categoryId: searchParams.get('categoryId') || undefined,
+    }),
+    [searchParams]
+  );
+
+  const { recipes, loading, error, fetchRecipes } =
+    useRecipeListPresenter(filters);
 
   useEffect(() => {
-    const fetchRecipes = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const params = {
-          q: searchParams.get('q') || undefined,
-          tag: searchParams.get('tag') || undefined,
-          category: searchParams.get('category') || undefined,
-          categoryId: searchParams.get('categoryId') || undefined,
-        };
-
-        const response = await api.recipesGet(params);
-        setRecipes(response.recipes || []);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'レシピの取得に失敗しました'
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRecipes();
-  }, [searchParams]);
+    fetchRecipes(filters);
+  }, [filters, fetchRecipes]);
 
   if (loading) {
     return (
