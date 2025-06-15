@@ -11,7 +11,7 @@ const meta: Meta<typeof Toaster> = {
   },
   tags: ['autodocs'],
   decorators: [
-    (Story) => (
+    Story => (
       <div>
         <Story />
         <div className="flex flex-col gap-4 p-8">
@@ -88,7 +88,7 @@ const meta: Meta<typeof Toaster> = {
             <Button
               onClick={() =>
                 toast.promise(
-                  new Promise((resolve) => setTimeout(resolve, 2000)),
+                  new Promise(resolve => setTimeout(resolve, 2000)),
                   {
                     loading: 'レシピを削除しています...',
                     success: 'レシピが削除されました',
