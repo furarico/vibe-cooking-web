@@ -61,7 +61,6 @@ describe('useRecipeDetailPresenter', () => {
 
       expect(result.current.recipe).toBeNull();
       expect(result.current.loading).toBe(false);
-      expect(result.current.error).toBeNull();
       expect(result.current.currentStep).toBe(0);
       expect(result.current.isCompleted).toBe(false);
     });
@@ -78,7 +77,6 @@ describe('useRecipeDetailPresenter', () => {
       expect(mockRecipeService.getRecipeById).toHaveBeenCalledWith('1');
       expect(result.current.recipe).toEqual(mockRecipe);
       expect(result.current.loading).toBe(false);
-      expect(result.current.error).toBeNull();
       expect(result.current.currentStep).toBe(0);
       expect(result.current.isCompleted).toBe(false);
     });
@@ -100,7 +98,6 @@ describe('useRecipeDetailPresenter', () => {
 
       // ローディング状態を確認
       expect(result.current.loading).toBe(true);
-      expect(result.current.error).toBeNull();
 
       // Promise を解決
       await act(async () => {
@@ -111,7 +108,7 @@ describe('useRecipeDetailPresenter', () => {
       expect(result.current.loading).toBe(false);
     });
 
-    it('レシピが見つからない場合はエラー状態になるべき', async () => {
+    it('レシピが見つからない場合はローディングが停止するべき', async () => {
       mockRecipeService.getRecipeById.mockResolvedValue(null);
 
       const { result } = renderHook(() => useRecipeDetailPresenter());
@@ -121,11 +118,10 @@ describe('useRecipeDetailPresenter', () => {
       });
 
       expect(result.current.loading).toBe(false);
-      expect(result.current.error).toBe('レシピが見つかりませんでした');
       expect(result.current.recipe).toBeNull();
     });
 
-    it('エラー時は適切にエラー状態を設定するべき', async () => {
+    it('エラー時はローディングが停止するべき', async () => {
       const errorMessage = 'ネットワークエラー';
       mockRecipeService.getRecipeById.mockRejectedValue(
         new Error(errorMessage)
@@ -138,7 +134,6 @@ describe('useRecipeDetailPresenter', () => {
       });
 
       expect(result.current.loading).toBe(false);
-      expect(result.current.error).toBe(errorMessage);
       expect(result.current.recipe).toBeNull();
     });
   });

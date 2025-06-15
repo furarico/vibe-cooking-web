@@ -45,7 +45,6 @@ describe('useRecipeListPresenter', () => {
 
     expect(result.current.recipes).toEqual([]);
     expect(result.current.loading).toBe(true);
-    expect(result.current.error).toBeNull();
     expect(result.current.filters).toEqual({});
   });
 
@@ -68,7 +67,6 @@ describe('useRecipeListPresenter', () => {
     });
 
     expect(result.current.recipes).toEqual(mockRecipes);
-    expect(result.current.error).toBeNull();
     expect(mockRecipeListService.getRecipes).toHaveBeenCalledWith({});
   });
 
@@ -83,7 +81,6 @@ describe('useRecipeListPresenter', () => {
     });
 
     expect(result.current.recipes).toEqual([]);
-    expect(result.current.error).toBe('API Error');
   });
 
   it('フィルター付きでレシピを取得する', async () => {

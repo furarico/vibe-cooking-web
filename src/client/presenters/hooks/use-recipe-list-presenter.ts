@@ -4,11 +4,11 @@ import { useDI } from '@/client/di/providers';
 import { RecipeListFilters } from '@/client/repositories/interfaces/i-recipe-repository';
 import { Recipe } from '@/lib/api-client';
 import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 export interface RecipeListPresenterState {
   recipes: Recipe[];
   loading: boolean;
-  error: string | null;
   filters: RecipeListFilters;
 }
 
@@ -26,32 +26,21 @@ export const useRecipeListPresenter = (
   const [state, setState] = useState<RecipeListPresenterState>({
     recipes: [],
     loading: true,
-    error: null,
     filters: initialFilters || {},
   });
 
   const fetchRecipes = useCallback(
     async (filters?: RecipeListFilters) => {
-      setState(prev => ({ ...prev, loading: true, error: null }));
+      setState(prev => ({ ...prev, loading: true }));
 
       try {
         const filtersToUse = filters || state.filters;
         const recipes = await recipeListService.getRecipes(filtersToUse);
-        setState(prev => ({
-          ...prev,
-          recipes,
-          loading: false,
-          filters: filtersToUse,
-        }));
-      } catch (error) {
-        setState(prev => ({
-          ...prev,
-          error:
-            error instanceof Error
-              ? error.message
-              : '不明なエラーが発生しました',
-          loading: false,
-        }));
+        setState(prev => ({ ...prev, recipes, filters: filtersToUse }));
+      } catch {
+        toast.error('レシピの取得に失敗しました');
+      } finally {
+        setState(prev => ({ ...prev, loading: false }));
       }
     },
     [recipeListService, state.filters]

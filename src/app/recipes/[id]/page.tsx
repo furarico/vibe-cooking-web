@@ -3,6 +3,7 @@
 import { useRecipeDetailPresenter } from '@/client/presenters/hooks/use-recipe-detail-presenter';
 import { Ingredients } from '@/components/ui/ingredients';
 import { Instructions } from '@/components/ui/instructions';
+import Loading from '@/components/ui/loading';
 import { RecipeDetailHeader } from '@/components/ui/recipe-detail-header';
 import { TimeCard } from '@/components/ui/time-card';
 import Image from 'next/image';
@@ -14,7 +15,7 @@ interface PageProps {
 
 export default function Page({ params }: PageProps) {
   const [recipeId, setRecipeId] = useState<string>('');
-  const { recipe, loading, error, fetchRecipe } = useRecipeDetailPresenter();
+  const { recipe, loading, fetchRecipe } = useRecipeDetailPresenter();
 
   useEffect(() => {
     const fetchRecipeId = async () => {
@@ -30,19 +31,7 @@ export default function Page({ params }: PageProps) {
   }, [recipeId, fetchRecipe]);
 
   if (loading) {
-    return (
-      <div className="w-full max-w-[600px] mx-auto min-h-screen flex items-center justify-center">
-        <p className="text-lg text-gray-600">読み込み中...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full max-w-[600px] mx-auto min-h-screen flex items-center justify-center">
-        <p className="text-lg text-red-600">{error}</p>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (!recipe) {

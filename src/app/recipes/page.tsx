@@ -1,6 +1,7 @@
 'use client';
 
 import { useRecipeListPresenter } from '@/client/presenters/hooks/use-recipe-list-presenter';
+import Loading from '@/components/ui/loading';
 import { RecipeCard } from '@/components/ui/recipe-card';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo } from 'react';
@@ -18,27 +19,14 @@ function RecipeListContent() {
     [searchParams]
   );
 
-  const { recipes, loading, error, fetchRecipes } =
-    useRecipeListPresenter(filters);
+  const { recipes, loading, fetchRecipes } = useRecipeListPresenter(filters);
 
   useEffect(() => {
     fetchRecipes(filters);
   }, [filters, fetchRecipes]);
 
   if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">読み込み中...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center text-red-600">{error}</div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

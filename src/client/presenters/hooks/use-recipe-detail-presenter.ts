@@ -3,11 +3,11 @@
 import { useDI } from '@/client/di/providers';
 import { Recipe } from '@/lib/api-client';
 import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
 
 export interface RecipeDetailPresenterState {
   recipe: Recipe | null;
   loading: boolean;
-  error: string | null;
   currentStep: number;
   isCompleted: boolean;
 }
@@ -28,7 +28,6 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenterState &
   const [state, setState] = useState<RecipeDetailPresenterState>({
     recipe: null,
     loading: false,
-    error: null,
     currentStep: 0,
     isCompleted: false,
   });
@@ -36,17 +35,14 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenterState &
   // レシピ詳細取得
   const fetchRecipe = useCallback(
     async (id: string) => {
-      setState(prev => ({ ...prev, loading: true, error: null }));
+      setState(prev => ({ ...prev, loading: true }));
 
       try {
         const recipe = await recipeService.getRecipeById(id);
 
         if (!recipe) {
-          setState(prev => ({
-            ...prev,
-            error: 'レシピが見つかりませんでした',
-            loading: false,
-          }));
+          setState(prev => ({ ...prev, loading: false }));
+          toast.error('レシピが見つかりませんでした');
           return;
         }
 
@@ -57,15 +53,9 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenterState &
           currentStep: 0,
           isCompleted: false,
         }));
-      } catch (error) {
-        setState(prev => ({
-          ...prev,
-          error:
-            error instanceof Error
-              ? error.message
-              : '不明なエラーが発生しました',
-          loading: false,
-        }));
+      } catch {
+        setState(prev => ({ ...prev, loading: false }));
+        toast.error('レシピの取得に失敗しました');
       }
     },
     [recipeService]
