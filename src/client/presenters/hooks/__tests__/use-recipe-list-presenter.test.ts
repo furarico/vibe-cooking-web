@@ -2,11 +2,7 @@ import { RecipeListFilters } from '@/client/repositories/interfaces/i-recipe-rep
 import { RecipeListService } from '@/client/services/recipe-list/recipe-list-service';
 import { Recipe } from '@/lib/api-client';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import {
-  useRecipeListPresenter,
-  RecipeListPresenterState,
-  RecipeListPresenterActions,
-} from '../use-recipe-list-presenter';
+import { useRecipeListPresenter } from '../use-recipe-list-presenter';
 
 jest.mock('@/client/di/providers', () => ({
   useDI: () => ({
@@ -57,9 +53,7 @@ describe('useRecipeListPresenter', () => {
     const initialFilters: RecipeListFilters = { q: 'パスタ' };
     mockRecipeListService.getRecipes.mockResolvedValue(mockRecipes);
 
-    const { result } = renderHook(() =>
-      useRecipeListPresenter(initialFilters)
-    );
+    const { result } = renderHook(() => useRecipeListPresenter(initialFilters));
 
     expect(result.current.filters).toEqual(initialFilters);
   });
