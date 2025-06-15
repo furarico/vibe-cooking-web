@@ -65,6 +65,8 @@ jobs:
 
       - name: Create Pull Request
         if: steps.verify-changed-files.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           # 現在のブランチ名を取得（作業ブランチ）
           CURRENT_BRANCH="${{ github.head_ref || github.ref_name }}"
@@ -75,6 +77,8 @@ jobs:
           # Git設定
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+
+          git checkout $CURRENT_BRANCH
 
           # 新しいブランチを作成してチェックアウト
           git checkout -b "$NEW_BRANCH"
