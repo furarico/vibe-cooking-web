@@ -9,7 +9,9 @@ beforeAll(() => {
   console.error = (...args) => {
     if (
       typeof args[0] === 'string' &&
-      args[0].includes('Warning: An update to TestComponent inside a test was not wrapped in act')
+      args[0].includes(
+        'Warning: An update to TestComponent inside a test was not wrapped in act'
+      )
     ) {
       return;
     }
@@ -149,7 +151,7 @@ describe('useRecipesByCategoryPresenter', () => {
 
     // プロミスを解決
     resolvePromise!(mockRecipes);
-    
+
     await act(async () => {
       await promise;
     });
@@ -220,7 +222,7 @@ describe('useRecipesByCategoryPresenter', () => {
 
     // プロミスを解決
     resolveSecondPromise!(mockRecipes);
-    
+
     await act(async () => {
       await secondPromise;
     });

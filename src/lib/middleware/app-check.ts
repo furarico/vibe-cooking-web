@@ -46,7 +46,7 @@ async function verifyAppCheck(
     }
 
     return { isValid: true };
-  } catch (error) {
+  } catch {
     return {
       isValid: false,
       errorResponse: NextResponse.json(
