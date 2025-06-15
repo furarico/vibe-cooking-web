@@ -8,6 +8,10 @@ export class RecipeService {
     return await this.recipeRepository.findAll();
   }
 
+  async getRecipesByCategoryId(categoryId: string): Promise<Recipe[]> {
+    return await this.recipeRepository.findByCategoryId(categoryId);
+  }
+
   async getRecipeById(id: string): Promise<Recipe | null> {
     return await this.recipeRepository.findById(id);
   }

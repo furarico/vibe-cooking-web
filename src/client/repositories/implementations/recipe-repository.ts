@@ -22,6 +22,25 @@ export class RecipeRepository implements IRecipeRepository {
     }
   }
 
+  async findByCategoryId(categoryId: string): Promise<Recipe[]> {
+    try {
+      console.log('📡 カテゴリ別レシピ一覧取得開始:', categoryId);
+      const response: RecipesGet200Response = await this.apiClient.recipesGet({
+        categoryId,
+      });
+      console.log('✅ カテゴリ別レシピ一覧取得成功:', response);
+      return response.recipes || [];
+    } catch (error) {
+      console.error('❌ カテゴリ別レシピ一覧取得エラー:', error);
+      if (error instanceof Error) {
+        throw new Error(
+          `カテゴリ別レシピ一覧の取得に失敗しました: ${error.message}`
+        );
+      }
+      throw new Error('カテゴリ別レシピ一覧の取得に失敗しました');
+    }
+  }
+
   async findById(id: string): Promise<Recipe | null> {
     try {
       const recipe: Recipe = await this.apiClient.recipesIdGet(id);
