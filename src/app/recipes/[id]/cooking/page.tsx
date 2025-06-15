@@ -10,6 +10,7 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { CookingInstructionCard } from '@/components/ui/cooking-instruction-card';
+import { FixedBottomButton } from '@/components/ui/fixed-bottom-button';
 import { ProgressBar } from '@/components/ui/instruction-progress';
 import Loading from '@/components/ui/loading';
 import { RecipeCard } from '@/components/ui/recipe-card';
@@ -92,8 +93,6 @@ export default function Page({ params }: PageProps) {
         imageAlt={recipe.title || ''}
       />
 
-      <ProgressBar totalSteps={totalSteps} currentStep={currentStep + 1} />
-
       <Carousel className="w-[calc(100%-96px)]" setApi={setApi}>
         <CarouselContent>
           {recipe.instructions?.map(instruction => (
@@ -109,6 +108,12 @@ export default function Page({ params }: PageProps) {
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
+
+      <ProgressBar totalSteps={totalSteps} currentStep={currentStep + 1} />
+
+      <FixedBottomButton href={`/recipes/${recipeId}`}>
+        Vibe Cooking をおわる
+      </FixedBottomButton>
     </div>
   );
 }

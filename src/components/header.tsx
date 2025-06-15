@@ -2,18 +2,28 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { SearchIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { ArrowLeftIcon, SearchIcon } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 import React from 'react';
 
 const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const router = useRouter();
+  const pathname = usePathname();
+
+  const handleGoBack = () => {
+    router.back();
+  };
 
   return (
-    <header className="w-full px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+    <header className="w-full px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center gap-2">
+      {pathname !== '/' && (
+        <Button variant="outline" size="icon" onClick={handleGoBack}>
+          <ArrowLeftIcon className="w-4 h-4" />
+        </Button>
+      )}
       <form
-        className="flex items-center gap-2 w-full"
+        className="w-full flex flex-row items-center gap-2"
         action={() => {
           router.push(`/recipes?q=${searchQuery}`);
         }}
@@ -24,7 +34,7 @@ const Header: React.FC = () => {
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
         />
-        <Button type="submit">
+        <Button size="icon" type="submit">
           <SearchIcon className="w-4 h-4" />
         </Button>
       </form>

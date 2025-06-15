@@ -1,6 +1,7 @@
 'use client';
 
 import { useRecipeDetailPresenter } from '@/client/presenters/use-recipe-detail-presenter';
+import { FixedBottomButton } from '@/components/ui/fixed-bottom-button';
 import { Ingredients } from '@/components/ui/ingredients';
 import { Instructions } from '@/components/ui/instructions';
 import Loading from '@/components/ui/loading';
@@ -98,6 +99,10 @@ export default function Page({ params }: PageProps) {
         {/* 作成手順 */}
         <Instructions steps={instructionsData} />
       </div>
+
+      <FixedBottomButton href={`/recipes/${recipeId}/cooking`}>
+        Vibe Cooking をはじめる
+      </FixedBottomButton>
     </Suspense>
   );
 }
