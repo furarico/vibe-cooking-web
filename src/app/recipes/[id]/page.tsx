@@ -1,37 +1,102 @@
+'use client';
+
 import { Ingredients } from '@/components/ui/ingredients';
 import { RecipeDetailHeader } from '@/components/ui/recipe-detail-header';
 import { TimeCard } from '@/components/ui/time-card';
+import { DefaultApi, Recipe } from '@/lib/api-client';
+import { useEffect, useState } from 'react';
 
-export default function Page() {
-  // サンプルデータ
-  const sampleIngredients = [
-    { name: '鶏もも肉', amount: '300', unit: 'g', note: '' },
-    { name: '玉ねぎ', amount: '1', unit: '個', note: '中サイズ' },
-    { name: '人参', amount: '1', unit: '本', note: '' },
-    { name: 'じゃがいも', amount: '2', unit: '個', note: '' },
-    { name: 'カレールー', amount: '1/2', unit: '箱', note: '' },
-    { name: '水', amount: '400', unit: 'ml', note: '' },
-  ];
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default function Page({ params }: PageProps) {
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [recipeId, setRecipeId] = useState<string>('');
+
+  useEffect(() => {
+    const fetchRecipeId = async () => {
+      const resolvedParams = await params;
+      setRecipeId(resolvedParams.id);
+    };
+    fetchRecipeId();
+  }, [params]);
+
+  useEffect(() => {
+    if (!recipeId) return;
+
+    const fetchRecipe = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const apiClient = new DefaultApi();
+        const recipeData = await apiClient.recipesIdGet(recipeId);
+        setRecipe(recipeData);
+      } catch (err) {
+        console.error('レシピ取得エラー:', err);
+        setError('レシピの取得に失敗しました');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecipe();
+  }, [recipeId]);
+
+  if (loading) {
+    return (
+      <div className="w-full max-w-[600px] mx-auto min-h-screen flex items-center justify-center">
+        <p className="text-lg text-gray-600">読み込み中...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full max-w-[600px] mx-auto min-h-screen flex items-center justify-center">
+        <p className="text-lg text-red-600">{error}</p>
+      </div>
+    );
+  }
+
+  if (!recipe) {
+    return (
+      <div className="w-full max-w-[600px] mx-auto min-h-screen flex items-center justify-center">
+        <p className="text-lg text-gray-600">レシピが見つかりません</p>
+      </div>
+    );
+  }
+
+  // APIから取得したデータを材料コンポーネント用に変換
+  const ingredientsData =
+    recipe.ingredients?.map((ingredient, index) => ({
+      name: ingredient.name || '',
+      amount: ingredient.amount || '',
+      unit: ingredient.unit || '',
+      note: ingredient.notes || '',
+    })) || [];
 
   return (
     <div className="w-full max-w-[600px] mx-auto min-h-screen">
       <div className="flex flex-col gap-8">
         <div className="items-center justify-center">
           <RecipeDetailHeader
-            title="kantacky"
-            description="ore"
-            tags={['tag1', 'tag2', 'tag3']}
+            title={recipe.title || ''}
+            description={recipe.description || ''}
+            tags={recipe.tags || []}
           />
         </div>
         {/* 調理時間カード */}
         <div className="flex flex-row items-center justify-center gap-2">
-          <TimeCard title="準備時間" label="30分" />
-          <TimeCard title="調理時間" label="30分" />
-          <TimeCard title="人前" label="4人前" />
+          <TimeCard title="準備時間" label={`${recipe.prepTime || 0}分`} />
+          <TimeCard title="調理時間" label={`${recipe.cookTime || 0}分`} />
+          <TimeCard title="人前" label={`${recipe.servings || 0}人前`} />
         </div>
 
         {/* 材料リスト */}
-        <Ingredients ingredients={sampleIngredients} />
+        <Ingredients ingredients={ingredientsData} />
       </div>
     </div>
   );
