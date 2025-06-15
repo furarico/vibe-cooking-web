@@ -51,22 +51,11 @@ jobs:
       - name: Generate Prisma client
         run: pnpm db:generate
 
-      - name: Check lint errors
-        id: lint-check
-        run: |
-          if pnpm lint:check; then
-            echo "lint_passed=true" >> $GITHUB_OUTPUT
-          else
-            echo "lint_passed=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Run format
-        if: steps.lint-check.outputs.lint_passed == 'true'
         run: pnpm format
 
       - name: Check for changes
         id: verify-changed-files
-        if: steps.lint-check.outputs.lint_passed == 'true'
         run: |
           if [ -n "$(git status --porcelain)" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
@@ -75,7 +64,7 @@ jobs:
           fi
 
       - name: Create Pull Request
-        if: steps.lint-check.outputs.lint_passed == 'true' && steps.verify-changed-files.outputs.changed == 'true'
+        if: steps.verify-changed-files.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
           commit-message: '🤖 自動フォーマット適用'
