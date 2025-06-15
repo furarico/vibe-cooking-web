@@ -17,7 +17,7 @@ concurrency:
 jobs:
   format:
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    if: github.event_name != 'pull_request' || (github.event.pull_request.draft == false && github.event.pull_request.state == 'open')
     permissions:
       contents: write
       pull-requests: write
@@ -30,6 +30,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
