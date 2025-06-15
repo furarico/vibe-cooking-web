@@ -2,7 +2,7 @@ name: Format Code
 
 on:
   push:
-    branches: [main]
+    branches: ['main']
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
@@ -17,7 +17,9 @@ concurrency:
 jobs:
   format:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
+    permissions:
+      contents: write
+      pull-requests: write
 
     strategy:
       matrix:
@@ -62,24 +64,44 @@ jobs:
 
       - name: Create Pull Request
         if: steps.verify-changed-files.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@v7
-        with:
-          commit-message: '🤖 自動フォーマット適用'
-          title: '🤖 自動フォーマット適用'
-          body: |
-            ## 概要
-            自動フォーマットによるコード整形を適用しました。
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 現在のブランチ名を取得
+          CURRENT_BRANCH="${{ github.base_ref || github.ref_name }}"
 
-            ## 変更内容
-            - コードフォーマットの自動適用
-            - リンティングエラーの修正
+          # 新しいブランチ名を生成
+          NEW_BRANCH="auto-format/format-${{ github.run_number }}-${{ github.sha }}"
 
-            ## 確認事項
-            - [ ] フォーマット結果を確認
-            - [ ] 意図しない変更がないことを確認
+          # Git設定
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
 
-            ---
-            *このPRは自動生成されました*
-          branch: auto-format/format-${{ github.run_number }}
-          delete-branch: true
-          base: ${{ github.head_ref || github.ref_name }}
+          # 新しいブランチを作成してチェックアウト
+          git checkout -b "$NEW_BRANCH"
+
+          # 変更をコミット
+          git add -A
+          git commit -m "🤖 自動フォーマット適用"
+
+          # ブランチをプッシュ
+          git push origin "$NEW_BRANCH"
+
+          # PRを作成
+          gh pr create \
+            --title "🤖 自動フォーマット適用" \
+            --body "## 概要
+          自動フォーマットを適用しました。
+
+          ## 変更内容
+          - コードフォーマットの自動適用
+          - スタイルの統一
+
+          ## 確認事項
+          - [ ] フォーマット結果を確認
+          - [ ] 意図しない変更がないことを確認
+
+          ---
+          *このPRは自動生成されました*" \
+            --base "$CURRENT_BRANCH" \
+            --head "$NEW_BRANCH"
