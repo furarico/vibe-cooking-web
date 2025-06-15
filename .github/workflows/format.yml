@@ -67,8 +67,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 現在のブランチ名を取得
-          CURRENT_BRANCH="${{ github.base_ref || github.ref_name }}"
+          # 現在のブランチ名を取得（作業ブランチ）
+          CURRENT_BRANCH="${{ github.head_ref || github.ref_name }}"
 
           # 新しいブランチ名を生成
           NEW_BRANCH="auto-format/format-${{ github.run_number }}-${{ github.sha }}"
