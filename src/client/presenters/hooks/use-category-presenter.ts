@@ -1,11 +1,11 @@
 import { useDI } from '@/client/di/providers';
 import type { Category } from '@/lib/api-client';
 import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface CategoryPresenterState {
   categories: Category[];
   loading: boolean;
-  error: string | null;
 }
 
 interface CategoryPresenterActions {
@@ -17,18 +17,14 @@ export const useCategoryPresenter = (): CategoryPresenterState &
   const { categoryService } = useDI();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const fetchCategories = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
       const fetchedCategories = await categoryService.getAllCategories();
       setCategories(fetchedCategories);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'カテゴリの取得に失敗しました'
-      );
+      toast.error('カテゴリの取得に失敗しました');
       console.error('カテゴリ取得エラー:', err);
     } finally {
       setLoading(false);
@@ -42,7 +38,6 @@ export const useCategoryPresenter = (): CategoryPresenterState &
   return {
     categories,
     loading,
-    error,
     fetchCategories,
   };
 };
