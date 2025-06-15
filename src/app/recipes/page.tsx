@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo } from 'react';
 
-export default function Page() {
+function RecipesContent() {
   const searchParams = useSearchParams();
 
   const filters = useMemo(
@@ -31,7 +31,7 @@ export default function Page() {
   }
 
   return (
-    <Suspense fallback={<Loading />}>
+    <>
       {recipes.length === 0 ? (
         <div className="text-center text-gray-600">
           レシピが見つかりませんでした
@@ -57,6 +57,14 @@ export default function Page() {
           ))}
         </div>
       )}
+    </>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <RecipesContent />
     </Suspense>
   );
 }
