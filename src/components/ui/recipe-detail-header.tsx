@@ -13,7 +13,7 @@ const RecipeDetailHeader = React.forwardRef<
 >(({ className, title, description, tags, ...props }, ref) => {
   return (
     <div
-      className={cn('w-full items-start flex px-4 py-2 flex-col', className)}
+      className={cn('w-full flex flex-col items-start', className)}
       ref={ref}
       {...props}
     >
@@ -26,7 +26,7 @@ const RecipeDetailHeader = React.forwardRef<
         <div className="flex flex-wrap gap-2 mt-2">
           {tags.map((tag, index) => (
             <span key={`${tag}-${index}`} className="text-sm text-slate-600">
-              {tag}
+              #{tag}
             </span>
           ))}
         </div>

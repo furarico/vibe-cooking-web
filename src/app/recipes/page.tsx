@@ -3,6 +3,7 @@
 import { useRecipeListPresenter } from '@/client/presenters/hooks/use-recipe-list-presenter';
 import Loading from '@/components/ui/loading';
 import { RecipeCard } from '@/components/ui/recipe-card';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo } from 'react';
 
@@ -36,7 +37,7 @@ function RecipeListContent() {
           レシピが見つかりませんでした
         </div>
       ) : (
-        <div className="space-y-4">
+        <Link href={`/recipes/${recipes[0].id}`} className="space-y-4">
           {recipes.map(recipe => (
             <RecipeCard
               key={recipe.id}
@@ -45,11 +46,15 @@ function RecipeListContent() {
               description={recipe.description || ''}
               tags={recipe.tags || []}
               cookingTime={(recipe.cookTime || 0) + (recipe.prepTime || 0)}
-              imageUrl={recipe.imageUrl || '/placeholder-recipe.jpg'}
+              imageUrl={
+                recipe.imageUrl && recipe.imageUrl.length > 0
+                  ? recipe.imageUrl
+                  : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png'
+              }
               imageAlt={recipe.title || 'レシピ画像'}
             />
           ))}
-        </div>
+        </Link>
       )}
     </>
   );

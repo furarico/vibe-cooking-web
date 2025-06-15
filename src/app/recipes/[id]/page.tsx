@@ -67,24 +67,20 @@ export default function Page({ params }: PageProps) {
   return (
     <div className="mb-16 flex flex-col gap-8">
       {/* レシピ画像 */}
-      <div className="w-full">
-        <Image
-          src={imageUrl}
-          alt={recipe.title || 'レシピ画像'}
-          width={600}
-          height={300}
-          className="w-full h-[300px] object-cover rounded-lg"
-          priority
-        />
-      </div>
+      <Image
+        src={imageUrl}
+        alt={recipe.title || 'レシピ画像'}
+        width={600}
+        height={300}
+        className="w-full h-[300px] object-cover rounded-lg border-2 border-slate-200"
+        priority
+      />
 
-      <div className="items-center justify-center">
-        <RecipeDetailHeader
-          title={recipe.title || ''}
-          description={recipe.description || ''}
-          tags={recipe.tags || []}
-        />
-      </div>
+      <RecipeDetailHeader
+        title={recipe.title || ''}
+        description={recipe.description || ''}
+        tags={recipe.tags || []}
+      />
 
       {/* 調理時間カード */}
       <div className="flex flex-row items-center justify-center gap-2">
