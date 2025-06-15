@@ -2,7 +2,7 @@ name: Format Code
 
 on:
   push:
-    branches: [main]
+    branches: ['**']
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
@@ -17,7 +17,7 @@ concurrency:
 jobs:
   format:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     permissions:
       contents: write
       pull-requests: write
@@ -30,8 +30,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
@@ -99,4 +97,4 @@ jobs:
             *このPRは自動生成されました（リント通過後のフォーマット適用）*
           branch: auto-format/format-${{ github.run_number }}
           delete-branch: true
-          base: ${{ github.head_ref || github.ref_name }}
+          base: ${{ github.ref_name }}
