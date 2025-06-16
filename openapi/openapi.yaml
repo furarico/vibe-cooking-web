@@ -163,6 +163,12 @@ components:
     Instruction:
       type: object
       properties:
+        id:
+          type: string
+          description: 手順ID
+        recipeId:
+          type: string
+          description: レシピID
         step:
           type: integer
           description: 手順番号
@@ -200,3 +206,37 @@ components:
       required:
         - id
         - name
+
+    VibeRecipe:
+      type: object
+      properties:
+        id:
+          type: string
+          description: VibeレシピID
+        recipeIds:
+          type: array
+          items:
+            type: string
+          description: 関連するレシピIDの配列
+        instructions:
+          type: array
+          items:
+            $ref: '#/components/schemas/VibeInstruction'
+          description: Vibe手順の配列
+      required:
+        - id
+        - recipeIds
+        - instructions
+
+    VibeInstruction:
+      type: object
+      properties:
+        instructionId:
+          type: string
+          description: 手順ID
+        step:
+          type: integer
+          description: 手順番号
+      required:
+        - instructionId
+        - step
