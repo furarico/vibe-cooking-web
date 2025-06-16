@@ -115,6 +115,12 @@ paths:
               required:
                 - recipeIds
       responses:
+        '200':
+          description: 既存のバイブレシピを返します
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VibeRecipe'
         '201':
           description: バイブレシピが正常に作成されました
           content:
