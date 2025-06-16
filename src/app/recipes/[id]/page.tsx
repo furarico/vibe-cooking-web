@@ -7,6 +7,7 @@ import { Instructions } from '@/components/ui/instructions';
 import Loading from '@/components/ui/loading';
 import { RecipeDetailHeader } from '@/components/ui/recipe-detail-header';
 import { TimeCard } from '@/components/ui/time-card';
+import { useSavedRecipe } from '@/hooks/use-saved-recipe';
 import Image from 'next/image';
 import { Suspense, useEffect, useState } from 'react';
 
@@ -17,6 +18,7 @@ interface PageProps {
 export default function Page({ params }: PageProps) {
   const [recipeId, setRecipeId] = useState<string>('');
   const { recipe, loading, fetchRecipe } = useRecipeDetailPresenter();
+  const { isSaved, saveRecipe, removeRecipe } = useSavedRecipe(recipeId);
 
   useEffect(() => {
     const fetchRecipeId = async () => {
@@ -30,6 +32,16 @@ export default function Page({ params }: PageProps) {
     if (!recipeId) return;
     fetchRecipe(recipeId);
   }, [recipeId, fetchRecipe]);
+
+  // 追加ボタンクリック時の処理
+  const handleAddRecipe = () => {
+    if (!isSaved) {
+      const success = saveRecipe();
+      if (success) {
+        console.log(`レシピID ${recipeId} を追加しました`);
+      }
+    }
+  };
 
   if (loading) {
     return <Loading />;
@@ -107,11 +119,11 @@ export default function Page({ params }: PageProps) {
             children: 'Vibe Cooking をはじめる',
           },
           {
-            href: `/recipes/add`,
-            children: '追加',
-            onClick: () => {
-              console.log('追加');
-            },
+            onClick: isSaved ? undefined : handleAddRecipe,
+            href: isSaved ? '/' : undefined,
+            children: isSaved ? '追加済み' : 'お気に入りに追加',
+            variant: isSaved ? 'secondary' : 'outline',
+            disabled: isSaved,
           },
         ]}
       />
