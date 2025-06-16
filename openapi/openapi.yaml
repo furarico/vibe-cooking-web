@@ -212,7 +212,7 @@ components:
       properties:
         id:
           type: string
-          description: vibeレシピID
+          description: VibeレシピID
         recipeIds:
           type: array
           items:
