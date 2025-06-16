@@ -24,7 +24,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="w-full px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center gap-2">
+    <header className="w-full p-2 flex justify-between items-center gap-2">
       {pathname !== '/' && (
         <Button variant="outline" size="icon" onClick={handleGoBack}>
           <ArrowLeftIcon className="w-4 h-4" />
