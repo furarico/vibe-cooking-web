@@ -5,6 +5,7 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { cva } from 'class-variance-authority';
 import { Card } from './card';
+import { SelectRevert } from './select-revert';
 
 const recipeCardVariants = cva(
   'w-full items-stretch flex gap-4 rounded-md border border-slate-200 bg-white p-4 shadow-md transition-all hover:shadow-lg cursor-pointer',
@@ -29,6 +30,7 @@ interface RecipeCardProps extends React.HTMLAttributes<HTMLDivElement> {
   cookingTime: number;
   imageUrl: string;
   imageAlt: string;
+  onDelete?: () => void;
 }
 
 const RecipeCard = React.forwardRef<HTMLDivElement, RecipeCardProps>(
@@ -42,13 +44,14 @@ const RecipeCard = React.forwardRef<HTMLDivElement, RecipeCardProps>(
       cookingTime,
       imageUrl,
       imageAlt,
+      onDelete,
       ...props
     },
     ref
   ) => {
     return (
       <Card
-        className={cn(recipeCardVariants({ variant, className }))}
+        className={cn(recipeCardVariants({ variant, className }), 'relative')}
         ref={ref}
         {...props}
       >
@@ -106,6 +109,15 @@ const RecipeCard = React.forwardRef<HTMLDivElement, RecipeCardProps>(
             </span>
           </div>
         </div>
+
+        {/* Delete Button */}
+        {onDelete && (
+          <SelectRevert
+            onClick={() => {
+              onDelete();
+            }}
+          />
+        )}
       </Card>
     );
   }

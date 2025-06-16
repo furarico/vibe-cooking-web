@@ -79,9 +79,14 @@ export default function Page({ params }: PageProps) {
         currentStep={state.currentStep + 1}
       />
 
-      <FixedBottomButton href={`/recipes/${state.recipe.id}`}>
-        Vibe Cooking をおわる
-      </FixedBottomButton>
+      <FixedBottomButton
+        buttons={[
+          {
+            href: `/recipes/${state.recipe.id}`,
+            children: 'Vibe Cooking をおわる',
+          },
+        ]}
+      />
     </div>
   );
 }
