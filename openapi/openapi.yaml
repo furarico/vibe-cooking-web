@@ -95,6 +95,40 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Category'
+  /vibe-recipe:
+    post:
+      summary: バイブレシピ作成
+      description: 指定されたレシピIDsからバイブレシピを作成
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recipeIds:
+                  type: array
+                  items:
+                    type: string
+                  description: バイブレシピに含めるレシピIDの配列
+                  example: ['cm123abc456', 'cm789def012']
+              required:
+                - recipeIds
+      responses:
+        '200':
+          description: 既存のバイブレシピを返します
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VibeRecipe'
+        '201':
+          description: バイブレシピが正常に作成されました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VibeRecipe'
+        '400':
+          description: 無効なリクエスト
 
 components:
   schemas:
