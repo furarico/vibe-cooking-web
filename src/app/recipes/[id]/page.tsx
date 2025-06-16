@@ -1,6 +1,7 @@
 'use client';
 
 import { useRecipeDetailPresenter } from '@/client/presenters/use-recipe-detail-presenter';
+import { useSavedRecipePresenter } from '@/client/presenters/use-saved-recipe-presenter';
 import { FixedBottomButton } from '@/components/ui/fixed-bottom-button';
 import { Ingredients } from '@/components/ui/ingredients';
 import { Instructions } from '@/components/ui/instructions';
@@ -8,7 +9,6 @@ import Loading from '@/components/ui/loading';
 import { RecipeDetailHeader } from '@/components/ui/recipe-detail-header';
 import { SelectCount } from '@/components/ui/select-count';
 import { TimeCard } from '@/components/ui/time-card';
-import { useSavedRecipe } from '@/hooks/use-saved-recipe';
 import { getSavedRecipesCount } from '@/lib/local-storage';
 import Image from 'next/image';
 import { Suspense, useEffect, useState } from 'react';
@@ -21,7 +21,7 @@ export default function Page({ params }: PageProps) {
   const [recipeId, setRecipeId] = useState<string>('');
   const [savedCount, setSavedCount] = useState(0);
   const { recipe, loading, fetchRecipe } = useRecipeDetailPresenter();
-  const { isSaved, canSave, saveRecipe } = useSavedRecipe(recipeId);
+  const { isSaved, canSave, saveRecipe } = useSavedRecipePresenter(recipeId);
 
   useEffect(() => {
     const fetchRecipeId = async () => {
