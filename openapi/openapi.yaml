@@ -207,12 +207,12 @@ components:
         - id
         - name
     
-    vibeRecipe:
+    VibeRecipe:
       type: object
       properties:
         id:
           type: string
-          description: vibeレシピID
+          description: VibeレシピID
         recipeIds:
           type: array
           items:
@@ -222,13 +222,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/vibeInstruction'
-          description: vibe手順の配列
+          description: Vibe手順の配列
       required:
         - id
         - recipeIds
         - instructions
 
-    vibeInstruction:
+    VibeInstruction:
       type: object
       properties:
         instructionId:
