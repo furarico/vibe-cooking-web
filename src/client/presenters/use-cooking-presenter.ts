@@ -114,14 +114,31 @@ export const useCookingPresenter = (): CookingPresenter => {
 
     audioRecognitionService.addListener(updateState);
     audioPlayerService.addListener(updateState);
-  }, [audioRecognitionService, audioPlayerService, state]);
+
+    return () => {
+      audioRecognitionService.removeListener(updateState);
+      audioPlayerService.removeListener(updateState);
+    };
+  }, [audioRecognitionService, audioPlayerService]);
 
   useEffect(() => {
-    actions.setCurrentStep(state.carouselApi?.selectedScrollSnap() ?? 0);
-    state.carouselApi?.on('select', () => {
-      actions.setCurrentStep(state.carouselApi?.selectedScrollSnap() ?? 0);
-    });
-  }, [state.carouselApi, actions]);
+    if (!state.carouselApi) return;
+
+    const updateCurrentStep = () => {
+      const selectedIndex = state.carouselApi?.selectedScrollSnap() ?? 0;
+      setState(prev => ({ ...prev, currentStep: selectedIndex }));
+    };
+
+    // 初期設定
+    updateCurrentStep();
+
+    // イベントリスナー登録
+    state.carouselApi.on('select', updateCurrentStep);
+
+    return () => {
+      state.carouselApi?.off('select', updateCurrentStep);
+    };
+  }, [state.carouselApi]);
 
   useEffect(() => {
     if (!state.carouselApi) return;
