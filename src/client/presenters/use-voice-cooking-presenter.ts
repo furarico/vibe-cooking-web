@@ -58,8 +58,7 @@ export interface VoiceCookingPresenter {
 }
 
 export const useVoiceCookingPresenter = (): VoiceCookingPresenter => {
-  const { audioPlayerService } = useDI();
-  const { voiceCookingService } = useDI();
+  const { audioPlayerService, voiceCookingService } = useDI();
 
   // 状態の初期化
   const [state, setState] = useState<VoiceCookingPresenterState>(() => {
