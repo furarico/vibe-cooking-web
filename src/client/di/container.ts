@@ -47,7 +47,9 @@ export const createDIContainer = (): DIContainer => {
 
   // Service の作成
   const audioPlayerService = new AudioPlayerServiceImpl();
-  const audioRecognitionService = new AudioRecognitionServiceImpl();
+  const audioRecognitionService = new AudioRecognitionServiceImpl(
+    speechRecognitionRepository
+  );
   const categoryService = new CategoryService(categoryRepository);
   const recipeListService = new RecipeListService(recipeRepository);
   const recipeService = new RecipeService(recipeRepository);

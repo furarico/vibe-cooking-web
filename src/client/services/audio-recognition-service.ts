@@ -1,6 +1,8 @@
 import { RecipeRepository } from '@/client/repositories/implementations/recipe-repository';
-import { WebSpeechRecognitionRepository } from '@/client/repositories/implementations/speech-recognition-repository';
-import type { SpeechRecognitionErrorEvent } from '@/client/repositories/interfaces/i-speech-recognition-repository';
+import type {
+  SpeechRecognitionErrorEvent,
+  SpeechRecognitionRepository,
+} from '@/client/repositories/interfaces/i-speech-recognition-repository';
 import { AudioPlayerServiceImpl } from '@/client/services/audio-player-service';
 import { RecipeService } from '@/client/services/recipe-service';
 import { DefaultApi } from '@/lib/api-client';
@@ -48,8 +50,8 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
   // イベントリスナー
   private listeners: Set<() => void> = new Set();
 
-  constructor() {
-    this.speechRecognitionRepository = new WebSpeechRecognitionRepository();
+  constructor(speechRecognitionRepository: SpeechRecognitionRepository) {
+    this.speechRecognitionRepository = speechRecognitionRepository;
     this.recipeService = new RecipeService(
       new RecipeRepository(new DefaultApi())
     );

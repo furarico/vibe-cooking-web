@@ -1,8 +1,8 @@
 import { useDI } from '@/client/di/providers';
 import { useCookingPresenter } from '@/client/presenters/use-cooking-presenter';
-import { RecipeService } from '@/client/services/recipe-service';
 import { AudioPlayerService } from '@/client/services/audio-player-service';
 import { AudioRecognitionService } from '@/client/services/audio-recognition-service';
+import { RecipeService } from '@/client/services/recipe-service';
 import { Recipe } from '@/lib/api-client';
 import { act, renderHook } from '@testing-library/react';
 
@@ -190,6 +190,7 @@ describe('useCookingPresenter', () => {
       };
 
       act(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         result.current.actions.setCarouselApi(mockCarouselApi as any);
       });
 
