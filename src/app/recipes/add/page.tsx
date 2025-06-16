@@ -99,14 +99,11 @@ export default function Page() {
             </p>
           </div>
         ) : (
-          <div className="grid gap-4">
+          <div className="flex flex-col gap-4">
             {savedRecipes.map(recipe => (
-              <Link
-                key={recipe.id}
-                href={`/recipes/${recipe.id}`}
-                className="block"
-              >
+              <Link key={recipe.id} href={`/recipes/${recipe.id}`}>
                 <RecipeCard
+                  variant="row"
                   title={recipe.title ?? ''}
                   description={recipe.description ?? ''}
                   tags={recipe.tags ?? []}
@@ -117,7 +114,6 @@ export default function Page() {
                       : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png'
                   }
                   imageAlt={recipe.title ?? ''}
-                  className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
                 />
               </Link>
             ))}
