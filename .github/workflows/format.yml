@@ -67,18 +67,16 @@ jobs:
         if: steps.verify-changed-files.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
+          CURRENT_BRANCH: ${{ github.head_ref || github.ref_name }}
+          NEW_BRANCH: auto-format/format-${{ github.run_number }}-${{ github.sha }}
         run: |
-          # 現在のブランチ名を取得（作業ブランチ）
-          CURRENT_BRANCH="${{ github.head_ref || github.ref_name }}"
-
-          # 新しいブランチ名を生成
-          NEW_BRANCH="auto-format/format-${{ github.run_number }}-${{ github.sha }}"
-
           # Git設定
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-          git checkout $CURRENT_BRANCH
+          git branch -a
+
+          git checkout "$CURRENT_BRANCH"
 
           # 新しいブランチを作成してチェックアウト
           git checkout -b "$NEW_BRANCH"
@@ -90,7 +88,7 @@ jobs:
           # ブランチをプッシュ
           git push origin "$NEW_BRANCH"
 
-                    # PRを作成
+          # PRを作成
           gh pr create \
             --title "🤖 自動フォーマット適用" \
             --body "## 概要
