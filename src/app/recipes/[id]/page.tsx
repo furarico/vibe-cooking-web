@@ -81,7 +81,7 @@ export default function Page({ params }: PageProps) {
 
   return (
     <Suspense fallback={<Loading />}>
-      <div className="mb-16 flex flex-col gap-8">
+      <div className="mb-30 flex flex-col gap-8">
         {/* レシピ画像 */}
         <Image
           src={imageUrl}
@@ -114,16 +114,28 @@ export default function Page({ params }: PageProps) {
 
       <FixedBottomButton
         buttons={[
+          /*
           {
             href: `/recipes/${recipeId}/cooking`,
             children: 'Vibe Cooking をはじめる',
           },
+        */
           {
             onClick: isSaved ? undefined : handleAddRecipe,
-            href: isSaved ? '/' : undefined,
-            children: isSaved ? '追加済み' : 'お気に入りに追加',
-            variant: isSaved ? 'secondary' : 'outline',
+            href: isSaved ? undefined : `/`,
+            children: isSaved ? '✓ 追加済み' : 'お気に入りに追加',
+            variant: isSaved ? 'default' : 'outline',
             disabled: isSaved,
+            className: isSaved
+              ? 'bg-slate-300 text-white cursor-not-allowed opacity-70 border-0'
+              : 'bg-black text-white hover:bg-slate-600 transition-all duration-200 font-medium border-0',
+          },
+          {
+            href: '/recipes/add',
+            children: '保存済みレシピ一覧',
+            variant: 'ghost',
+            className:
+              'text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200 hover:border-gray-300 transition-all duration-200',
           },
         ]}
       />

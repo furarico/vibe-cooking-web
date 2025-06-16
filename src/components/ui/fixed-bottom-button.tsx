@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -14,6 +15,7 @@ interface ButtonConfig {
     | 'ghost'
     | 'link';
   disabled?: boolean;
+  className?: string;
 }
 
 interface FixedBottomButtonProps {
@@ -33,6 +35,7 @@ interface SingleFixedBottomButtonProps {
     | 'ghost'
     | 'link';
   disabled?: boolean;
+  className?: string;
 }
 
 export function FixedBottomButton({ buttons }: FixedBottomButtonProps) {
@@ -54,7 +57,7 @@ export function FixedBottomButton({ buttons }: FixedBottomButtonProps) {
               return (
                 <Button
                   key={index}
-                  className="w-full"
+                  className={cn('w-full', button.className)}
                   variant={button.variant || 'default'}
                   disabled={button.disabled}
                   onClick={handleClickAndNavigate}
@@ -68,7 +71,7 @@ export function FixedBottomButton({ buttons }: FixedBottomButtonProps) {
               return (
                 <Button
                   key={index}
-                  className="w-full"
+                  className={cn('w-full', button.className)}
                   variant={button.variant || 'default'}
                   disabled={button.disabled}
                   onClick={button.onClick}
@@ -83,7 +86,7 @@ export function FixedBottomButton({ buttons }: FixedBottomButtonProps) {
                 <Button
                   key={index}
                   asChild
-                  className="w-full"
+                  className={cn('w-full', button.className)}
                   variant={button.variant || 'default'}
                   disabled={button.disabled}
                 >
@@ -96,7 +99,7 @@ export function FixedBottomButton({ buttons }: FixedBottomButtonProps) {
               return (
                 <Button
                   key={index}
-                  className="w-full"
+                  className={cn('w-full', button.className)}
                   variant={button.variant || 'default'}
                   disabled={button.disabled}
                 >
