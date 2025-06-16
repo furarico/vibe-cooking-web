@@ -111,7 +111,7 @@ paths:
                   items:
                     type: string
                   description: バイブレシピに含めるレシピIDの配列
-                  example: ["cm123abc456", "cm789def012"]
+                  example: ['cm123abc456', 'cm789def012']
               required:
                 - recipeIds
       responses:
