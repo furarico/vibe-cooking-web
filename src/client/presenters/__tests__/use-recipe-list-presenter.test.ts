@@ -38,7 +38,7 @@ describe('useRecipeListPresenter', () => {
     jest.clearAllMocks();
   });
 
-  it('初期状態が正しく設定される', () => {
+  it('初期状態が正しく設定される', async () => {
     mockRecipeListService.getRecipes.mockResolvedValue(mockRecipes);
 
     const { result } = renderHook(() => useRecipeListPresenter());
@@ -46,15 +46,25 @@ describe('useRecipeListPresenter', () => {
     expect(result.current.recipes).toEqual([]);
     expect(result.current.loading).toBe(true);
     expect(result.current.filters).toEqual({});
+
+    // 初期化が完了するまで待機
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
   });
 
-  it('初期フィルターで初期化される', () => {
+  it('初期フィルターで初期化される', async () => {
     const initialFilters: RecipeListFilters = { q: 'パスタ' };
     mockRecipeListService.getRecipes.mockResolvedValue(mockRecipes);
 
     const { result } = renderHook(() => useRecipeListPresenter(initialFilters));
 
     expect(result.current.filters).toEqual(initialFilters);
+
+    // 初期化が完了するまで待機
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
   });
 
   it('レシピ取得が成功する', async () => {

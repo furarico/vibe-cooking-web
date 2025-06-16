@@ -1,5 +1,7 @@
 import {
+  SpeechRecognition,
   SpeechRecognitionErrorEvent,
+  SpeechRecognitionEvent,
   SpeechRecognitionOptions,
   SpeechRecognitionRepository,
 } from '../interfaces/i-speech-recognition-repository';

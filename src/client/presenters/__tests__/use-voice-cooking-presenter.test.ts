@@ -3,6 +3,11 @@ import { AudioPlayerService } from '@/client/services/audio-player-service';
 import { VoiceCookingService } from '@/client/services/voice-cooking-service';
 import { act, renderHook } from '@testing-library/react';
 
+// DIプロバイダーをモック
+jest.mock('@/client/di/providers', () => ({
+  useDI: jest.fn(),
+}));
+
 const mockVoiceCookingService = {
   getSpeechStatus: jest.fn(),
   getTranscript: jest.fn(),
@@ -36,6 +41,9 @@ const mockAudioPlayerService = {
 } as jest.Mocked<AudioPlayerService>;
 
 describe('useVoiceCookingPresenter', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let mockDIContainer: any;
+
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -61,12 +69,24 @@ describe('useVoiceCookingPresenter', () => {
 
     mockAudioPlayerService.isPlaying.mockReturnValue(false);
     mockAudioPlayerService.getCurrentAudioUrl.mockReturnValue(null);
+
+    mockDIContainer = {
+      voiceCookingService: mockVoiceCookingService,
+      audioPlayerService: mockAudioPlayerService,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any;
   });
 
+  const renderHookWithDI = () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { useDI } = require('@/client/di/providers');
+    (useDI as jest.Mock).mockReturnValue(mockDIContainer);
+
+    return renderHook(() => useVoiceCookingPresenter());
+  };
+
   it('初期状態が正しく設定される', () => {
-    const { result } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { result } = renderHookWithDI();
 
     expect(result.current.state.speechStatus).toEqual({
       isRecording: false,
@@ -91,9 +111,7 @@ describe('useVoiceCookingPresenter', () => {
   it('音声認識開始アクションが正常に動作する', async () => {
     mockVoiceCookingService.startSpeechRecognition.mockResolvedValue();
 
-    const { result } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { result } = renderHookWithDI();
 
     await act(async () => {
       await result.current.actions.startSpeechRecognition();
@@ -109,9 +127,7 @@ describe('useVoiceCookingPresenter', () => {
     mockVoiceCookingService.startSpeechRecognition.mockRejectedValue(error);
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-    const { result } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { result } = renderHookWithDI();
 
     await act(async () => {
       await result.current.actions.startSpeechRecognition();
@@ -125,9 +141,7 @@ describe('useVoiceCookingPresenter', () => {
   });
 
   it('音声認識停止アクションが正常に動作する', () => {
-    const { result } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { result } = renderHookWithDI();
 
     act(() => {
       result.current.actions.stopSpeechRecognition();
@@ -139,9 +153,7 @@ describe('useVoiceCookingPresenter', () => {
   });
 
   it('トランスクリプトクリアアクションが正常に動作する', () => {
-    const { result } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { result } = renderHookWithDI();
 
     act(() => {
       result.current.actions.clearTranscript();
@@ -151,9 +163,7 @@ describe('useVoiceCookingPresenter', () => {
   });
 
   it('トリガー履歴クリアアクションが正常に動作する', () => {
-    const { result } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { result } = renderHookWithDI();
 
     act(() => {
       result.current.actions.clearTriggerHistory();
@@ -167,9 +177,7 @@ describe('useVoiceCookingPresenter', () => {
   it('レシピ選択アクションが正常に動作する', async () => {
     mockVoiceCookingService.selectRecipe.mockResolvedValue();
 
-    const { result } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { result } = renderHookWithDI();
 
     await act(async () => {
       await result.current.actions.selectRecipe('recipe-1');
@@ -185,9 +193,7 @@ describe('useVoiceCookingPresenter', () => {
     mockVoiceCookingService.selectRecipe.mockRejectedValue(error);
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-    const { result } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { result } = renderHookWithDI();
 
     await act(async () => {
       await result.current.actions.selectRecipe('recipe-1');
@@ -201,9 +207,7 @@ describe('useVoiceCookingPresenter', () => {
   });
 
   it('次のステップアクションが正常に動作する', () => {
-    const { result } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { result } = renderHookWithDI();
 
     act(() => {
       result.current.actions.nextStep();
@@ -213,9 +217,7 @@ describe('useVoiceCookingPresenter', () => {
   });
 
   it('前のステップアクションが正常に動作する', () => {
-    const { result } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { result } = renderHookWithDI();
 
     act(() => {
       result.current.actions.prevStep();
@@ -225,9 +227,7 @@ describe('useVoiceCookingPresenter', () => {
   });
 
   it('レシピリストに戻るアクションが正常に動作する', () => {
-    const { result } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { result } = renderHookWithDI();
 
     act(() => {
       result.current.actions.backToRecipeList();
@@ -236,46 +236,37 @@ describe('useVoiceCookingPresenter', () => {
     expect(mockVoiceCookingService.backToRecipeList).toHaveBeenCalledTimes(1);
   });
 
-  it('テスト音声再生アクションが正常に動作する', async () => {
+  it('音声再生アクションが正常に動作する', async () => {
     mockAudioPlayerService.playAudio.mockResolvedValue();
 
-    const { result } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { result } = renderHookWithDI();
 
     await act(async () => {
-      await result.current.actions.playTestAudio();
+      await result.current.actions.playAudio('https://example.com/test.mp3');
     });
 
     expect(mockAudioPlayerService.playAudio).toHaveBeenCalledWith(
-      'https://r2.dev.vibe-cooking.furari.co/instructions/cmbupoqed0000vs5x1xxjgb1w/5omL6aCG-1749813349586.mp3'
+      'https://example.com/test.mp3'
     );
   });
 
-  it('テスト音声再生でエラーが発生した場合にコンソールエラーが出力される', async () => {
+  it('音声再生でエラーが発生した場合にコンソールエラーが出力される', async () => {
     const error = new Error('音声再生エラー');
     mockAudioPlayerService.playAudio.mockRejectedValue(error);
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-    const { result } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { result } = renderHookWithDI();
 
     await act(async () => {
-      await result.current.actions.playTestAudio();
+      await result.current.actions.playAudio('https://example.com/test.mp3');
     });
 
-    expect(consoleSpy).toHaveBeenCalledWith(
-      'テスト音声再生に失敗しました:',
-      error
-    );
+    expect(consoleSpy).toHaveBeenCalledWith('音声再生に失敗しました:', error);
     consoleSpy.mockRestore();
   });
 
   it('音声停止アクションが正常に動作する', () => {
-    const { result } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { result } = renderHookWithDI();
 
     act(() => {
       result.current.actions.stopAudio();
@@ -285,9 +276,7 @@ describe('useVoiceCookingPresenter', () => {
   });
 
   it('音声一時停止アクションが正常に動作する', () => {
-    const { result } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { result } = renderHookWithDI();
 
     act(() => {
       result.current.actions.pauseAudio();
@@ -297,18 +286,14 @@ describe('useVoiceCookingPresenter', () => {
   });
 
   it('サービスにリスナーが追加される', () => {
-    renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    renderHookWithDI();
 
     expect(mockVoiceCookingService.addListener).toHaveBeenCalledTimes(1);
     expect(mockAudioPlayerService.addListener).toHaveBeenCalledTimes(1);
   });
 
   it('アンマウント時にリスナーが削除される', () => {
-    const { unmount } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { unmount } = renderHookWithDI();
 
     unmount();
 
@@ -322,9 +307,7 @@ describe('useVoiceCookingPresenter', () => {
       mockListener.mockImplementation(listener);
     });
 
-    const { result } = renderHook(() =>
-      useVoiceCookingPresenter(mockVoiceCookingService, mockAudioPlayerService)
-    );
+    const { result } = renderHookWithDI();
 
     // 初期状態を確認
     expect(result.current.state.transcript).toBe('');

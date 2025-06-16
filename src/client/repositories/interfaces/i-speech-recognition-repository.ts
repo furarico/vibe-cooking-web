@@ -10,11 +10,11 @@ export interface SpeechRecognitionOptions {
   onEnd: () => void;
 }
 
-interface SpeechRecognitionConstructor {
+export interface SpeechRecognitionConstructor {
   new (): SpeechRecognition;
 }
 
-interface SpeechRecognition extends EventTarget {
+export interface SpeechRecognition extends EventTarget {
   lang: string;
   continuous: boolean;
   interimResults: boolean;
@@ -32,7 +32,7 @@ interface SpeechRecognition extends EventTarget {
   onend: ((this: SpeechRecognition, ev: Event) => void) | null;
 }
 
-interface SpeechRecognitionEvent extends Event {
+export interface SpeechRecognitionEvent extends Event {
   resultIndex: number;
   results: SpeechRecognitionResultList;
 }

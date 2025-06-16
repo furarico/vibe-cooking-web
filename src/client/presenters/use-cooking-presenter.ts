@@ -29,7 +29,7 @@ export const useCookingPresenter = (): CookingPresenterState &
   const [state, setState] = useState<CookingPresenterState>({
     recipe: null,
     loading: false,
-    currentStep: 1,
+    currentStep: 0,
     totalSteps: 0,
     isCompleted: false,
   });
@@ -100,11 +100,15 @@ export const useCookingPresenter = (): CookingPresenterState &
 
   // 前のステップ
   const prevStep = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      currentStep: Math.max(prev.currentStep - 1, 0),
-      isCompleted: false,
-    }));
+    setState(prev => {
+      if (!prev.recipe) return prev;
+
+      return {
+        ...prev,
+        currentStep: Math.max(prev.currentStep - 1, 0),
+        isCompleted: false,
+      };
+    });
   }, []);
 
   // 進行状況リセット
