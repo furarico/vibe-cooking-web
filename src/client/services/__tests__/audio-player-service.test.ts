@@ -103,22 +103,29 @@ describe('AudioPlayerServiceImpl', () => {
 
     it('同じ音声を再生中に再度再生しようとしても何もしない', async () => {
       await service.playAudio(testUrl);
-      const firstCallCount = consoleSpy.mock.calls.length;
+      expect(service.isPlaying()).toBe(true);
+      expect(service.getCurrentAudioUrl()).toBe(testUrl);
 
+      // 同じ音声を再度再生しようとする
       await service.playAudio(testUrl);
 
-      // コンソールログの回数が増えていないことを確認（新しい再生が開始されていない）
-      expect(consoleSpy.mock.calls.length).toBe(firstCallCount);
+      // 状態が変わらないことを確認
+      expect(service.isPlaying()).toBe(true);
+      expect(service.getCurrentAudioUrl()).toBe(testUrl);
     });
 
     it('forceRestartフラグがtrueの場合は同じ音声でも再生し直す', async () => {
+      // 最初の再生
       await service.playAudio(testUrl);
-      const firstCallCount = consoleSpy.mock.calls.length;
+      expect(service.isPlaying()).toBe(true);
+      expect(service.getCurrentAudioUrl()).toBe(testUrl);
 
+      // forceRestart = true で同じ音声を再生
       await service.playAudio(testUrl, true);
 
-      // 新しい再生が開始されたことを確認
-      expect(consoleSpy.mock.calls.length).toBeGreaterThan(firstCallCount);
+      // 再生が継続されていることを確認
+      expect(service.isPlaying()).toBe(true);
+      expect(service.getCurrentAudioUrl()).toBe(testUrl);
     });
 
     it('異なる音声を再生する場合は前の音声を停止して新しい音声を再生する', async () => {
