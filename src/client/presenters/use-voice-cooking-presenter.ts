@@ -1,4 +1,4 @@
-import { VoiceCookingService } from '@/client/services/voice-cooking-service';
+import { useDI } from '@/client/di/providers';
 import { components } from '@/types/api';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -47,7 +47,7 @@ export interface VoiceCookingPresenterActions {
   backToRecipeList: () => void;
 
   // 音声再生アクション
-  playTestAudio: () => Promise<void>;
+  playAudio: (audioUrl?: string) => Promise<void>;
   stopAudio: () => void;
   pauseAudio: () => void;
 }
@@ -57,10 +57,9 @@ export interface VoiceCookingPresenter {
   actions: VoiceCookingPresenterActions;
 }
 
-export const useVoiceCookingPresenter = (
-  voiceCookingService: VoiceCookingService,
-  audioPlayerService: import('@/client/services/audio-player-service').AudioPlayerService
-): VoiceCookingPresenter => {
+export const useVoiceCookingPresenter = (): VoiceCookingPresenter => {
+  const { audioPlayerService, voiceCookingService } = useDI();
+
   // 状態の初期化
   const [state, setState] = useState<VoiceCookingPresenterState>(() => {
     return {
@@ -156,16 +155,21 @@ export const useVoiceCookingPresenter = (
       voiceCookingService.backToRecipeList();
     }, [voiceCookingService]),
 
-    playTestAudio: useCallback(async () => {
-      try {
-        await audioPlayerService.playAudio(
-          'https://r2.dev.vibe-cooking.furari.co/instructions/cmbupoqed0000vs5x1xxjgb1w/5omL6aCG-1749813349586.mp3'
-        );
-      } catch (error) {
-        console.error('テスト音声再生に失敗しました:', error);
-        toast.error('テスト音声再生に失敗しました');
-      }
-    }, [audioPlayerService]),
+    playAudio: useCallback(
+      async (audioUrl?: string) => {
+        console.log('playAudio', audioUrl);
+        if (!audioUrl) {
+          return;
+        }
+        try {
+          await audioPlayerService.playAudio(audioUrl);
+        } catch (error) {
+          console.error('音声再生に失敗しました:', error);
+          toast.error('音声再生に失敗しました');
+        }
+      },
+      [audioPlayerService]
+    ),
 
     stopAudio: useCallback(() => {
       audioPlayerService.stopAudio();

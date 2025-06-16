@@ -126,7 +126,7 @@ export class RecipeRepository implements IRecipeRepository {
   }
 
   async findById(id: string): Promise<RecipeWithDetails | null> {
-    return this.prisma.recipe.findUnique({
+    return await this.prisma.recipe.findUnique({
       where: { id },
       include: {
         ingredients: {

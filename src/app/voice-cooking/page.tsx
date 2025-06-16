@@ -1,6 +1,5 @@
 'use client';
 
-import { useDI } from '@/client/di/providers';
 import { useRecipePresenter } from '@/client/presenters/use-recipe-presenter';
 import { useVoiceCookingPresenter } from '@/client/presenters/use-voice-cooking-presenter';
 import { AudioControl } from '@/components/audio-control';
@@ -10,16 +9,11 @@ import { SpeechControl } from '@/components/speech-control';
 import { SpeechTranscript } from '@/components/speech-transcript';
 
 export default function VoiceCooking() {
-  const { voiceCookingService, audioPlayerService } = useDI();
-
   // レシピ一覧のデータ
   const { recipes, loading, error, fetchRecipes } = useRecipePresenter();
 
   // 音声クッキングのプレゼンター
-  const { state, actions } = useVoiceCookingPresenter(
-    voiceCookingService,
-    audioPlayerService
-  );
+  const { state, actions } = useVoiceCookingPresenter();
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
@@ -41,7 +35,11 @@ export default function VoiceCooking() {
         {/* 音声再生コントロール */}
         <AudioControl
           isPlaying={state.audioStatus.isPlaying}
-          onPlay={actions.playTestAudio}
+          onPlay={() =>
+            actions.playAudio(
+              'https://r2.dev.vibe-cooking.furari.co/audio/instructions/cmbupoqed0000vs5x1xxjgb1w/5omL6aCG-1749813349586.mp3'
+            )
+          }
           onStop={actions.stopAudio}
           onPause={actions.pauseAudio}
         />

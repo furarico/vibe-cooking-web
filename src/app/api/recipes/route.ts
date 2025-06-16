@@ -1,5 +1,5 @@
 import { withAppCheck } from '@/lib/middleware/app-check';
-import { ServerContainer } from '@/server/di/container';
+import { createDIContainer } from '@/server/di/container';
 import { RecipeFilters } from '@/server/repositories/interfaces/i-recipe-repository';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -23,7 +23,8 @@ async function handleGet(request: NextRequest) {
     const categoryId = searchParams.get('categoryId');
     if (categoryId) filters.categoryId = categoryId;
 
-    const recipeService = ServerContainer.getInstance().recipeService;
+    const container = createDIContainer();
+    const recipeService = container.recipeService;
 
     // フィルター条件があるかチェック
     const hasFilters = Object.keys(filters).length > 0;

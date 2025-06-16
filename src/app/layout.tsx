@@ -31,13 +31,13 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full max-w-2xl min-h-screen mx-auto p-4 bg-slate-50`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full max-w-xl min-h-screen mx-auto p-4 bg-slate-50`}
       >
         <DIProvider>
           <ServiceWorkerRegistration />
           <FirebaseInit />
           <Header />
-          <main className="w-full px-4 sm:px-6 lg:px-8 py-8">{children}</main>
+          <main className="w-full p-2">{children}</main>
           <Toaster />
         </DIProvider>
       </body>

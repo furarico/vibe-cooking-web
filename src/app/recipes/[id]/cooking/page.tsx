@@ -1,6 +1,7 @@
 'use client';
 
 import { useCookingPresenter } from '@/client/presenters/use-cooking-presenter';
+import { useVoiceCookingPresenter } from '@/client/presenters/use-voice-cooking-presenter';
 import {
   Carousel,
   CarouselApi,
@@ -31,6 +32,7 @@ export default function Page({ params }: PageProps) {
     fetchRecipe,
     setCurrentStep,
   } = useCookingPresenter();
+  const { actions } = useVoiceCookingPresenter();
 
   useEffect(() => {
     const fetchRecipeId = async () => {
@@ -51,13 +53,21 @@ export default function Page({ params }: PageProps) {
     const onSelect = () => {
       const selectedIndex = api.selectedScrollSnap();
       setCurrentStep(selectedIndex);
+      const currentInstruction = recipe?.instructions?.find(
+        instruction => instruction.step === selectedIndex + 1
+      );
+      const audioUrl = currentInstruction?.audioUrl;
+      console.log('Current instruction audio URL:', audioUrl);
+      if (audioUrl) {
+        actions.playAudio(audioUrl);
+      }
     };
 
     api.on('select', onSelect);
     return () => {
       api.off('select', onSelect);
     };
-  }, [api, setCurrentStep]);
+  }, [api, setCurrentStep, recipe?.instructions, currentStep, actions]);
 
   // プレゼンターのcurrentStepが変更されたときにカルーセルを同期
   useEffect(() => {

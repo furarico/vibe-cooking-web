@@ -1,5 +1,5 @@
 import { withAppCheck } from '@/lib/middleware/app-check';
-import { ServerContainer } from '@/server/di/container';
+import { createDIContainer } from '@/server/di/container';
 import { NextRequest, NextResponse } from 'next/server';
 
 // GET /api/recipes/[id] - 特定IDのレシピ詳細を取得
@@ -10,7 +10,8 @@ async function handleGet(
   try {
     const { id } = await params;
 
-    const recipeService = ServerContainer.getInstance().recipeService;
+    const container = createDIContainer();
+    const recipeService = container.recipeService;
     const recipe = await recipeService.getRecipeById(id);
 
     if (!recipe) {

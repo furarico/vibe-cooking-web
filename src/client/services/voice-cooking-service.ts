@@ -1,4 +1,4 @@
-import type { SpeechRecognitionErrorEvent } from '@/client/repositories/speech-recognition-repository';
+import type { SpeechRecognitionErrorEvent } from '@/client/repositories/interfaces/i-speech-recognition-repository';
 import { components } from '@/types/api';
 
 type Recipe = components['schemas']['Recipe'];
@@ -49,13 +49,13 @@ export interface ErrorState {
 }
 
 export interface VoiceCookingServiceDependencies {
-  speechRecognitionRepository: import('@/client/repositories/speech-recognition-repository').SpeechRecognitionRepository;
+  speechRecognitionRepository: import('@/client/repositories/interfaces/i-speech-recognition-repository').SpeechRecognitionRepository;
   recipeService: import('@/client/services/recipe-service').RecipeService;
   audioPlayerService: import('@/client/services/audio-player-service').AudioPlayerService;
 }
 
 export class VoiceCookingServiceImpl implements VoiceCookingService {
-  private speechRecognitionRepository: import('@/client/repositories/speech-recognition-repository').SpeechRecognitionRepository;
+  private speechRecognitionRepository: import('@/client/repositories/interfaces/i-speech-recognition-repository').SpeechRecognitionRepository;
   private recipeService: import('@/client/services/recipe-service').RecipeService;
   private audioPlayerService: import('@/client/services/audio-player-service').AudioPlayerService;
 
