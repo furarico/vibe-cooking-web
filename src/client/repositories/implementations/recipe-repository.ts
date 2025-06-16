@@ -29,8 +29,7 @@ export class RecipeRepository implements IRecipeRepository {
 
   async findById(id: string): Promise<Recipe | null> {
     try {
-      const recipe: Recipe = await this.apiClient.recipesIdGet(id);
-      return recipe;
+      return await this.apiClient.recipesIdGet(id);
     } catch (error: unknown) {
       if (
         error &&
