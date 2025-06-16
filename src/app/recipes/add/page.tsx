@@ -144,9 +144,9 @@ export default function Page() {
       <FixedBottomButton
         buttons={[
           {
-            href: '/recipes',
-            children: 'レシピを探す',
-            variant: 'outline',
+            href: '/recipes/cooking',
+            children: 'Vibe Cookingを始める',
+            variant: 'default',
           },
         ]}
       />

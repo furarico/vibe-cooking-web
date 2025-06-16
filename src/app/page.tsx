@@ -4,7 +4,8 @@ import { useCategoryPresenter } from '@/client/presenters/use-category-presenter
 import { CategoryRecipeSection } from '@/components/category-recipe-section';
 import { Button } from '@/components/ui/button';
 import Loading from '@/components/ui/loading';
-import { getMaxSavedRecipes, getSavedRecipesCount } from '@/lib/local-storage';
+import { SelectCount } from '@/components/ui/select-count';
+import { getSavedRecipesCount } from '@/lib/local-storage';
 import Link from 'next/link';
 import { Suspense, useEffect, useState } from 'react';
 
@@ -45,8 +46,12 @@ export default function Page() {
           variant="ghost"
           className="w-full text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200 hover:border-gray-300 transition-all duration-200"
         >
-          <Link href="/recipes/add">
-            保存済みレシピ一覧 ({savedCount}/{getMaxSavedRecipes()})
+          <Link
+            href="/recipes/add"
+            className="flex items-center justify-between"
+          >
+            <SelectCount count={savedCount} />
+            <span>選択中のレシピを表示</span>
           </Link>
         </Button>
       </div>

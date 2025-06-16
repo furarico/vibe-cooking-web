@@ -10,11 +10,21 @@ interface SelectRevertProps {
 
 const SelectRevert = React.forwardRef<HTMLButtonElement, SelectRevertProps>(
   ({ onClick, disabled = false, className, ...props }, ref) => {
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      // イベントの伝播を停止してリンクのナビゲーションを防ぐ
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (onClick) {
+        onClick();
+      }
+    };
+
     return (
       <Button
         ref={ref}
         variant="ghost"
-        onClick={onClick}
+        onClick={handleClick}
         disabled={disabled}
         className={`text-red-600 hover:text-red-700 hover:bg-red-50 ${className}`}
         {...props}
