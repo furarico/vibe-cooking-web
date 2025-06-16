@@ -59,6 +59,7 @@ export default function Page({ params }: PageProps) {
       title: instruction.title || '',
       description: instruction.description || '',
       imageUrl: instruction.imageUrl || '',
+      audioUrl: instruction.audioUrl || '',
     })) || [];
 
   // 画像URLの処理（デフォルト画像を設定）
