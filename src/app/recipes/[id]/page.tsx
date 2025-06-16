@@ -100,9 +100,21 @@ export default function Page({ params }: PageProps) {
         <Instructions steps={instructionsData} />
       </div>
 
-      <FixedBottomButton href={`/recipes/${recipeId}/cooking`}>
-        Vibe Cooking をはじめる
-      </FixedBottomButton>
+      <FixedBottomButton
+        buttons={[
+          {
+            href: `/recipes/${recipeId}/cooking`,
+            children: 'Vibe Cooking をはじめる',
+          },
+          {
+            href: `/recipes/add`,
+            children: '追加',
+            onClick: () => {
+              console.log('追加');
+            },
+          },
+        ]}
+      />
     </Suspense>
   );
 }
