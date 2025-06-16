@@ -4,11 +4,7 @@ import { FixedBottomButton } from '@/components/ui/fixed-bottom-button';
 import Loading from '@/components/ui/loading';
 import { RecipeCard } from '@/components/ui/recipe-card';
 import { Recipe } from '@/lib/api-client';
-import {
-  getMaxSavedRecipes,
-  getSavedRecipes,
-  removeRecipe,
-} from '@/lib/local-storage';
+import { getSavedRecipes, removeRecipe } from '@/lib/local-storage';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -75,9 +71,9 @@ export default function Page() {
 
   return (
     <div className="w-full max-w-[600px] mx-auto min-h-screen p-4">
-      <div className="flex flex-col gap-8">
-        <h1 className="text-2xl font-bold text-center text-gray-800">
-          保存されたレシピ
+      <div className="flex flex-col gap-4">
+        <h1 className="text-2xl font-bold text-left text-gray-800">
+          調理するレシピを確認
         </h1>
 
         {error && (
@@ -103,8 +99,8 @@ export default function Page() {
                 />
               </svg>
             </div>
-            <p className="text-lg text-gray-600 mb-2">
-              保存されたレシピがありません
+            <p className="text-lg text-gray-600 mb-2 text-left">
+              調理するレシピがありません
             </p>
             <p className="text-sm text-gray-500">
               レシピ詳細ページで「お気に入りに追加」を押すと、ここに表示されます
@@ -132,13 +128,6 @@ export default function Page() {
             ))}
           </div>
         )}
-
-        {savedRecipes.length > 0 && (
-          <div className="text-center text-sm text-gray-500">
-            {savedRecipes.length}/{getMaxSavedRecipes()}
-            件のレシピが保存されています
-          </div>
-        )}
       </div>
 
       <FixedBottomButton
@@ -147,6 +136,7 @@ export default function Page() {
             href: '/recipes/cooking',
             children: 'Vibe Cookingを始める',
             variant: 'default',
+            className: 'h-14',
           },
         ]}
       />

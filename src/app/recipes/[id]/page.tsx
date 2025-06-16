@@ -6,8 +6,10 @@ import { Ingredients } from '@/components/ui/ingredients';
 import { Instructions } from '@/components/ui/instructions';
 import Loading from '@/components/ui/loading';
 import { RecipeDetailHeader } from '@/components/ui/recipe-detail-header';
+import { SelectCount } from '@/components/ui/select-count';
 import { TimeCard } from '@/components/ui/time-card';
 import { useSavedRecipe } from '@/hooks/use-saved-recipe';
+import { getSavedRecipesCount } from '@/lib/local-storage';
 import Image from 'next/image';
 import { Suspense, useEffect, useState } from 'react';
 
@@ -17,6 +19,7 @@ interface PageProps {
 
 export default function Page({ params }: PageProps) {
   const [recipeId, setRecipeId] = useState<string>('');
+  const [savedCount, setSavedCount] = useState(0);
   const { recipe, loading, fetchRecipe } = useRecipeDetailPresenter();
   const { isSaved, canSave, saveRecipe, removeRecipe } =
     useSavedRecipe(recipeId);
@@ -34,12 +37,31 @@ export default function Page({ params }: PageProps) {
     fetchRecipe(recipeId);
   }, [recipeId, fetchRecipe]);
 
+  useEffect(() => {
+    const updateSavedCount = () => {
+      setSavedCount(getSavedRecipesCount());
+    };
+
+    updateSavedCount();
+
+    const handleFocus = () => {
+      updateSavedCount();
+    };
+
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
   // 追加ボタンクリック時の処理
   const handleAddRecipe = () => {
     if (!isSaved && canSave) {
       const success = saveRecipe();
       if (success) {
         console.log(`レシピID ${recipeId} を追加しました`);
+        setSavedCount(getSavedRecipesCount()); // カウントを更新
       }
     }
   };
@@ -82,7 +104,7 @@ export default function Page({ params }: PageProps) {
 
   return (
     <Suspense fallback={<Loading />}>
-      <div className="mb-30 flex flex-col gap-8">
+      <div className="mb-40 flex flex-col gap-8">
         {/* レシピ画像 */}
         <Image
           src={imageUrl}
@@ -139,7 +161,12 @@ export default function Page({ params }: PageProps) {
           },
           {
             href: '/recipes/add',
-            children: '保存済みレシピ一覧',
+            children: (
+              <div className="flex items-center justify-center w-full gap-2">
+                <SelectCount count={savedCount} />
+                <span>保存済みレシピ一覧</span>
+              </div>
+            ),
             variant: 'ghost',
             className:
               'text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200 hover:border-gray-300 transition-all duration-200',
