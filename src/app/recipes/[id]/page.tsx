@@ -21,7 +21,8 @@ export default function Page({ params }: PageProps) {
   const [recipeId, setRecipeId] = useState<string>('');
   const [savedCount, setSavedCount] = useState(0);
   const { recipe, loading, fetchRecipe } = useRecipeDetailPresenter();
-  const { isSaved, canSave, saveRecipe } = useSavedRecipe(recipeId);
+  const { isSaved, canSave, saveRecipe, removeRecipe } =
+    useSavedRecipe(recipeId);
 
   useEffect(() => {
     const fetchRecipeId = async () => {
