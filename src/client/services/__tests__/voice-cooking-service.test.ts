@@ -1,4 +1,4 @@
-import { SpeechRecognitionRepository } from '@/client/repositories/speech-recognition-repository';
+import { SpeechRecognitionRepository } from '@/client/repositories/interfaces/i-speech-recognition-repository';
 import { AudioPlayerService } from '@/client/services/audio-player-service';
 import { RecipeService } from '@/client/services/recipe-service';
 import {

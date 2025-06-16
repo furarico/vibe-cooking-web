@@ -2,9 +2,9 @@ import { CategoryRepository } from '@/client/repositories/implementations/catego
 import { RecipeRepository } from '@/client/repositories/implementations/recipe-repository';
 import {
   MediaRecorderSpeechRepository,
-  SpeechRecognitionRepository,
   WebSpeechRecognitionRepository,
-} from '@/client/repositories/speech-recognition-repository';
+} from '@/client/repositories/implementations/speech-recognition-repository';
+import { SpeechRecognitionRepository } from '@/client/repositories/interfaces/i-speech-recognition-repository';
 import {
   AudioPlayerService,
   AudioPlayerServiceImpl,
