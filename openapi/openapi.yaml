@@ -206,7 +206,7 @@ components:
       required:
         - id
         - name
-    
+
     VibeRecipe:
       type: object
       properties:
