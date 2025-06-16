@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { SavedRecipeContainer } from '../di/saved-recipe-container';
+import { useDI } from '../di/providers';
 
 /**
  * レシピの保存状態を管理するプレゼンター
@@ -14,26 +14,26 @@ export function useSavedRecipePresenter(recipeId: string) {
   const router = useRouter();
 
   // サービス層のインスタンスを取得
-  const service = SavedRecipeContainer.getService();
+  const { savedRecipeService } = useDI();
 
   // 初期化時に保存状態をチェック
   useEffect(() => {
     if (recipeId) {
-      setIsSaved(service.isRecipeSaved(recipeId));
-      setCanSave(service.canSaveMoreRecipes());
+      setIsSaved(savedRecipeService.isRecipeSaved(recipeId));
+      setCanSave(savedRecipeService.canSaveMoreRecipes());
       setIsLoading(false);
     }
-  }, [recipeId, service]);
+  }, [recipeId, savedRecipeService]);
 
   /**
    * レシピを保存する
    */
   const handleSaveRecipe = () => {
-    const result = service.saveRecipe(recipeId);
+    const result = savedRecipeService.saveRecipe(recipeId);
 
     if (result.success) {
       setIsSaved(true);
-      setCanSave(service.canSaveMoreRecipes());
+      setCanSave(savedRecipeService.canSaveMoreRecipes());
 
       // サービス層で決定された遷移先に移動
       if (result.nextRoute) {
@@ -48,10 +48,10 @@ export function useSavedRecipePresenter(recipeId: string) {
    * レシピを削除する
    */
   const handleRemoveRecipe = () => {
-    const success = service.removeRecipe(recipeId);
+    const success = savedRecipeService.removeRecipe(recipeId);
     if (success) {
       setIsSaved(false);
-      setCanSave(service.canSaveMoreRecipes());
+      setCanSave(savedRecipeService.canSaveMoreRecipes());
     }
     return success;
   };
@@ -60,11 +60,11 @@ export function useSavedRecipePresenter(recipeId: string) {
    * 保存状態をトグルする
    */
   const toggleSaveRecipe = () => {
-    const result = service.toggleSaveRecipe(recipeId);
+    const result = savedRecipeService.toggleSaveRecipe(recipeId);
 
     if (result.success) {
       setIsSaved(result.isSaved);
-      setCanSave(service.canSaveMoreRecipes());
+      setCanSave(savedRecipeService.canSaveMoreRecipes());
 
       // 保存時の遷移処理
       if (result.isSaved && result.nextRoute) {
