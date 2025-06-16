@@ -221,7 +221,7 @@ components:
         instructions:
           type: array
           items:
-            $ref: '#/components/schemas/vibeInstruction'
+            $ref: '#/components/schemas/VibeInstruction'
           description: Vibe手順の配列
       required:
         - id
