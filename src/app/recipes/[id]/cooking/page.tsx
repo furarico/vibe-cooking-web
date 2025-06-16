@@ -28,7 +28,7 @@ export default function Page({ params }: PageProps) {
       await actions.fetchRecipe(resolvedParams.id);
     };
     fetchRecipeId();
-  }, [params]);
+  }, [params, actions]);
 
   if (state.loading) {
     return <Loading />;

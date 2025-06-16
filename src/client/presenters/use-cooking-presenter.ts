@@ -61,6 +61,41 @@ export const useCookingPresenter = (): CookingPresenter => {
     };
   });
 
+  // アクションの定義
+  const actions: CookingPresenterActions = {
+    // レシピ詳細取得
+    fetchRecipe: useCallback(
+      async (id: string) => {
+        setState(prev => ({ ...prev, loading: true }));
+        try {
+          const recipe = await recipeService.getRecipeById(id);
+          if (!recipe) {
+            setState(prev => ({ ...prev, loading: false }));
+            toast.error('レシピが見つかりませんでした');
+            return;
+          }
+          setState(prev => ({
+            ...prev,
+            recipe,
+            loading: false,
+            currentStep: 0,
+            totalSteps: recipe.instructions?.length ?? 0,
+          }));
+        } catch {
+          setState(prev => ({ ...prev, loading: false }));
+          toast.error('レシピの取得に失敗しました');
+        }
+      },
+      [recipeService]
+    ),
+    setCurrentStep: useCallback((step: number) => {
+      setState(prev => ({ ...prev, currentStep: step }));
+    }, []),
+    setCarouselApi: useCallback((api: CarouselApi) => {
+      setState(prev => ({ ...prev, carouselApi: api }));
+    }, []),
+  };
+
   // サービスの状態変更を監視
   useEffect(() => {
     const updateState = () => {
@@ -86,12 +121,12 @@ export const useCookingPresenter = (): CookingPresenter => {
     state.carouselApi?.on('select', () => {
       actions.setCurrentStep(state.carouselApi?.selectedScrollSnap() ?? 0);
     });
-  }, [state.carouselApi]);
+  }, [state.carouselApi, actions]);
 
   useEffect(() => {
     if (!state.carouselApi) return;
     state.carouselApi.scrollTo(state.currentStep);
-  }, [state.currentStep]);
+  }, [state.carouselApi, state.currentStep]);
 
   useEffect(() => {
     const playCurrentStepAudio = async () => {
@@ -102,46 +137,7 @@ export const useCookingPresenter = (): CookingPresenter => {
       }
     };
     playCurrentStepAudio();
-  }, [state.recipe, state.currentStep]);
-
-  // アクションの定義
-  const actions: CookingPresenterActions = {
-    // レシピ詳細取得
-    fetchRecipe: useCallback(
-      async (id: string) => {
-        setState(prev => ({ ...prev, loading: true }));
-        try {
-          const recipe = await recipeService.getRecipeById(id);
-          if (!recipe) {
-            setState(prev => ({ ...prev, loading: false }));
-            toast.error('レシピが見つかりませんでした');
-            return;
-          }
-          const totalSteps = recipe.instructions?.length || 0;
-          setState(prev => ({
-            ...prev,
-            recipe,
-            loading: false,
-            currentStep: 0,
-            totalSteps,
-          }));
-        } catch {
-          setState(prev => ({ ...prev, loading: false }));
-          toast.error('レシピの取得に失敗しました');
-        }
-      },
-      [recipeService]
-    ),
-    setCurrentStep: useCallback(
-      (step: number) => {
-        setState(prev => ({ ...prev, currentStep: step }));
-      },
-      [audioPlayerService]
-    ),
-    setCarouselApi: useCallback((api: CarouselApi) => {
-      setState(prev => ({ ...prev, carouselApi: api }));
-    }, []),
-  };
+  }, [state.recipe, state.currentStep, audioPlayerService]);
 
   return {
     state,

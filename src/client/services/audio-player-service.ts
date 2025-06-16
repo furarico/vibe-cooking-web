@@ -54,7 +54,7 @@ export class AudioPlayerServiceImpl implements AudioPlayerService {
         this.notifyListeners();
       });
 
-      this.audio.addEventListener('error', error => {
+      this.audio.addEventListener('error', () => {
         this.isCurrentlyPlaying = false;
         this.notifyListeners();
       });
