@@ -2,9 +2,9 @@ import { CategoryRepository } from '@/client/repositories/implementations/catego
 import { RecipeRepository } from '@/client/repositories/implementations/recipe-repository';
 import {
   MediaRecorderSpeechRepository,
-  SpeechRecognitionRepository,
   WebSpeechRecognitionRepository,
-} from '@/client/repositories/speech-recognition-repository';
+} from '@/client/repositories/implementations/speech-recognition-repository';
+import { SpeechRecognitionRepository } from '@/client/repositories/interfaces/i-speech-recognition-repository';
 import {
   AudioPlayerService,
   AudioPlayerServiceImpl,
@@ -17,15 +17,12 @@ import {
   VoiceCookingServiceImpl,
 } from '@/client/services/voice-cooking-service';
 import { DefaultApi } from '@/lib/api-client';
-import { prisma } from '@/lib/database';
 
 export interface DIContainer {
-  prisma: typeof prisma;
   recipeService: RecipeService;
   categoryService: CategoryService;
   recipeListService: RecipeListService;
   voiceCookingService: VoiceCookingService;
-  speechRecognitionRepository: SpeechRecognitionRepository;
   audioPlayerService: AudioPlayerService;
 }
 
@@ -56,12 +53,10 @@ export const createDIContainer = (): DIContainer => {
   });
 
   return {
-    prisma,
     recipeService,
     categoryService,
     recipeListService,
     voiceCookingService,
-    speechRecognitionRepository,
     audioPlayerService,
   };
 };

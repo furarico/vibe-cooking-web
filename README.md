@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/kantacky/vibe-cooking-web/actions/workflows/ci.yml/badge.svg)](https://github.com/kantacky/vibe-cooking-web/actions/workflows/ci.yml)
 
-レシピ共有とクッキングコミュニティのためのWebアプリケーション
+音声ガイド機能付きの革新的な料理体験を提供するWebアプリケーション
 
 ## 🚀 クイックスタート
 
@@ -58,6 +58,15 @@ pnpm test:watch
 
 # テストカバレッジ
 pnpm test:coverage
+```
+
+### Storybook関連コマンド
+```bash
+# Storybook開発サーバー起動
+pnpm storybook
+
+# Storybookビルド
+pnpm build-storybook
 ```
 
 ### API関連コマンド
@@ -133,6 +142,11 @@ vibe-cooking-web/
 ├── src/
 │   ├── app/                    # Next.js App Router（UI Layer）
 │   │   ├── api/                # API Routes
+│   │   ├── recipes/            # レシピ関連ページ
+│   │   │   ├── [id]/           # レシピ詳細
+│   │   │   │   └── cooking/    # 調理モードページ
+│   │   │   └── page.tsx        # レシピ一覧
+│   │   ├── voice-cooking/      # 音声クッキングページ
 │   │   ├── layout.tsx         # ルートレイアウト
 │   │   ├── page.tsx           # ホームページ
 │   │   ├── firebase-init.tsx  # Firebase初期化コンポーネント
@@ -152,6 +166,9 @@ vibe-cooking-web/
 │   │   ├── api-client.ts      # 手動実装HTTPクライアント
 │   │   ├── database.ts        # データベース接続管理
 │   │   ├── firebase.ts        # Firebase設定
+│   │   ├── firebase-admin.ts  # Firebase Admin SDK
+│   │   ├── middleware/        # ミドルウェア
+│   │   │   └── app-check.ts   # App Check検証
 │   │   └── utils.ts           # shadcn/ui用ユーティリティ
 │   └── types/                  # 型定義
 │       └── api.d.ts           # 自動生成されたAPI型定義
@@ -162,6 +179,8 @@ vibe-cooking-web/
 │   └── migrations/
 ├── components.json             # shadcn/ui設定
 ├── tailwind.config.ts         # Tailwind CSS設定
+├── jest.config.js             # Jest設定
+├── .storybook/                # Storybook設定
 └── public/                     # 静的ファイル
 ```
 
@@ -170,12 +189,14 @@ vibe-cooking-web/
 - **フレームワーク**: Next.js 15 (App Router)
 - **言語**: TypeScript
 - **スタイリング**: Tailwind CSS 4 + shadcn/ui
-- **UIコンポーネント**: shadcn/ui (Button, Card, Input等)
+- **UIコンポーネント**: shadcn/ui + カスタムコンポーネント
 - **データベース**: PostgreSQL + Prisma ORM
 - **認証・分析**: Firebase + App Check (reCAPTCHA v3)
+- **音声機能**: Web Speech API + HTML5 Audio API
 - **パッケージマネージャー**: pnpm
 - **API仕様**: OpenAPI 3.0.3
-- **テスト**: Jest
+- **テスト**: Jest + Testing Library
+- **Storybook**: コンポーネントカタログ
 - **フォント**: Geist (Vercel)
 - **デプロイ**: Google Cloud Run + Cloud SQL
 
@@ -197,6 +218,23 @@ TypeScript型定義が `src/types/api.d.ts` に自動生成されます
 pnpm api:preview
 ```
 ブラウザでインタラクティブなAPIドキュメントを表示
+
+### 主要機能
+
+🎤 **音声クッキング** (`/voice-cooking`)
+- 音声認識でレシピを選択・操作
+- 音声ガイドで手順をナビゲーション
+- リアルタイム音声認識とコマンド処理
+
+🍳 **調理モード** (`/recipes/{id}/cooking`)
+- カルーセル形式の手順表示
+- 進捗トラッキングとステップナビゲーション
+- 各手順の音声ガイド自動再生
+
+📚 **レシピ管理**
+- カテゴリ別フィルター、テキスト検索、タグ検索
+- レスポンシブデザイン対応
+- リアルタイムデータ取得
 
 ### 現在のAPIエンドポイント
 - `GET /recipes` - レシピ一覧取得（テキスト検索、タグフィルター、カテゴリフィルター対応）
@@ -257,9 +295,9 @@ GOOGLE_APPLICATION_CREDENTIALS=path/to/service-account-key.json
 データベーススキーマは `prisma/schema.prisma` で管理し、マイグレーションでバージョン管理しています。
 
 #### 主要なデータモデル
-- **Recipe**: レシピの基本情報、準備時間、調理時間、材料、手順、カテゴリ
+- **Recipe**: レシピの基本情報、準備時間、調理時間、材料、手順、カテゴリ、タグ
 - **Ingredient**: 材料名、分量、単位、備考
-- **Instruction**: 手順番号、タイトル、説明、推定時間、画像URL
+- **Instruction**: 手順番号、タイトル、説明、推定時間、画像URL、**音声ファイルURL**
 - **Category**: カテゴリ名（ご飯、おかず、デザート、汁物など）
 
 ## 🎨 UIコンポーネントシステム
@@ -275,9 +313,25 @@ GOOGLE_APPLICATION_CREDENTIALS=path/to/service-account-key.json
 - **アイコンライブラリ**: Lucide React
 
 #### 利用可能なコンポーネント
-- `Button`: 複数バリアント対応ボタン（default, destructive, outline, secondary, ghost, link）
-- `Card`: カードコンポーネント（Header, Title, Description, Content, Footer）
+
+**基本コンポーネント**:
+- `Button`: 複数バリアント対応ボタン
+- `Card`: カードコンポーネント
 - `Input`: 入力フィールドコンポーネント
+- `Carousel`: 画像カルーセルコンポーネント
+- `Progress`: プログレスバーコンポーネント
+- `Loading`: ローディング表示コンポーネント
+- `Sonner`: トースト通知コンポーネント
+
+**料理特化コンポーネント**:
+- `RecipeCard`: レシピカード表示コンポーネント
+- `CookingInstructionCard`: 調理手順カードコンポーネント
+- `InstructionProgress`: 調理進捗表示コンポーネント
+- `Ingredients`: 材料リスト表示コンポーネント
+- `Instructions`: 手順リスト表示コンポーネント
+- `StepBadge`: ステップ番号バッジコンポーネント
+- `TimeCard`: 時間表示カードコンポーネント
+- `FixedBottomButton`: 画面下部固定ボタンコンポーネント
 
 #### 主要な依存関係
 - `class-variance-authority`: バリアント管理
@@ -285,6 +339,11 @@ GOOGLE_APPLICATION_CREDENTIALS=path/to/service-account-key.json
 - `tailwind-merge`: TailwindCSSクラスのマージ
 - `lucide-react`: アイコンライブラリ
 - `@radix-ui/react-slot`: プリミティブコンポーネント
+- `@radix-ui/react-progress`: プログレスバーコンポーネント
+- `embla-carousel-react`: カルーセルライブラリ
+- `sonner`: トースト通知ライブラリ
+- `next-themes`: テーマ管理ライブラリ
+- `tw-animate-css`: TailwindCSS用アニメーションユーティリティ
 
 ## 🔐 Firebase統合
 
