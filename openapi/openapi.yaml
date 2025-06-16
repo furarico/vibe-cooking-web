@@ -207,7 +207,7 @@ components:
         - id
         - name
     
-    vibeRecipe:
+    VibeRecipe:
       type: object
       properties:
         id:
