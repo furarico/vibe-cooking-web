@@ -59,7 +59,6 @@ export default function Page({ params }: PageProps) {
     if (!isSaved && canSave) {
       const success = saveRecipe();
       if (success) {
-        console.log(`レシピID ${recipeId} を追加しました`);
         setSavedCount(getSavedRecipesCount()); // カウントを更新
       }
     }
