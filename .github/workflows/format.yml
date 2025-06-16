@@ -28,6 +28,9 @@ jobs:
         pnpm-version: [10.x]
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
@@ -70,6 +73,8 @@ jobs:
           # Git設定
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+
+          git branch -a
 
           git checkout "$CURRENT_BRANCH"
 
