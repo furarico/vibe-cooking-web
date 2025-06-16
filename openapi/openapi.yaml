@@ -222,7 +222,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/vibeInstruction'
-          description: vibe手順の配列
+          description: Vibe手順の配列
       required:
         - id
         - recipeIds
