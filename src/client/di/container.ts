@@ -9,21 +9,21 @@ import {
   AudioPlayerService,
   AudioPlayerServiceImpl,
 } from '@/client/services/audio-player-service';
+import {
+  AudioRecognitionService,
+  AudioRecognitionServiceImpl,
+} from '@/client/services/audio-recognition-service';
 import { CategoryService } from '@/client/services/category-service';
 import { RecipeListService } from '@/client/services/recipe-list-service';
 import { RecipeService } from '@/client/services/recipe-service';
-import {
-  VoiceCookingService,
-  VoiceCookingServiceImpl,
-} from '@/client/services/voice-cooking-service';
 import { DefaultApi } from '@/lib/api-client';
 
 export interface DIContainer {
-  recipeService: RecipeService;
+  audioPlayerService: AudioPlayerService;
+  audioRecognitionService: AudioRecognitionService;
   categoryService: CategoryService;
   recipeListService: RecipeListService;
-  voiceCookingService: VoiceCookingService;
-  audioPlayerService: AudioPlayerService;
+  recipeService: RecipeService;
 }
 
 export const createDIContainer = (): DIContainer => {
@@ -46,7 +46,7 @@ export const createDIContainer = (): DIContainer => {
   const categoryService = new CategoryService(categoryRepository);
   const recipeListService = new RecipeListService(recipeRepository);
   const audioPlayerService = new AudioPlayerServiceImpl();
-  const voiceCookingService = new VoiceCookingServiceImpl({
+  const audioRecognitionService = new AudioRecognitionServiceImpl({
     speechRecognitionRepository,
     recipeService,
     audioPlayerService,
@@ -56,7 +56,7 @@ export const createDIContainer = (): DIContainer => {
     recipeService,
     categoryService,
     recipeListService,
-    voiceCookingService,
+    audioRecognitionService,
     audioPlayerService,
   };
 };

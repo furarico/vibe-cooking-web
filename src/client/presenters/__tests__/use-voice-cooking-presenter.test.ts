@@ -1,6 +1,6 @@
 import { useVoiceCookingPresenter } from '@/client/presenters/use-voice-cooking-presenter';
 import { AudioPlayerService } from '@/client/services/audio-player-service';
-import { VoiceCookingService } from '@/client/services/voice-cooking-service';
+import { AudioRecognitionService } from '@/client/services/audio-recognition-service';
 import { act, renderHook } from '@testing-library/react';
 
 // DIプロバイダーをモック
@@ -28,7 +28,7 @@ const mockVoiceCookingService = {
   nextStep: jest.fn(),
   prevStep: jest.fn(),
   backToRecipeList: jest.fn(),
-} as jest.Mocked<VoiceCookingService>;
+} as jest.Mocked<AudioRecognitionService>;
 
 const mockAudioPlayerService = {
   isPlaying: jest.fn(),

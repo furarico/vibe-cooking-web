@@ -35,34 +35,26 @@ export class AudioPlayerServiceImpl implements AudioPlayerService {
       this.currentAudioUrl = audioUrl;
 
       // イベントリスナーを設定
-      this.audio.addEventListener('loadstart', () => {
-        console.log('🎵 音声読み込み開始:', audioUrl);
-      });
+      this.audio.addEventListener('loadstart', () => {});
 
-      this.audio.addEventListener('canplay', () => {
-        console.log('🎵 音声再生準備完了:', audioUrl);
-      });
+      this.audio.addEventListener('canplay', () => {});
 
       this.audio.addEventListener('play', () => {
         this.isCurrentlyPlaying = true;
-        console.log('▶️ 音声再生開始:', audioUrl);
         this.notifyListeners();
       });
 
       this.audio.addEventListener('pause', () => {
         this.isCurrentlyPlaying = false;
-        console.log('⏸️ 音声一時停止:', audioUrl);
         this.notifyListeners();
       });
 
       this.audio.addEventListener('ended', () => {
         this.isCurrentlyPlaying = false;
-        console.log('⏹️ 音声再生終了:', audioUrl);
         this.notifyListeners();
       });
 
       this.audio.addEventListener('error', error => {
-        console.error('❌ 音声再生エラー:', error);
         this.isCurrentlyPlaying = false;
         this.notifyListeners();
       });
@@ -85,7 +77,6 @@ export class AudioPlayerServiceImpl implements AudioPlayerService {
     }
     this.isCurrentlyPlaying = false;
     this.currentAudioUrl = null;
-    console.log('⏹️ 音声停止');
     this.notifyListeners();
   }
 
@@ -97,9 +88,7 @@ export class AudioPlayerServiceImpl implements AudioPlayerService {
 
   resumeAudio(): void {
     if (this.audio && !this.isCurrentlyPlaying) {
-      this.audio.play().catch(error => {
-        console.error('音声再開に失敗しました:', error);
-      });
+      this.audio.play();
     }
   }
 

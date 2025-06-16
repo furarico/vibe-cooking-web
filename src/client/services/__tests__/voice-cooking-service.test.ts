@@ -1,10 +1,10 @@
 import { SpeechRecognitionRepository } from '@/client/repositories/interfaces/i-speech-recognition-repository';
 import { AudioPlayerService } from '@/client/services/audio-player-service';
-import { RecipeService } from '@/client/services/recipe-service';
 import {
-  VoiceCookingServiceDependencies,
-  VoiceCookingServiceImpl,
-} from '@/client/services/voice-cooking-service';
+  AudioRecognitionServiceDependencies,
+  AudioRecognitionServiceImpl,
+} from '@/client/services/audio-recognition-service';
+import { RecipeService } from '@/client/services/recipe-service';
 import { components } from '@/types/api';
 
 type Recipe = components['schemas']['Recipe'];
@@ -26,8 +26,8 @@ const mockAudioPlayerService = {
 } as jest.Mocked<AudioPlayerService>;
 
 describe('VoiceCookingServiceImpl', () => {
-  let service: VoiceCookingServiceImpl;
-  let dependencies: VoiceCookingServiceDependencies;
+  let service: AudioRecognitionServiceImpl;
+  let dependencies: AudioRecognitionServiceDependencies;
   let consoleSpy: jest.SpyInstance;
 
   const mockRecipe: Recipe = {
@@ -66,7 +66,7 @@ describe('VoiceCookingServiceImpl', () => {
       audioPlayerService: mockAudioPlayerService,
     };
 
-    service = new VoiceCookingServiceImpl(dependencies);
+    service = new AudioRecognitionServiceImpl(dependencies);
   });
 
   afterEach(() => {

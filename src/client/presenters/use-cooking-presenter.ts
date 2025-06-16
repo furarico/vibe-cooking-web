@@ -1,140 +1,150 @@
 'use client';
 
 import { useDI } from '@/client/di/providers';
+import { SpeechStatus } from '@/client/services/audio-recognition-service';
+import { CarouselApi } from '@/components/ui/carousel';
 import { Recipe } from '@/lib/api-client';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 export interface CookingPresenterState {
   recipe: Recipe | null;
+  carouselApi: CarouselApi | null;
   loading: boolean;
   currentStep: number;
   totalSteps: number;
-  isCompleted: boolean;
+
+  // 音声再生状態
+  audioStatus: {
+    isPlaying: boolean;
+    currentAudioUrl: string | null;
+  };
+
+  // 音声認識状態
+  speechStatus: SpeechStatus;
+  transcript: string;
+  interimTranscript: string;
+  triggerHistory: string[];
 }
 
 export interface CookingPresenterActions {
   fetchRecipe: (id: string) => Promise<void>;
   setCurrentStep: (step: number) => void;
-  nextStep: () => void;
-  prevStep: () => void;
-  resetProgress: () => void;
-  markCompleted: () => void;
+  setCarouselApi: (api: CarouselApi) => void;
 }
 
-export const useCookingPresenter = (): CookingPresenterState &
-  CookingPresenterActions => {
-  const { recipeService } = useDI();
+export interface CookingPresenter {
+  state: CookingPresenterState;
+  actions: CookingPresenterActions;
+}
 
-  const [state, setState] = useState<CookingPresenterState>({
-    recipe: null,
-    loading: false,
-    currentStep: 0,
-    totalSteps: 0,
-    isCompleted: false,
+export const useCookingPresenter = (): CookingPresenter => {
+  const { audioPlayerService, audioRecognitionService, recipeService } =
+    useDI();
+
+  // 状態の初期化
+  const [state, setState] = useState<CookingPresenterState>(() => {
+    return {
+      recipe: null,
+      carouselApi: null,
+      loading: false,
+      currentStep: 0,
+      totalSteps: 0,
+      speechStatus: audioRecognitionService.getSpeechStatus(),
+      transcript: audioRecognitionService.getTranscript(),
+      interimTranscript: audioRecognitionService.getInterimTranscript(),
+      triggerHistory: audioRecognitionService.getTriggerHistory(),
+      audioStatus: {
+        isPlaying: audioPlayerService.isPlaying(),
+        currentAudioUrl: audioPlayerService.getCurrentAudioUrl(),
+      },
+    };
   });
 
-  // レシピ詳細取得
-  const fetchRecipe = useCallback(
-    async (id: string) => {
-      setState(prev => ({ ...prev, loading: true }));
+  // サービスの状態変更を監視
+  useEffect(() => {
+    const updateState = () => {
+      setState(prev => ({
+        ...prev,
+        speechStatus: audioRecognitionService.getSpeechStatus(),
+        transcript: audioRecognitionService.getTranscript(),
+        interimTranscript: audioRecognitionService.getInterimTranscript(),
+        triggerHistory: audioRecognitionService.getTriggerHistory(),
+        audioStatus: {
+          isPlaying: audioPlayerService.isPlaying(),
+          currentAudioUrl: audioPlayerService.getCurrentAudioUrl(),
+        },
+      }));
+    };
 
-      try {
-        const recipe = await recipeService.getRecipeById(id);
+    audioRecognitionService.addListener(updateState);
+    audioPlayerService.addListener(updateState);
+  }, [audioRecognitionService, audioPlayerService, state]);
 
-        if (!recipe) {
-          setState(prev => ({ ...prev, loading: false }));
-          toast.error('レシピが見つかりませんでした');
-          return;
-        }
+  useEffect(() => {
+    actions.setCurrentStep(state.carouselApi?.selectedScrollSnap() ?? 0);
+    state.carouselApi?.on('select', () => {
+      actions.setCurrentStep(state.carouselApi?.selectedScrollSnap() ?? 0);
+    });
+  }, [state.carouselApi]);
 
-        const totalSteps = recipe.instructions?.length || 0;
+  useEffect(() => {
+    if (!state.carouselApi) return;
+    state.carouselApi.scrollTo(state.currentStep);
+  }, [state.currentStep]);
 
-        setState(prev => ({
-          ...prev,
-          recipe,
-          loading: false,
-          currentStep: 0,
-          totalSteps,
-          isCompleted: false,
-        }));
-      } catch {
-        setState(prev => ({ ...prev, loading: false }));
-        toast.error('レシピの取得に失敗しました');
+  useEffect(() => {
+    const playCurrentStepAudio = async () => {
+      const audioUrl =
+        state.recipe?.instructions?.[state.currentStep]?.audioUrl;
+      if (audioUrl) {
+        await audioPlayerService.playAudio(audioUrl);
       }
-    },
-    [recipeService]
-  );
+    };
+    playCurrentStepAudio();
+  }, [state.recipe, state.currentStep]);
 
-  // 現在のステップ設定
-  const setCurrentStep = useCallback((step: number) => {
-    setState(prev => {
-      if (!prev.recipe) return prev;
-
-      const maxStep = prev.totalSteps - 1;
-      const newStep = Math.max(0, Math.min(step, maxStep));
-
-      return {
-        ...prev,
-        currentStep: newStep,
-        isCompleted: newStep === maxStep,
-      };
-    });
-  }, []);
-
-  // 次のステップ
-  const nextStep = useCallback(() => {
-    setState(prev => {
-      if (!prev.recipe) return prev;
-
-      const maxStep = prev.totalSteps - 1;
-      const newStep = Math.min(prev.currentStep + 1, maxStep);
-
-      return {
-        ...prev,
-        currentStep: newStep,
-        isCompleted: newStep === maxStep,
-      };
-    });
-  }, []);
-
-  // 前のステップ
-  const prevStep = useCallback(() => {
-    setState(prev => {
-      if (!prev.recipe) return prev;
-
-      return {
-        ...prev,
-        currentStep: Math.max(prev.currentStep - 1, 0),
-        isCompleted: false,
-      };
-    });
-  }, []);
-
-  // 進行状況リセット
-  const resetProgress = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      currentStep: 0,
-      isCompleted: false,
-    }));
-  }, []);
-
-  // 完了マーク
-  const markCompleted = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      isCompleted: true,
-    }));
-  }, []);
+  // アクションの定義
+  const actions: CookingPresenterActions = {
+    // レシピ詳細取得
+    fetchRecipe: useCallback(
+      async (id: string) => {
+        setState(prev => ({ ...prev, loading: true }));
+        try {
+          const recipe = await recipeService.getRecipeById(id);
+          if (!recipe) {
+            setState(prev => ({ ...prev, loading: false }));
+            toast.error('レシピが見つかりませんでした');
+            return;
+          }
+          const totalSteps = recipe.instructions?.length || 0;
+          setState(prev => ({
+            ...prev,
+            recipe,
+            loading: false,
+            currentStep: 0,
+            totalSteps,
+          }));
+        } catch {
+          setState(prev => ({ ...prev, loading: false }));
+          toast.error('レシピの取得に失敗しました');
+        }
+      },
+      [recipeService]
+    ),
+    setCurrentStep: useCallback(
+      (step: number) => {
+        setState(prev => ({ ...prev, currentStep: step }));
+      },
+      [audioPlayerService]
+    ),
+    setCarouselApi: useCallback((api: CarouselApi) => {
+      setState(prev => ({ ...prev, carouselApi: api }));
+    }, []),
+  };
 
   return {
-    ...state,
-    fetchRecipe,
-    setCurrentStep,
-    nextStep,
-    prevStep,
-    resetProgress,
-    markCompleted,
+    state,
+    actions,
   };
 };
