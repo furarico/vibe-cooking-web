@@ -228,7 +228,7 @@ components:
         - recipeIds
         - instructions
 
-    vibeInstruction:
+    VibeInstruction:
       type: object
       properties:
         instructionId:
