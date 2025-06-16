@@ -6,7 +6,7 @@ import { RecipeCard } from '@/components/ui/recipe-card';
 import { Recipe } from '@/lib/api-client';
 import { getSavedRecipes, removeRecipe } from '@/lib/local-storage';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function Page() {
   const { recipeService } = useDI();
@@ -14,7 +14,7 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadSavedRecipes = async () => {
+  const loadSavedRecipes = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -51,11 +51,11 @@ export default function Page() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [recipeService]);
 
   useEffect(() => {
     loadSavedRecipes();
-  }, [recipeService]);
+  }, [loadSavedRecipes]);
 
   const handleDeleteRecipe = (recipeId: string) => {
     const success = removeRecipe(recipeId);
