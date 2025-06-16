@@ -121,9 +121,14 @@ export default function Page({ params }: PageProps) {
 
       <ProgressBar totalSteps={totalSteps} currentStep={currentStep + 1} />
 
-      <FixedBottomButton href={`/recipes/${recipeId}`}>
-        Vibe Cooking をおわる
-      </FixedBottomButton>
+      <FixedBottomButton
+        buttons={[
+          {
+            href: `/recipes/${recipeId}`,
+            children: 'Vibe Cooking をおわる',
+          },
+        ]}
+      />
     </div>
   );
 }
