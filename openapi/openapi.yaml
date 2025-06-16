@@ -216,7 +216,7 @@ components:
         recipeIds:
           type: array
           items:
-            $ref: '#/components/schemas/Recipe'
+            type: string
           description: 関連するレシピIDの配列
         instructions:
           type: array
@@ -232,7 +232,7 @@ components:
       type: object
       properties:
         instructionId:
-          $ref: '#/components/schemas/Instruction'
+          type: string
           description: 手順ID
         step:
           type: integer
