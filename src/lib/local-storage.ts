@@ -1,6 +1,9 @@
 // ローカルストレージのキー
 const SAVED_RECIPES_KEY = 'saved_recipes';
 
+// 保存可能な最大レシピ数
+const MAX_SAVED_RECIPES = 3;
+
 // 保存されたレシピIDの型
 export type SavedRecipes = string[];
 
@@ -23,6 +26,8 @@ export function getSavedRecipes(): SavedRecipes {
 
 /**
  * レシピIDをローカルストレージに保存
+ * @param recipeId 保存するレシピID
+ * @returns 保存に成功した場合はtrue、失敗した場合はfalse
  */
 export function saveRecipe(recipeId: string): boolean {
   if (typeof window === 'undefined') {
@@ -35,6 +40,14 @@ export function saveRecipe(recipeId: string): boolean {
     // 既に保存されている場合は何もしない
     if (savedRecipes.includes(recipeId)) {
       console.log(`レシピID ${recipeId} は既に保存されています`);
+      return false;
+    }
+
+    // 最大保存数に達している場合は保存できない
+    if (savedRecipes.length >= MAX_SAVED_RECIPES) {
+      console.log(
+        `保存可能な最大レシピ数（${MAX_SAVED_RECIPES}）に達しています`
+      );
       return false;
     }
 
@@ -92,6 +105,20 @@ export function isRecipeSaved(recipeId: string): boolean {
  */
 export function getSavedRecipesCount(): number {
   return getSavedRecipes().length;
+}
+
+/**
+ * 保存可能な最大レシピ数を取得
+ */
+export function getMaxSavedRecipes(): number {
+  return MAX_SAVED_RECIPES;
+}
+
+/**
+ * 保存可能かどうかをチェック
+ */
+export function canSaveMoreRecipes(): boolean {
+  return getSavedRecipesCount() < MAX_SAVED_RECIPES;
 }
 
 /**

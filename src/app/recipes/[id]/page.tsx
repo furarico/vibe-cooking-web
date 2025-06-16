@@ -18,7 +18,8 @@ interface PageProps {
 export default function Page({ params }: PageProps) {
   const [recipeId, setRecipeId] = useState<string>('');
   const { recipe, loading, fetchRecipe } = useRecipeDetailPresenter();
-  const { isSaved, saveRecipe, removeRecipe } = useSavedRecipe(recipeId);
+  const { isSaved, canSave, saveRecipe, removeRecipe } =
+    useSavedRecipe(recipeId);
 
   useEffect(() => {
     const fetchRecipeId = async () => {
@@ -35,7 +36,7 @@ export default function Page({ params }: PageProps) {
 
   // 追加ボタンクリック時の処理
   const handleAddRecipe = () => {
-    if (!isSaved) {
+    if (!isSaved && canSave) {
       const success = saveRecipe();
       if (success) {
         console.log(`レシピID ${recipeId} を追加しました`);
@@ -121,14 +122,20 @@ export default function Page({ params }: PageProps) {
           },
         */
           {
-            onClick: isSaved ? undefined : handleAddRecipe,
-            href: isSaved ? undefined : `/`,
-            children: isSaved ? '✓ 追加済み' : 'お気に入りに追加',
+            onClick: isSaved || !canSave ? undefined : handleAddRecipe,
+            href: isSaved && !canSave ? undefined : undefined,
+            children: isSaved
+              ? '✓ 追加済み'
+              : !canSave
+                ? '保存上限に達しています（3/3）'
+                : 'お気に入りに追加',
             variant: isSaved ? 'default' : 'outline',
-            disabled: isSaved,
+            disabled: isSaved || !canSave,
             className: isSaved
               ? 'bg-slate-300 text-white cursor-not-allowed opacity-70 border-0'
-              : 'bg-black text-white hover:bg-slate-600 transition-all duration-200 font-medium border-0',
+              : !canSave
+                ? 'bg-slate-300 text-slate-600 cursor-not-allowed opacity-70 border-0'
+                : 'bg-black text-white hover:bg-slate-600 transition-all duration-200 font-medium border-0',
           },
           {
             href: '/recipes/add',

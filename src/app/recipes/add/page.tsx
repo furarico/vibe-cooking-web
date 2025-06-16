@@ -4,7 +4,11 @@ import { FixedBottomButton } from '@/components/ui/fixed-bottom-button';
 import Loading from '@/components/ui/loading';
 import { RecipeCard } from '@/components/ui/recipe-card';
 import { Recipe } from '@/lib/api-client';
-import { getSavedRecipes } from '@/lib/local-storage';
+import {
+  getMaxSavedRecipes,
+  getSavedRecipes,
+  removeRecipe,
+} from '@/lib/local-storage';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -14,48 +18,56 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadSavedRecipes = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  const loadSavedRecipes = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        // ローカルストレージから保存されたレシピIDを取得
-        const savedRecipeIds = getSavedRecipes();
+      // ローカルストレージから保存されたレシピIDを取得
+      const savedRecipeIds = getSavedRecipes();
 
-        if (savedRecipeIds.length === 0) {
-          setSavedRecipes([]);
-          setLoading(false);
-          return;
-        }
-
-        // 各レシピIDの詳細情報を取得
-        const recipePromises = savedRecipeIds.map(async recipeId => {
-          try {
-            return await recipeService.getRecipeById(recipeId);
-          } catch (error) {
-            console.error(`レシピID ${recipeId} の取得に失敗しました:`, error);
-            return null;
-          }
-        });
-
-        const recipes = await Promise.all(recipePromises);
-        // nullを除外してレシピのみを保持
-        const validRecipes = recipes.filter(
-          (recipe): recipe is Recipe => recipe !== null
-        );
-
-        setSavedRecipes(validRecipes);
-      } catch (error) {
-        console.error('保存されたレシピの読み込みに失敗しました:', error);
-        setError('保存されたレシピの読み込みに失敗しました');
-      } finally {
+      if (savedRecipeIds.length === 0) {
+        setSavedRecipes([]);
         setLoading(false);
+        return;
       }
-    };
 
+      // 各レシピIDの詳細情報を取得
+      const recipePromises = savedRecipeIds.map(async recipeId => {
+        try {
+          return await recipeService.getRecipeById(recipeId);
+        } catch (error) {
+          console.error(`レシピID ${recipeId} の取得に失敗しました:`, error);
+          return null;
+        }
+      });
+
+      const recipes = await Promise.all(recipePromises);
+      // nullを除外してレシピのみを保持
+      const validRecipes = recipes.filter(
+        (recipe): recipe is Recipe => recipe !== null
+      );
+
+      setSavedRecipes(validRecipes);
+    } catch (error) {
+      console.error('保存されたレシピの読み込みに失敗しました:', error);
+      setError('保存されたレシピの読み込みに失敗しました');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadSavedRecipes();
   }, [recipeService]);
+
+  const handleDeleteRecipe = (recipeId: string) => {
+    const success = removeRecipe(recipeId);
+    if (success) {
+      // レシピリストを更新
+      loadSavedRecipes();
+    }
+  };
 
   if (loading) {
     return <Loading />;
@@ -114,6 +126,7 @@ export default function Page() {
                       : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png'
                   }
                   imageAlt={recipe.title ?? ''}
+                  onDelete={() => recipe.id && handleDeleteRecipe(recipe.id)}
                 />
               </Link>
             ))}
@@ -122,7 +135,8 @@ export default function Page() {
 
         {savedRecipes.length > 0 && (
           <div className="text-center text-sm text-gray-500">
-            {savedRecipes.length}件のレシピが保存されています
+            {savedRecipes.length}/{getMaxSavedRecipes()}
+            件のレシピが保存されています
           </div>
         )}
       </div>
