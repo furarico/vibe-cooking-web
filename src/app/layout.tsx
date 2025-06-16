@@ -1,5 +1,5 @@
-import { Header } from '@/components/header';
 import { DIProvider } from '@/client/di/providers';
+import { Header } from '@/components/header';
 import ServiceWorkerRegistration from '@/components/service-worker-registration';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
