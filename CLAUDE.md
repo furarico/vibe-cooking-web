@@ -83,6 +83,11 @@
 - `GET /recipes/{id}` - IDで特定のレシピを取得
 - `GET /categories` - カテゴリ一覧を取得
 
+**主要機能**:
+- **音声クッキング機能**: `/voice-cooking`ページで音声認識とオーディオ再生による対話的な料理体験を提供
+- **調理モード**: `/recipes/{id}/cooking`ページでカルーセル形式の調理手順表示とオーディオガイド機能
+- **レシピ検索・表示**: カテゴリ別フィルター、テキスト検索、タグフィルターに対応したレシピ管理機能
+
 ### クライアントサイドアーキテクチャ
 
 **レイヤードアーキテクチャ**
@@ -200,7 +205,7 @@ prisma/                 # Prismaスキーマとマイグレーション
 
 **Ingredientスキーマ**: name、amount、unit（すべて必須）と、オプションのnotesで構成されています。
 
-**Instructionスキーマ**: step number、title、description（すべて必須）と、オプションのimageUrlとestimatedTimeを持つ順次ステップです。
+**Instructionスキーマ**: step number、title、description（すべて必須）と、オプションのimageUrl、estimatedTime、audioUrlを持つ順次ステップです。音声クッキング機能に対応するためaudioUrlフィールドが追加されています。
 
 **Categoryスキーマ**: id、name（両方必須）で構成され、複数のレシピを関連付けるカテゴリ情報です。
 
@@ -267,6 +272,18 @@ prisma/                 # Prismaスキーマとマイグレーション
 - `Button`: 複数バリアント対応ボタン（default, destructive, outline, secondary, ghost, link）
 - `Card`: カードコンポーネント（Header, Title, Description, Content, Footer）
 - `Input`: 入力フィールドコンポーネント
+- `Carousel`: 画像カルーセルコンポーネント（embla-carousel-reactベース）
+- `Progress`: プログレスバーコンポーネント
+- `Loading`: ローディング表示コンポーネント
+- `Sonner`: トースト通知コンポーネント
+- `RecipeCard`: レシピカード表示コンポーネント
+- `CookingInstructionCard`: 調理手順カードコンポーネント
+- `InstructionProgress`: 調理進捗表示コンポーネント
+- `Ingredients`: 材料リスト表示コンポーネント
+- `Instructions`: 手順リスト表示コンポーネント
+- `StepBadge`: ステップ番号バッジコンポーネント
+- `TimeCard`: 時間表示カードコンポーネント
+- `FixedBottomButton`: 画面下部固定ボタンコンポーネント
 
 **依存関係**:
 - `class-variance-authority`: バリアント管理
@@ -274,6 +291,11 @@ prisma/                 # Prismaスキーマとマイグレーション
 - `tailwind-merge`: TailwindCSSクラスのマージ
 - `lucide-react`: アイコンライブラリ
 - `@radix-ui/react-slot`: プリミティブコンポーネント
+- `@radix-ui/react-progress`: プログレスバーコンポーネント
+- `embla-carousel-react`: カルーセルライブラリ
+- `sonner`: トースト通知ライブラリ
+- `next-themes`: テーマ管理ライブラリ
+- `tw-animate-css`: TailwindCSS用アニメーションユーティリティ
 
 ### Firebase設定
 
