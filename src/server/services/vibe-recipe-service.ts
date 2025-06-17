@@ -1,6 +1,11 @@
-import { VibeRecipe } from '@prisma/client';
+import { VibeInstruction, VibeRecipe } from '@prisma/client';
 import { GeminiClient } from '../../lib/gemini-client';
 import { IVibeRecipeRepository } from '../repositories/interfaces/i-vibe-recipe-repository';
+
+// vibeInstructionsを含む拡張型を定義
+type VibeRecipeWithInstructions = VibeRecipe & {
+  vibeInstructions: VibeInstruction[];
+};
 
 export class VibeRecipeService {
   constructor(
@@ -9,7 +14,7 @@ export class VibeRecipeService {
   ) {}
 
   async createOrGetVibeRecipe(recipeIds: string[]): Promise<{
-    vibeRecipe: VibeRecipe;
+    vibeRecipe: VibeRecipeWithInstructions;
     isNewlyCreated: boolean;
   }> {
     // 既存のVibeRecipeを検索

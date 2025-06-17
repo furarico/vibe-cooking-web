@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     const response: VibeRecipe = {
       id: result.vibeRecipe.id,
       recipeIds: result.vibeRecipe.recipeIds,
-      instructions: result.vibeRecipe.vibeInstructions.map(
+      vibeInstructions: result.vibeRecipe.vibeInstructions.map(
         (vi: { instructionId: string; step: number }) => ({
           instructionId: vi.instructionId,
           step: vi.step,
