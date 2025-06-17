@@ -5,6 +5,8 @@ interface InstructionsItemProps {
   step: number;
   title?: string;
   description: string;
+  imageUrl?: string;
+  audioUrl?: string;
 }
 
 const InstructionsItem: React.FC<InstructionsItemProps> = ({

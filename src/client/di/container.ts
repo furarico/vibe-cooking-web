@@ -10,22 +10,22 @@ import {
   AudioPlayerService,
   AudioPlayerServiceImpl,
 } from '@/client/services/audio-player-service';
+import {
+  AudioRecognitionService,
+  AudioRecognitionServiceImpl,
+} from '@/client/services/audio-recognition-service';
 import { CategoryService } from '@/client/services/category-service';
 import { RecipeListService } from '@/client/services/recipe-list-service';
 import { RecipeService } from '@/client/services/recipe-service';
 import { SavedRecipeService } from '@/client/services/saved-recipe-service';
-import {
-  VoiceCookingService,
-  VoiceCookingServiceImpl,
-} from '@/client/services/voice-cooking-service';
 import { DefaultApi } from '@/lib/api-client';
 
 export interface DIContainer {
-  recipeService: RecipeService;
+  audioPlayerService: AudioPlayerService;
+  audioRecognitionService: AudioRecognitionService;
   categoryService: CategoryService;
   recipeListService: RecipeListService;
-  voiceCookingService: VoiceCookingService;
-  audioPlayerService: AudioPlayerService;
+  recipeService: RecipeService;
   savedRecipeService: SavedRecipeService;
 }
 
@@ -46,23 +46,21 @@ export const createDIContainer = (): DIContainer => {
       : new MediaRecorderSpeechRepository();
 
   // Service の作成
-  const recipeService = new RecipeService(recipeRepository);
+  const audioPlayerService = new AudioPlayerServiceImpl();
+  const audioRecognitionService = new AudioRecognitionServiceImpl(
+    speechRecognitionRepository
+  );
   const categoryService = new CategoryService(categoryRepository);
   const recipeListService = new RecipeListService(recipeRepository);
-  const audioPlayerService = new AudioPlayerServiceImpl();
+  const recipeService = new RecipeService(recipeRepository);
   const savedRecipeService = new SavedRecipeService(savedRecipeRepository);
-  const voiceCookingService = new VoiceCookingServiceImpl({
-    speechRecognitionRepository,
-    recipeService,
-    audioPlayerService,
-  });
 
   return {
-    recipeService,
+    audioPlayerService,
+    audioRecognitionService,
     categoryService,
     recipeListService,
-    voiceCookingService,
-    audioPlayerService,
+    recipeService,
     savedRecipeService,
   };
 };

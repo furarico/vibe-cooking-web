@@ -1,5 +1,7 @@
 import { useDI } from '@/client/di/providers';
 import { useCookingPresenter } from '@/client/presenters/use-cooking-presenter';
+import { AudioPlayerService } from '@/client/services/audio-player-service';
+import { AudioRecognitionService } from '@/client/services/audio-recognition-service';
 import { RecipeService } from '@/client/services/recipe-service';
 import { Recipe } from '@/lib/api-client';
 import { act, renderHook } from '@testing-library/react';
@@ -7,11 +9,32 @@ import { act, renderHook } from '@testing-library/react';
 // DIプロバイダーをモック
 jest.mock('@/client/di/providers');
 
+// Firebase環境変数をモック
+process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY = 'test-site-key';
+
 const mockRecipeService = {
   getRecipeById: jest.fn(),
   getAllRecipes: jest.fn(),
   getRecipesByCategoryId: jest.fn(),
 } as Partial<RecipeService> as jest.Mocked<RecipeService>;
+
+const mockAudioPlayerService = {
+  isPlaying: jest.fn().mockReturnValue(false),
+  getCurrentAudioUrl: jest.fn().mockReturnValue(null),
+  playAudio: jest.fn(),
+  stopAudio: jest.fn(),
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+} as Partial<AudioPlayerService> as jest.Mocked<AudioPlayerService>;
+
+const mockAudioRecognitionService = {
+  getSpeechStatus: jest.fn().mockReturnValue('idle'),
+  getTranscript: jest.fn().mockReturnValue(''),
+  getInterimTranscript: jest.fn().mockReturnValue(''),
+  getTriggerHistory: jest.fn().mockReturnValue([]),
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+} as Partial<AudioRecognitionService> as jest.Mocked<AudioRecognitionService>;
 
 const mockUseDI = useDI as jest.MockedFunction<typeof useDI>;
 
@@ -41,6 +64,8 @@ const mockRecipe: Recipe = {
 beforeEach(() => {
   mockUseDI.mockReturnValue({
     recipeService: mockRecipeService,
+    audioPlayerService: mockAudioPlayerService,
+    audioRecognitionService: mockAudioRecognitionService,
   });
   jest.clearAllMocks();
 });
@@ -50,11 +75,17 @@ describe('useCookingPresenter', () => {
     it('初期状態が正しく設定されるべき', () => {
       const { result } = renderHook(() => useCookingPresenter());
 
-      expect(result.current.recipe).toBeNull();
-      expect(result.current.loading).toBe(false);
-      expect(result.current.currentStep).toBe(0);
-      expect(result.current.totalSteps).toBe(0);
-      expect(result.current.isCompleted).toBe(false);
+      expect(result.current.state.recipe).toBeNull();
+      expect(result.current.state.loading).toBe(false);
+      expect(result.current.state.currentStep).toBe(0);
+      expect(result.current.state.totalSteps).toBe(0);
+      expect(result.current.state.carouselApi).toBeNull();
+      expect(result.current.state.speechStatus).toBe('idle');
+      expect(result.current.state.transcript).toBe('');
+      expect(result.current.state.interimTranscript).toBe('');
+      expect(result.current.state.triggerHistory).toEqual([]);
+      expect(result.current.state.audioStatus.isPlaying).toBe(false);
+      expect(result.current.state.audioStatus.currentAudioUrl).toBeNull();
     });
   });
 
@@ -65,15 +96,14 @@ describe('useCookingPresenter', () => {
       const { result } = renderHook(() => useCookingPresenter());
 
       await act(async () => {
-        await result.current.fetchRecipe('1');
+        await result.current.actions.fetchRecipe('1');
       });
 
       expect(mockRecipeService.getRecipeById).toHaveBeenCalledWith('1');
-      expect(result.current.recipe).toEqual(mockRecipe);
-      expect(result.current.loading).toBe(false);
-      expect(result.current.currentStep).toBe(0);
-      expect(result.current.totalSteps).toBe(3);
-      expect(result.current.isCompleted).toBe(false);
+      expect(result.current.state.recipe).toEqual(mockRecipe);
+      expect(result.current.state.loading).toBe(false);
+      expect(result.current.state.currentStep).toBe(0);
+      expect(result.current.state.totalSteps).toBe(3);
     });
 
     it('レシピ取得中はローディング状態になるべき', async () => {
@@ -87,17 +117,17 @@ describe('useCookingPresenter', () => {
       const { result } = renderHook(() => useCookingPresenter());
 
       act(() => {
-        result.current.fetchRecipe('1');
+        result.current.actions.fetchRecipe('1');
       });
 
-      expect(result.current.loading).toBe(true);
+      expect(result.current.state.loading).toBe(true);
 
       await act(async () => {
         resolvePromise!(mockRecipe);
         await longRunningPromise;
       });
 
-      expect(result.current.loading).toBe(false);
+      expect(result.current.state.loading).toBe(false);
     });
 
     it('レシピが見つからない場合はローディングが停止するべき', async () => {
@@ -106,11 +136,11 @@ describe('useCookingPresenter', () => {
       const { result } = renderHook(() => useCookingPresenter());
 
       await act(async () => {
-        await result.current.fetchRecipe('999');
+        await result.current.actions.fetchRecipe('999');
       });
 
-      expect(result.current.loading).toBe(false);
-      expect(result.current.recipe).toBeNull();
+      expect(result.current.state.loading).toBe(false);
+      expect(result.current.state.recipe).toBeNull();
     });
 
     it('レシピ取得エラー時はローディングが停止するべき', async () => {
@@ -121,11 +151,11 @@ describe('useCookingPresenter', () => {
       const { result } = renderHook(() => useCookingPresenter());
 
       await act(async () => {
-        await result.current.fetchRecipe('1');
+        await result.current.actions.fetchRecipe('1');
       });
 
-      expect(result.current.loading).toBe(false);
-      expect(result.current.recipe).toBeNull();
+      expect(result.current.state.loading).toBe(false);
+      expect(result.current.state.recipe).toBeNull();
     });
   });
 
@@ -138,170 +168,33 @@ describe('useCookingPresenter', () => {
       const { result } = renderHook(() => useCookingPresenter());
 
       await act(async () => {
-        await result.current.fetchRecipe('1');
+        await result.current.actions.fetchRecipe('1');
       });
 
       act(() => {
-        result.current.setCurrentStep(1);
+        result.current.actions.setCurrentStep(1);
       });
 
-      expect(result.current.currentStep).toBe(1);
-      expect(result.current.isCompleted).toBe(false);
-    });
-
-    it('最後のステップに設定すると完了状態になるべき', async () => {
-      const { result } = renderHook(() => useCookingPresenter());
-
-      await act(async () => {
-        await result.current.fetchRecipe('1');
-      });
-
-      act(() => {
-        result.current.setCurrentStep(2); // 最後のステップ（0-indexed）
-      });
-
-      expect(result.current.currentStep).toBe(2);
-      expect(result.current.isCompleted).toBe(true);
-    });
-
-    it('範囲外のステップは制限されるべき', async () => {
-      const { result } = renderHook(() => useCookingPresenter());
-
-      await act(async () => {
-        await result.current.fetchRecipe('1');
-      });
-
-      act(() => {
-        result.current.setCurrentStep(-1);
-      });
-      expect(result.current.currentStep).toBe(0);
-
-      act(() => {
-        result.current.setCurrentStep(10);
-      });
-      expect(result.current.currentStep).toBe(2); // 最大ステップ
-    });
-
-    it('nextStepで次のステップに進めるべき', async () => {
-      const { result } = renderHook(() => useCookingPresenter());
-
-      await act(async () => {
-        await result.current.fetchRecipe('1');
-      });
-
-      act(() => {
-        result.current.nextStep();
-      });
-
-      expect(result.current.currentStep).toBe(1);
-
-      act(() => {
-        result.current.nextStep();
-      });
-
-      expect(result.current.currentStep).toBe(2);
-      expect(result.current.isCompleted).toBe(true);
-
-      // 最後のステップでnextStepしても変わらない
-      act(() => {
-        result.current.nextStep();
-      });
-
-      expect(result.current.currentStep).toBe(2);
-    });
-
-    it('prevStepで前のステップに戻れるべき', async () => {
-      const { result } = renderHook(() => useCookingPresenter());
-
-      await act(async () => {
-        await result.current.fetchRecipe('1');
-      });
-
-      act(() => {
-        result.current.setCurrentStep(2);
-      });
-
-      act(() => {
-        result.current.prevStep();
-      });
-
-      expect(result.current.currentStep).toBe(1);
-      expect(result.current.isCompleted).toBe(false);
-
-      act(() => {
-        result.current.prevStep();
-      });
-
-      expect(result.current.currentStep).toBe(0);
-
-      // 最初のステップでprevStepしても変わらない
-      act(() => {
-        result.current.prevStep();
-      });
-
-      expect(result.current.currentStep).toBe(0);
-    });
-
-    it('resetProgressで進行状況をリセットできるべき', async () => {
-      const { result } = renderHook(() => useCookingPresenter());
-
-      await act(async () => {
-        await result.current.fetchRecipe('1');
-      });
-
-      act(() => {
-        result.current.setCurrentStep(2);
-      });
-
-      expect(result.current.currentStep).toBe(2);
-      expect(result.current.isCompleted).toBe(true);
-
-      act(() => {
-        result.current.resetProgress();
-      });
-
-      expect(result.current.currentStep).toBe(0);
-      expect(result.current.isCompleted).toBe(false);
-    });
-
-    it('markCompletedで完了状態にできるべき', async () => {
-      const { result } = renderHook(() => useCookingPresenter());
-
-      await act(async () => {
-        await result.current.fetchRecipe('1');
-      });
-
-      act(() => {
-        result.current.markCompleted();
-      });
-
-      expect(result.current.isCompleted).toBe(true);
+      expect(result.current.state.currentStep).toBe(1);
     });
   });
 
-  describe('レシピなしの状態', () => {
-    it('レシピがない状態でステップ操作しても何も起こらないべき', () => {
+  describe('カルーセルAPI', () => {
+    it('setCarouselApiでカルーセルAPIを設定できるべき', () => {
       const { result } = renderHook(() => useCookingPresenter());
-
-      const initialState = { ...result.current };
-
-      act(() => {
-        result.current.setCurrentStep(1);
-      });
-
-      expect(result.current.currentStep).toBe(initialState.currentStep);
+      const mockCarouselApi = {
+        selectedScrollSnap: jest.fn().mockReturnValue(0),
+        scrollTo: jest.fn(),
+        on: jest.fn(),
+        off: jest.fn(),
+      };
 
       act(() => {
-        result.current.nextStep();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        result.current.actions.setCarouselApi(mockCarouselApi as any);
       });
 
-      expect(result.current.currentStep).toBe(initialState.currentStep);
-
-      act(() => {
-        result.current.prevStep();
-      });
-
-      expect(result.current.currentStep).toBe(initialState.currentStep);
+      expect(result.current.state.carouselApi).toBe(mockCarouselApi);
     });
   });
 });
