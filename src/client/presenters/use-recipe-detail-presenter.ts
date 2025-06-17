@@ -2,7 +2,7 @@
 
 import { useDI } from '@/client/di/providers';
 import { Recipe } from '@/lib/api-client';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 export interface RecipeDetailPresenterState {
@@ -10,31 +10,75 @@ export interface RecipeDetailPresenterState {
   loading: boolean;
   currentStep: number;
   isCompleted: boolean;
+  recipeId: string | null;
+  vibeCookingRecipeIds: string[];
 }
 
 export interface RecipeDetailPresenterActions {
-  fetchRecipe: (id: string) => Promise<void>;
-  setCurrentStep: (step: number) => void;
-  nextStep: () => void;
-  prevStep: () => void;
-  resetProgress: () => void;
-  markCompleted: () => void;
+  setRecipeId: (id: string) => void;
+  onAddToVibeCookingListButtonTapped: () => void;
 }
 
-export const useRecipeDetailPresenter = (): RecipeDetailPresenterState &
-  RecipeDetailPresenterActions => {
-  const { recipeService } = useDI();
+export interface RecipeDetailPresenter {
+  state: RecipeDetailPresenterState;
+  actions: RecipeDetailPresenterActions;
+}
+
+export const useRecipeDetailPresenter = (): RecipeDetailPresenter => {
+  const { recipeService, vibeCookingService } = useDI();
 
   const [state, setState] = useState<RecipeDetailPresenterState>({
     recipe: null,
     loading: false,
     currentStep: 0,
     isCompleted: false,
+    recipeId: null,
+    vibeCookingRecipeIds: [],
   });
 
-  // レシピ詳細取得
-  const fetchRecipe = useCallback(
-    async (id: string) => {
+  const getVibeCookingRecipeIds = () => {
+    const vibeCookingRecipeIds = vibeCookingService.getVibeCookingRecipeIds();
+    setState(prev => ({ ...prev, vibeCookingRecipeIds }));
+  };
+
+  const actions: RecipeDetailPresenterActions = {
+    setRecipeId: useCallback((id: string) => {
+      setState(prev => ({ ...prev, recipeId: id }));
+    }, []),
+    onAddToVibeCookingListButtonTapped: useCallback(() => {
+      if (state.vibeCookingRecipeIds.length >= 3) {
+        toast.error('Vibe Cooking リストの上限に達しています');
+        return;
+      }
+      const recipeId = state.recipeId;
+      if (!recipeId) {
+        toast.error('レシピが見つかりません');
+        return;
+      }
+      if (state.vibeCookingRecipeIds.includes(recipeId)) {
+        vibeCookingService.removeVibeCookingRecipeId(recipeId);
+        getVibeCookingRecipeIds();
+        toast.success('Vibe Cooking リストから削除しました');
+      } else {
+        vibeCookingService.addVibeCookingRecipeId(recipeId);
+        getVibeCookingRecipeIds();
+        toast.success('Vibe Cooking リストに追加しました');
+      }
+    }, [state.recipeId, state.vibeCookingRecipeIds, vibeCookingService]),
+  };
+
+  useEffect(() => {
+    getVibeCookingRecipeIds();
+
+    window.addEventListener('focus', getVibeCookingRecipeIds);
+
+    return () => {
+      window.removeEventListener('focus', getVibeCookingRecipeIds);
+    };
+  }, [vibeCookingService]);
+
+  useEffect(() => {
+    const fetchRecipe = async (id: string) => {
       setState(prev => ({ ...prev, loading: true }));
 
       try {
@@ -57,75 +101,25 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenterState &
         setState(prev => ({ ...prev, loading: false }));
         toast.error('レシピの取得に失敗しました');
       }
-    },
-    [recipeService]
-  );
+    };
 
-  // 現在のステップ設定
-  const setCurrentStep = useCallback((step: number) => {
-    setState(prev => {
-      if (!prev.recipe) return prev;
+    if (state.recipeId) {
+      fetchRecipe(state.recipeId);
+    }
+  }, [state.recipeId, recipeService]);
 
-      const maxStep = (prev.recipe.instructions?.length || 1) - 1;
-      const newStep = Math.max(0, Math.min(step, maxStep));
-
-      return {
+  useEffect(() => {
+    const recipeId = state.recipeId;
+    if (recipeId && state.vibeCookingRecipeIds.length > 0) {
+      setState(prev => ({
         ...prev,
-        currentStep: newStep,
-        isCompleted: newStep === maxStep,
-      };
-    });
-  }, []);
-
-  // 次のステップ
-  const nextStep = useCallback(() => {
-    setState(prev => {
-      if (!prev.recipe) return prev;
-
-      const maxStep = (prev.recipe.instructions?.length || 1) - 1;
-      const newStep = Math.min(prev.currentStep + 1, maxStep);
-
-      return {
-        ...prev,
-        currentStep: newStep,
-        isCompleted: newStep === maxStep,
-      };
-    });
-  }, []);
-
-  // 前のステップ
-  const prevStep = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      currentStep: Math.max(prev.currentStep - 1, 0),
-      isCompleted: false,
-    }));
-  }, []);
-
-  // 進行状況リセット
-  const resetProgress = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      currentStep: 0,
-      isCompleted: false,
-    }));
-  }, []);
-
-  // 完了マーク
-  const markCompleted = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      isCompleted: true,
-    }));
-  }, []);
+        isInVibeCookingList: state.vibeCookingRecipeIds.includes(recipeId),
+      }));
+    }
+  }, [state.recipeId, state.vibeCookingRecipeIds]);
 
   return {
-    ...state,
-    fetchRecipe,
-    setCurrentStep,
-    nextStep,
-    prevStep,
-    resetProgress,
-    markCompleted,
+    state,
+    actions,
   };
 };

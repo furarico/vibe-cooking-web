@@ -9,7 +9,7 @@ interface CategoryPresenterState {
   vibeCookingRecipeIds: string[];
 }
 
-interface CategoryPresenterActions {}
+interface CategoryPresenterActions { }
 
 interface CategoryPresenter {
   state: CategoryPresenterState;
@@ -17,7 +17,7 @@ interface CategoryPresenter {
 }
 
 export const useCategoryPresenter = (): CategoryPresenter => {
-  const { categoryService, savedRecipeService } = useDI();
+  const { categoryService, vibeCookingService } = useDI();
 
   const [state, setState] = useState<CategoryPresenterState>({
     categories: [],
@@ -41,7 +41,7 @@ export const useCategoryPresenter = (): CategoryPresenter => {
     };
 
     const getVibeCookingRecipeIds = () => {
-      const vibeCookingRecipeIds = savedRecipeService.getSavedRecipeIds();
+      const vibeCookingRecipeIds = vibeCookingService.getVibeCookingRecipeIds();
       setState(prev => ({ ...prev, vibeCookingRecipeIds }));
     };
 
