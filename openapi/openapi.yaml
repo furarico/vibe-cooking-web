@@ -260,7 +260,7 @@ components:
       required:
         - id
         - recipeIds
-        - vibeInstructions
+        - VibeInstructions
 
     VibeInstruction:
       type: object
