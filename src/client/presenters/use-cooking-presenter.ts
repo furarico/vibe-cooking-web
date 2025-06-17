@@ -31,6 +31,8 @@ export interface CookingPresenterActions {
   fetchRecipe: (id: string) => Promise<void>;
   setCurrentStep: (step: number) => void;
   setCarouselApi: (api: CarouselApi) => void;
+  playCurrentStepAudio: () => Promise<void>;
+  stopAudio: () => void;
 }
 
 export interface CookingPresenter {
@@ -94,6 +96,21 @@ export const useCookingPresenter = (): CookingPresenter => {
     setCarouselApi: useCallback((api: CarouselApi) => {
       setState(prev => ({ ...prev, carouselApi: api }));
     }, []),
+    playCurrentStepAudio: useCallback(async () => {
+      const audioUrl =
+        state.recipe?.instructions?.[state.currentStep]?.audioUrl;
+      if (audioUrl) {
+        try {
+          await audioPlayerService.playAudio(audioUrl);
+        } catch (error) {
+          console.warn('Audio playback failed:', error);
+          toast.error('音声の再生に失敗しました');
+        }
+      }
+    }, [state.recipe, state.currentStep, audioPlayerService]),
+    stopAudio: useCallback(() => {
+      audioPlayerService.stopAudio();
+    }, [audioPlayerService]),
   };
 
   // サービスの状態変更を監視
@@ -144,17 +161,6 @@ export const useCookingPresenter = (): CookingPresenter => {
     if (!state.carouselApi) return;
     state.carouselApi.scrollTo(state.currentStep);
   }, [state.carouselApi, state.currentStep]);
-
-  useEffect(() => {
-    const playCurrentStepAudio = async () => {
-      const audioUrl =
-        state.recipe?.instructions?.[state.currentStep]?.audioUrl;
-      if (audioUrl) {
-        await audioPlayerService.playAudio(audioUrl);
-      }
-    };
-    playCurrentStepAudio();
-  }, [state.recipe, state.currentStep, audioPlayerService]);
 
   return {
     state,

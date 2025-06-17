@@ -79,6 +79,13 @@ export default function Page({ params }: PageProps) {
       <FixedBottomButton
         buttons={[
           {
+            onClick: state.audioStatus.isPlaying
+              ? actions.stopAudio
+              : actions.playCurrentStepAudio,
+            children: state.audioStatus.isPlaying ? '音声停止' : '音声再生',
+            variant: 'outline',
+          },
+          {
             href: `/recipes/${state.recipe.id}`,
             children: 'Vibe Cooking をおわる',
           },
