@@ -33,10 +33,12 @@ export async function POST(request: NextRequest) {
     const response: VibeRecipeResponse = {
       id: result.vibeRecipe.id,
       recipeIds: result.vibeRecipe.recipeIds,
-      instructions: result.vibeRecipe.vibeInstructions.map(vi => ({
-        instructionId: vi.instructionId,
-        step: vi.step,
-      })),
+      instructions: result.vibeRecipe.vibeInstructions.map(
+        (vi: { instructionId: string; step: number }) => ({
+          instructionId: vi.instructionId,
+          step: vi.step,
+        })
+      ),
     };
 
     // 新規作成の場合は201、既存の場合は200を返す
