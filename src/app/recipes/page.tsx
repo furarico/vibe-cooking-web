@@ -2,7 +2,8 @@
 
 import { useRecipeListPresenter } from '@/client/presenters/use-recipe-list-presenter';
 import { FixedBottomButton } from '@/components/ui/fixed-bottom-button';
-import Loading from '@/components/ui/loading';
+import { Loading } from '@/components/ui/loading';
+import { NoContent } from '@/components/ui/no-content';
 import { RecipeCard } from '@/components/ui/recipe-card';
 import { SelectCount } from '@/components/ui/select-count';
 import { getSavedRecipesCount } from '@/lib/local-storage';
@@ -36,9 +37,7 @@ function RecipesContent() {
   return (
     <>
       {recipes.length === 0 ? (
-        <div className="text-center text-gray-600">
-          レシピが見つかりませんでした
-        </div>
+        <NoContent text="レシピが見つかりませんでした" />
       ) : (
         <div className="flex flex-col gap-4">
           {recipes.map(recipe => (
@@ -91,7 +90,7 @@ export default function Page() {
       <FixedBottomButton
         buttons={[
           {
-            href: '/recipes/add',
+            href: '/candidates',
             children: (
               <div className="flex items-center justify-center w-full gap-2">
                 <SelectCount count={savedCount} />

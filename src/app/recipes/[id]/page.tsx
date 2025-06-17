@@ -5,7 +5,8 @@ import { useSavedRecipePresenter } from '@/client/presenters/use-saved-recipe-pr
 import { FixedBottomButton } from '@/components/ui/fixed-bottom-button';
 import { Ingredients } from '@/components/ui/ingredients';
 import { Instructions } from '@/components/ui/instructions';
-import Loading from '@/components/ui/loading';
+import { Loading } from '@/components/ui/loading';
+import { NoContent } from '@/components/ui/no-content';
 import { RecipeDetailHeader } from '@/components/ui/recipe-detail-header';
 import { SelectCount } from '@/components/ui/select-count';
 import { TimeCard } from '@/components/ui/time-card';
@@ -21,7 +22,8 @@ export default function Page({ params }: PageProps) {
   const [recipeId, setRecipeId] = useState<string>('');
   const [savedCount, setSavedCount] = useState(0);
   const { recipe, loading, fetchRecipe } = useRecipeDetailPresenter();
-  const { isSaved, canSave, saveRecipe } = useSavedRecipePresenter(recipeId);
+  const { isSaved, canSave, saveRecipe, removeRecipe } =
+    useSavedRecipePresenter(recipeId);
 
   useEffect(() => {
     const fetchRecipeId = async () => {
@@ -55,12 +57,13 @@ export default function Page({ params }: PageProps) {
   }, []);
 
   // 追加ボタンクリック時の処理
-  const handleAddRecipe = () => {
-    if (!isSaved && canSave) {
-      const success = saveRecipe();
-      if (success) {
-        setSavedCount(getSavedRecipesCount()); // カウントを更新
-      }
+  const handleOperateListButtonTapped = () => {
+    if (!canSave) {
+      return;
+    }
+
+    if (isSaved ? removeRecipe() : saveRecipe()) {
+      setSavedCount(getSavedRecipesCount());
     }
   };
 
@@ -69,11 +72,7 @@ export default function Page({ params }: PageProps) {
   }
 
   if (!recipe) {
-    return (
-      <div className="flex items-center justify-center">
-        <p className="text-lg text-gray-600">レシピが見つかりません</p>
-      </div>
-    );
+    return <NoContent text="レシピが見つかりません" />;
   }
 
   // APIから取得したデータを材料コンポーネント用に変換
@@ -136,39 +135,33 @@ export default function Page({ params }: PageProps) {
 
       <FixedBottomButton
         buttons={[
-          /*
           {
-            href: `/recipes/${recipeId}/cooking`,
-            children: 'Vibe Cooking をはじめる',
+            href: `/cooking/${recipeId}`,
+            children: 'このレシピのみで Vibe Cooking をはじめる',
           },
-        */
           {
-            onClick: isSaved || !canSave ? undefined : handleAddRecipe,
+            onClick: handleOperateListButtonTapped,
             href: isSaved && !canSave ? undefined : undefined,
             children: isSaved
-              ? '✓ 追加済み'
+              ? 'Vibe Cooking リストから削除'
               : !canSave
-                ? '保存上限に達しています（3/3）'
-                : 'お気に入りに追加',
-            variant: isSaved ? 'default' : 'outline',
-            disabled: isSaved || !canSave,
+                ? 'Vibe Cooking リストの上限に達しています'
+                : 'Vibe Cooking リストに追加',
+            variant: isSaved ? 'outline' : 'default',
+            disabled: !canSave,
             className: isSaved
-              ? 'bg-slate-300 text-white cursor-not-allowed opacity-70 border-0'
-              : !canSave
-                ? 'bg-slate-300 text-slate-600 cursor-not-allowed opacity-70 border-0'
-                : 'bg-black text-white hover:bg-slate-600 transition-all duration-200 font-medium border-0',
+              ? 'text-red-500 border-red-500 hover:text-red-500 hover:border-red-500'
+              : '',
           },
           {
-            href: '/recipes/add',
+            href: '/candidates',
             children: (
-              <div className="flex items-center justify-center w-full gap-2">
+              <div className="flex items-center justify-center gap-2">
                 <SelectCount count={savedCount} />
-                <span>保存済みレシピ一覧</span>
+                <span>Vibe Cooking リスト</span>
               </div>
             ),
-            variant: 'ghost',
-            className:
-              'text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200 hover:border-gray-300 transition-all duration-200',
+            variant: 'outline',
           },
         ]}
       />

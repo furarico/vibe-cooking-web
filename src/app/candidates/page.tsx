@@ -1,7 +1,8 @@
 'use client';
 import { useDI } from '@/client/di/providers';
 import { FixedBottomButton } from '@/components/ui/fixed-bottom-button';
-import Loading from '@/components/ui/loading';
+import { Loading } from '@/components/ui/loading';
+import { NoContent } from '@/components/ui/no-content';
 import { RecipeCard } from '@/components/ui/recipe-card';
 import { Recipe } from '@/lib/api-client';
 import { getSavedRecipes, removeRecipe } from '@/lib/local-storage';
@@ -70,42 +71,10 @@ export default function Page() {
   }
 
   return (
-    <div className="w-full max-w-[600px] mx-auto min-h-screen p-4">
+    <>
       <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-bold text-left text-gray-800">
-          調理するレシピを確認
-        </h1>
-
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-600 text-center">{error}</p>
-          </div>
-        )}
-
         {savedRecipes.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <svg
-                className="w-16 h-16 mx-auto"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                />
-              </svg>
-            </div>
-            <p className="text-lg text-gray-600 mb-2 text-left">
-              調理するレシピがありません
-            </p>
-            <p className="text-sm text-gray-500">
-              レシピ詳細ページで「お気に入りに追加」を押すと、ここに表示されます
-            </p>
-          </div>
+          <NoContent text="調理するレシピがありません" />
         ) : (
           <div className="flex flex-col gap-4">
             {savedRecipes.map(recipe => (
@@ -136,10 +105,9 @@ export default function Page() {
             href: '/recipes/cooking',
             children: 'Vibe Cookingを始める',
             variant: 'default',
-            className: 'h-14',
           },
         ]}
       />
-    </div>
+    </>
   );
 }

@@ -3,7 +3,7 @@
 import { useCategoryPresenter } from '@/client/presenters/use-category-presenter';
 import { CategoryRecipeSection } from '@/components/category-recipe-section';
 import { Button } from '@/components/ui/button';
-import Loading from '@/components/ui/loading';
+import { Loading } from '@/components/ui/loading';
 import { SelectCount } from '@/components/ui/select-count';
 import { getSavedRecipesCount } from '@/lib/local-storage';
 import Link from 'next/link';
@@ -39,7 +39,6 @@ export default function Page() {
 
   return (
     <>
-      {/* addページへの遷移ボタン */}
       <div className="mb-6">
         <Button
           asChild
@@ -47,7 +46,7 @@ export default function Page() {
           className="w-full text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200 hover:border-gray-300 transition-all duration-200"
         >
           <Link
-            href="/recipes/add"
+            href="/candidates"
             className="flex items-center justify-between"
           >
             <SelectCount count={savedCount} />

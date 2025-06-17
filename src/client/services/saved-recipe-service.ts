@@ -5,7 +5,7 @@ import { SavedRecipeRepository } from '../repositories/interfaces/saved-recipe-r
  * ビジネスロジックを管理する
  */
 export class SavedRecipeService {
-  constructor(private readonly repository: SavedRecipeRepository) {}
+  constructor(private readonly repository: SavedRecipeRepository) { }
 
   /**
    * レシピが保存されているかチェック
@@ -47,7 +47,7 @@ export class SavedRecipeService {
     let nextRoute: string;
     if (currentCount === 2) {
       // 3つ目を追加した場合は追加画面に遷移
-      nextRoute = '/recipes/add';
+      nextRoute = '/candidates';
     } else {
       // 1つ目、2つ目の場合はホーム画面に遷移
       nextRoute = '/';
