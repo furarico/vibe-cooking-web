@@ -29,6 +29,7 @@ export default function Page({ params }: PageProps) {
       await actions.fetchRecipe(resolvedParams.id);
     };
     fetchRecipeId();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params, actions.fetchRecipe]);
 
   if (state.loading) {

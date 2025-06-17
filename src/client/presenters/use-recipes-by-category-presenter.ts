@@ -38,8 +38,7 @@ export const useRecipesByCategoryPresenter = (
 
   useEffect(() => {
     fetchRecipesByCategory(categoryId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryId]); // fetchRecipesByCategoryは依存から除く
+  }, [categoryId, fetchRecipesByCategory]);
 
   return {
     recipes,

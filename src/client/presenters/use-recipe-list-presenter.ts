@@ -65,8 +65,7 @@ export const useRecipeListPresenter = (
     return () => {
       window.removeEventListener('focus', getVibeCookingRecipeIds);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // 依存配列から fetchRecipes と initialFilters を除く
+  }, [initialFilters, fetchRecipes, vibeCookingService]);
 
   return {
     state,

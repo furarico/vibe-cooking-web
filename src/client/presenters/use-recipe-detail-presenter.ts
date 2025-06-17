@@ -36,10 +36,10 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenter => {
     vibeCookingRecipeIds: [],
   });
 
-  const getVibeCookingRecipeIds = () => {
+  const getVibeCookingRecipeIds = useCallback(() => {
     const vibeCookingRecipeIds = vibeCookingService.getVibeCookingRecipeIds();
     setState(prev => ({ ...prev, vibeCookingRecipeIds }));
-  };
+  }, [vibeCookingService]);
 
   const actions: RecipeDetailPresenterActions = {
     setRecipeId: useCallback((id: string) => {
@@ -64,7 +64,12 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenter => {
         getVibeCookingRecipeIds();
         toast.success('Vibe Cooking リストに追加しました');
       }
-    }, [state.recipeId, state.vibeCookingRecipeIds, vibeCookingService]),
+    }, [
+      state.recipeId,
+      state.vibeCookingRecipeIds,
+      vibeCookingService,
+      getVibeCookingRecipeIds,
+    ]),
   };
 
   useEffect(() => {
@@ -75,7 +80,7 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenter => {
     return () => {
       window.removeEventListener('focus', getVibeCookingRecipeIds);
     };
-  }, []);
+  }, [getVibeCookingRecipeIds]);
 
   useEffect(() => {
     const fetchRecipe = async (id: string) => {
