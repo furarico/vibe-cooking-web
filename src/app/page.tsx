@@ -40,19 +40,17 @@ export default function Page() {
   return (
     <>
       <div className="mb-6">
-        <Button
-          asChild
-          variant="ghost"
-          className="w-full text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200 hover:border-gray-300 transition-all duration-200"
-        >
-          <Link
-            href="/candidates"
-            className="flex items-center justify-between"
-          >
-            <SelectCount count={savedCount} />
-            <span>選択中のレシピを表示</span>
-          </Link>
-        </Button>
+        {savedCount > 0 && (
+          <Button asChild variant="outline" className="w-full">
+            <Link
+              href="/candidates"
+              className="flex items-center justify-between"
+            >
+              <SelectCount count={savedCount} />
+              <span>Vibe Cooking リスト</span>
+            </Link>
+          </Button>
+        )}
       </div>
 
       <Suspense fallback={<Loading />}>
