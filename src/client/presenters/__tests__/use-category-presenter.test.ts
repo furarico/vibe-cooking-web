@@ -1,11 +1,12 @@
 import { useCategoryPresenter } from '@/client/presenters/use-category-presenter';
 import { CategoryService } from '@/client/services/category-service';
 import { Category } from '@/lib/api-client';
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 
 jest.mock('@/client/di/providers', () => ({
   useDI: () => ({
     categoryService: mockCategoryService,
+    savedRecipeService: mockSavedRecipeService,
   }),
 }));
 
@@ -18,6 +19,13 @@ jest.mock('sonner', () => ({
 const mockCategoryService = {
   getAllCategories: jest.fn(),
 } as jest.Mocked<CategoryService>;
+
+const mockSavedRecipeService = {
+  getSavedRecipeIds: jest.fn(),
+  saveRecipe: jest.fn(),
+  removeRecipe: jest.fn(),
+  isRecipeSaved: jest.fn(),
+};
 
 describe('useCategoryPresenter', () => {
   const mockCategories: Category[] = [
@@ -37,6 +45,7 @@ describe('useCategoryPresenter', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockSavedRecipeService.getSavedRecipeIds.mockReturnValue([]);
   });
 
   it('初期状態が正しく設定される', () => {
@@ -44,8 +53,9 @@ describe('useCategoryPresenter', () => {
 
     const { result } = renderHook(() => useCategoryPresenter());
 
-    expect(result.current.categories).toEqual([]);
-    expect(result.current.loading).toBe(true);
+    expect(result.current.state.categories).toEqual([]);
+    expect(result.current.state.loading).toBe(true);
+    expect(result.current.state.vibeCookingRecipeIds).toEqual([]);
   });
 
   it('カテゴリ取得が成功する', async () => {
@@ -54,10 +64,10 @@ describe('useCategoryPresenter', () => {
     const { result } = renderHook(() => useCategoryPresenter());
 
     await waitFor(() => {
-      expect(result.current.loading).toBe(false);
+      expect(result.current.state.loading).toBe(false);
     });
 
-    expect(result.current.categories).toEqual(mockCategories);
+    expect(result.current.state.categories).toEqual(mockCategories);
     expect(mockCategoryService.getAllCategories).toHaveBeenCalledTimes(1);
   });
 
@@ -70,50 +80,40 @@ describe('useCategoryPresenter', () => {
     const { result } = renderHook(() => useCategoryPresenter());
 
     await waitFor(() => {
-      expect(result.current.loading).toBe(false);
+      expect(result.current.state.loading).toBe(false);
     });
 
-    expect(result.current.categories).toEqual([]);
+    expect(result.current.state.categories).toEqual([]);
     expect(mockToastError).toHaveBeenCalledWith('カテゴリの取得に失敗しました');
   });
 
-  it('fetchCategoriesで手動でカテゴリを再取得できる', async () => {
+  it('プレゼンターが正常に初期化される', async () => {
     mockCategoryService.getAllCategories.mockResolvedValue(mockCategories);
 
     const { result } = renderHook(() => useCategoryPresenter());
 
     await waitFor(() => {
-      expect(result.current.loading).toBe(false);
+      expect(result.current.state.loading).toBe(false);
     });
 
-    // 手動で再取得
-    await act(async () => {
-      await result.current.fetchCategories();
-    });
-
-    expect(mockCategoryService.getAllCategories).toHaveBeenCalledTimes(2);
+    expect(result.current.state.categories).toEqual(mockCategories);
+    expect(result.current.actions).toBeDefined();
+    expect(mockCategoryService.getAllCategories).toHaveBeenCalledTimes(1);
+    expect(mockSavedRecipeService.getSavedRecipeIds).toHaveBeenCalledTimes(1);
   });
 
-  it('手動再取得中もローディング状態が適切に管理される', async () => {
-    let resolvePromise: (value: Category[]) => void;
-    const promise = new Promise<Category[]>(resolve => {
-      resolvePromise = resolve;
-    });
-    mockCategoryService.getAllCategories.mockReturnValue(promise);
+  it('保存されたレシピIDが正しく取得される', async () => {
+    const savedRecipeIds = ['recipe1', 'recipe2'];
+    mockSavedRecipeService.getSavedRecipeIds.mockReturnValue(savedRecipeIds);
+    mockCategoryService.getAllCategories.mockResolvedValue(mockCategories);
 
     const { result } = renderHook(() => useCategoryPresenter());
 
-    expect(result.current.loading).toBe(true);
-
-    // プロミスを解決
-    act(() => {
-      resolvePromise!(mockCategories);
-    });
-
     await waitFor(() => {
-      expect(result.current.loading).toBe(false);
+      expect(result.current.state.loading).toBe(false);
     });
 
-    expect(result.current.categories).toEqual(mockCategories);
+    expect(result.current.state.vibeCookingRecipeIds).toEqual(savedRecipeIds);
+    expect(mockSavedRecipeService.getSavedRecipeIds).toHaveBeenCalledTimes(1);
   });
 });
