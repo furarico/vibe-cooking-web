@@ -69,3 +69,23 @@ model Category {
 
   @@map("categories")
 }
+
+model VibeRecipe {
+  id              String            @id @default(cuid())
+  recipeIds       String[]          // バイブレシピに含まれるレシピIDの配列
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  vibeInstructions VibeInstruction[]
+
+  @@map("vibe_recipes")
+}
+
+model VibeInstruction {
+  id            String     @id @default(cuid())
+  instructionId String     // 元のInstructionのID
+  step          Int        // 並び替え後の手順番号
+  vibeRecipe    VibeRecipe @relation(fields: [vibeRecipeId], references: [id], onDelete: Cascade)
+  vibeRecipeId  String
+
+  @@map("vibe_instructions")
+}
