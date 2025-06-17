@@ -1,6 +1,6 @@
 import { useDI } from '@/client/di/providers';
 import type { Category } from '@/lib/api-client';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 interface CategoryPresenterState {
@@ -9,9 +9,7 @@ interface CategoryPresenterState {
   vibeCookingRecipeIds: string[];
 }
 
-interface CategoryPresenterActions {
-  fetchCategories: () => Promise<void>;
-}
+interface CategoryPresenterActions {}
 
 interface CategoryPresenter {
   state: CategoryPresenterState;
@@ -27,23 +25,21 @@ export const useCategoryPresenter = (): CategoryPresenter => {
     vibeCookingRecipeIds: [],
   });
 
-  const fetchCategories = useCallback(async () => {
-    setState(prev => ({ ...prev, loading: true }));
-    try {
-      const fetchedCategories = await categoryService.getAllCategories();
-      setState(prev => ({ ...prev, categories: fetchedCategories }));
-    } catch {
-      toast.error('カテゴリの取得に失敗しました');
-    } finally {
-      setState(prev => ({ ...prev, loading: false }));
-    }
-  }, [categoryService]);
-
-  const actions: CategoryPresenterActions = {
-    fetchCategories,
-  };
+  const actions: CategoryPresenterActions = {};
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      setState(prev => ({ ...prev, loading: true }));
+      try {
+        const fetchedCategories = await categoryService.getAllCategories();
+        setState(prev => ({ ...prev, categories: fetchedCategories }));
+      } catch {
+        toast.error('カテゴリの取得に失敗しました');
+      } finally {
+        setState(prev => ({ ...prev, loading: false }));
+      }
+    };
+
     const getVibeCookingRecipeIds = () => {
       const vibeCookingRecipeIds = savedRecipeService.getSavedRecipeIds();
       setState(prev => ({ ...prev, vibeCookingRecipeIds }));
@@ -56,7 +52,7 @@ export const useCategoryPresenter = (): CategoryPresenter => {
     return () => {
       window.removeEventListener('focus', getVibeCookingRecipeIds);
     };
-  }, [fetchCategories, savedRecipeService]);
+  }, []);
 
   return {
     state,
