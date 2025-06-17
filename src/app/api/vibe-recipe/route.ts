@@ -1,8 +1,6 @@
+import { VibeRecipe } from '@/lib/api-client';
 import { createDIContainer } from '@/server/di/container';
-import { components } from '@/types/api';
 import { NextRequest, NextResponse } from 'next/server';
-
-type VibeRecipeResponse = components['schemas']['VibeRecipe'];
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,7 +28,7 @@ export async function POST(request: NextRequest) {
     const result = await vibeRecipeService.createOrGetVibeRecipe(recipeIds);
 
     // レスポンス用のデータを整形
-    const response: VibeRecipeResponse = {
+    const response: VibeRecipe = {
       id: result.vibeRecipe.id,
       recipeIds: result.vibeRecipe.recipeIds,
       instructions: result.vibeRecipe.vibeInstructions.map(
