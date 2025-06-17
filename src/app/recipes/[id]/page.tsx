@@ -13,6 +13,7 @@ import { TimeCard } from '@/components/ui/time-card';
 import { getSavedRecipesCount } from '@/lib/local-storage';
 import Image from 'next/image';
 import { Suspense, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -59,11 +60,21 @@ export default function Page({ params }: PageProps) {
   // 追加ボタンクリック時の処理
   const handleOperateListButtonTapped = () => {
     if (!canSave) {
+      toast.error('Vibe Cooking リストの上限に達しています');
       return;
     }
 
-    if (isSaved ? removeRecipe() : saveRecipe()) {
+    const result = isSaved ? removeRecipe() : saveRecipe();
+    if (result) {
       setSavedCount(getSavedRecipesCount());
+
+      if (isSaved) {
+        toast.success('Vibe Cooking リストから削除しました');
+      } else {
+        toast.success('Vibe Cooking リストに追加しました');
+      }
+    } else {
+      toast.error('Vibe Cooking リストの追加に失敗しました');
     }
   };
 
@@ -141,7 +152,7 @@ export default function Page({ params }: PageProps) {
           },
           {
             onClick: handleOperateListButtonTapped,
-            href: isSaved && !canSave ? undefined : undefined,
+            href: '#',
             children: isSaved
               ? 'Vibe Cooking リストから削除'
               : !canSave

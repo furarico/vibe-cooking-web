@@ -1,4 +1,4 @@
-import { SavedRecipeRepository } from '../repositories/interfaces/saved-recipe-repository';
+import { SavedRecipeRepository } from '../repositories/interfaces/i-saved-recipe-repository';
 
 /**
  * 保存レシピのサービス層
@@ -91,5 +91,9 @@ export class SavedRecipeService {
         nextRoute: result.nextRoute,
       };
     }
+  }
+
+  getSavedRecipeIds(): string[] {
+    return this.repository.getSavedRecipeIds();
   }
 }

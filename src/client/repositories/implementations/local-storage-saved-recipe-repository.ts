@@ -1,19 +1,19 @@
 import {
   canSaveMoreRecipes,
   getMaxSavedRecipes,
+  getSavedRecipes,
   getSavedRecipesCount,
   isRecipeSaved,
   removeRecipe,
   saveRecipe,
 } from '@/lib/local-storage';
-import { SavedRecipeRepository } from '../interfaces/saved-recipe-repository';
+import { SavedRecipeRepository } from '../interfaces/i-saved-recipe-repository';
 
 /**
  * LocalStorageを使用したSavedRecipeRepositoryの実装
  */
 export class LocalStorageSavedRecipeRepository
-  implements SavedRecipeRepository
-{
+  implements SavedRecipeRepository {
   /**
    * レシピが保存されているかチェック
    */
@@ -54,5 +54,12 @@ export class LocalStorageSavedRecipeRepository
    */
   getMaxSavedRecipes(): number {
     return getMaxSavedRecipes();
+  }
+
+  /**
+   * 保存されたレシピのIDを取得
+   */
+  getSavedRecipeIds(): string[] {
+    return getSavedRecipes();
   }
 }

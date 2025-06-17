@@ -31,4 +31,9 @@ export interface SavedRecipeRepository {
    * 保存可能な最大レシピ数を取得
    */
   getMaxSavedRecipes(): number;
+
+  /**
+   * 保存されたレシピのIDを取得
+   */
+  getSavedRecipeIds(): string[];
 }
