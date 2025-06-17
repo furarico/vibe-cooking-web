@@ -73,8 +73,6 @@ model Category {
 model VibeRecipe {
   id              String            @id @default(cuid())
   recipeIds       String[]          // バイブレシピに含まれるレシピIDの配列
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
   vibeInstructions VibeInstruction[]
 
   @@map("vibe_recipes")
