@@ -24,13 +24,12 @@ export default function Page({ params }: PageProps) {
   const { state, actions } = useCookingPresenter();
 
   useEffect(() => {
-    const fetchRecipeId = async () => {
+    const setRecipeId = async () => {
       const resolvedParams = await params;
-      await actions.fetchRecipe(resolvedParams.id);
+      actions.setRecipeId(resolvedParams.id);
     };
-    fetchRecipeId();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params, actions.fetchRecipe]);
+    setRecipeId();
+  }, [params, actions]);
 
   if (state.loading) {
     return <Loading />;
@@ -79,13 +78,6 @@ export default function Page({ params }: PageProps) {
 
       <FixedBottomButton
         buttons={[
-          {
-            onClick: state.audioStatus.isPlaying
-              ? actions.stopAudio
-              : actions.playCurrentStepAudio,
-            children: state.audioStatus.isPlaying ? '音声停止' : '音声再生',
-            variant: 'outline',
-          },
           {
             href: `/recipes/${state.recipe.id}`,
             children: 'Vibe Cooking をおわる',
