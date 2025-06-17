@@ -6,7 +6,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 jest.mock('@/client/di/providers', () => ({
   useDI: () => ({
     categoryService: mockCategoryService,
-    savedRecipeService: mockSavedRecipeService,
+    vibeCookingService: mockVibeCookingService,
   }),
 }));
 
@@ -20,11 +20,10 @@ const mockCategoryService = {
   getAllCategories: jest.fn(),
 } as jest.Mocked<CategoryService>;
 
-const mockSavedRecipeService = {
-  getSavedRecipeIds: jest.fn(),
-  saveRecipe: jest.fn(),
-  removeRecipe: jest.fn(),
-  isRecipeSaved: jest.fn(),
+const mockVibeCookingService = {
+  getVibeCookingRecipeIds: jest.fn(),
+  addVibeCookingRecipeId: jest.fn(),
+  removeVibeCookingRecipeId: jest.fn(),
 };
 
 describe('useCategoryPresenter', () => {
@@ -45,7 +44,7 @@ describe('useCategoryPresenter', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockSavedRecipeService.getSavedRecipeIds.mockReturnValue([]);
+    mockVibeCookingService.getVibeCookingRecipeIds.mockReturnValue([]);
   });
 
   it('初期状態が正しく設定される', () => {
@@ -87,9 +86,11 @@ describe('useCategoryPresenter', () => {
     expect(mockToastError).toHaveBeenCalledWith('カテゴリの取得に失敗しました');
   });
 
-  it('保存されたレシピIDが正しく取得される', async () => {
-    const savedRecipeIds = ['recipe1', 'recipe2'];
-    mockSavedRecipeService.getSavedRecipeIds.mockReturnValue(savedRecipeIds);
+  it('Vibe CookingレシピIDが正しく取得される', async () => {
+    const vibeCookingRecipeIds = ['recipe1', 'recipe2'];
+    mockVibeCookingService.getVibeCookingRecipeIds.mockReturnValue(
+      vibeCookingRecipeIds
+    );
     mockCategoryService.getAllCategories.mockResolvedValue(mockCategories);
 
     const { result } = renderHook(() => useCategoryPresenter());
@@ -98,8 +99,12 @@ describe('useCategoryPresenter', () => {
       expect(result.current.state.loading).toBe(false);
     });
 
-    expect(result.current.state.vibeCookingRecipeIds).toEqual(savedRecipeIds);
-    expect(mockSavedRecipeService.getSavedRecipeIds).toHaveBeenCalledTimes(1);
+    expect(result.current.state.vibeCookingRecipeIds).toEqual(
+      vibeCookingRecipeIds
+    );
+    expect(
+      mockVibeCookingService.getVibeCookingRecipeIds
+    ).toHaveBeenCalledTimes(1);
   });
 
   it('actionsオブジェクトが定義されている', () => {
