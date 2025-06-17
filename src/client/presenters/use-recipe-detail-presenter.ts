@@ -64,6 +64,7 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenter => {
         getVibeCookingRecipeIds();
         toast.success('Vibe Cooking リストに追加しました');
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [state.recipeId, state.vibeCookingRecipeIds, vibeCookingService]),
   };
 
@@ -75,6 +76,7 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenter => {
     return () => {
       window.removeEventListener('focus', getVibeCookingRecipeIds);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vibeCookingService]);
 
   useEffect(() => {

@@ -13,6 +13,7 @@ export interface RecipeListPresenterState {
   vibeCookingRecipeIds: string[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface RecipeListPresenterActions { }
 
 export interface RecipeListPresenter {
@@ -64,7 +65,8 @@ export const useRecipeListPresenter = (
     return () => {
       window.removeEventListener('focus', getVibeCookingRecipeIds);
     };
-  }, [fetchRecipes, initialFilters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // 依存配列から fetchRecipes と initialFilters を除く
 
   return {
     state,
