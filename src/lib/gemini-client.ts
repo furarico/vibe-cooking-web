@@ -38,7 +38,7 @@ ${instructions.map(inst => `- ID: ${inst.id}, 説明: ${inst.description}`).join
 調理の効率性と論理的な順序を考慮して、最も適切な手順順序を決定してください。`;
 
     const response = await this.genAI.models.generateContent({
-      model: 'gemini-1.5-pro',
+      model: 'gemini-2.0-flash-lite',
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
