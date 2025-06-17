@@ -14,7 +14,7 @@ export interface RecipeListPresenterState {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface RecipeListPresenterActions { }
+export interface RecipeListPresenterActions {}
 
 export interface RecipeListPresenter {
   state: RecipeListPresenterState;

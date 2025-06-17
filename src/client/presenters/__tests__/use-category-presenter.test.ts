@@ -8,8 +8,12 @@ beforeAll(() => {
   console.error = (...args) => {
     if (
       typeof args[0] === 'string' &&
-      (args[0].includes('An update to TestComponent inside a test was not wrapped in act') ||
-       args[0].includes('The current testing environment is not configured to support act'))
+      (args[0].includes(
+        'An update to TestComponent inside a test was not wrapped in act'
+      ) ||
+        args[0].includes(
+          'The current testing environment is not configured to support act'
+        ))
     ) {
       return;
     }
@@ -60,7 +64,7 @@ describe('useCategoryPresenter', () => {
 
   it('categoryServiceが呼び出される', () => {
     renderHook(() => useCategoryPresenter());
-    
+
     // categoryServiceのgetAllCategoriesが呼び出されることを確認
     expect(mockCategoryService.getAllCategories).toHaveBeenCalled();
   });

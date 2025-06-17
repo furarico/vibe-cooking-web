@@ -29,7 +29,7 @@ export default function Page({ params }: PageProps) {
       await actions.fetchRecipe(resolvedParams.id);
     };
     fetchRecipeId();
-  }, [params, actions.fetchRecipe]);
+  }, [params, actions]);
 
   if (state.loading) {
     return <Loading />;

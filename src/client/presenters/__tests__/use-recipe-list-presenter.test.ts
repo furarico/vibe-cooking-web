@@ -35,7 +35,7 @@ describe('useRecipeListPresenter', () => {
 
   it('recipeListServiceが呼び出される', () => {
     renderHook(() => useRecipeListPresenter());
-    
+
     // recipeListServiceのgetRecipesが呼び出されることを確認
     expect(mockRecipeListService.getRecipes).toHaveBeenCalled();
   });

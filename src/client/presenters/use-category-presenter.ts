@@ -10,7 +10,7 @@ interface CategoryPresenterState {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface CategoryPresenterActions { }
+interface CategoryPresenterActions {}
 
 interface CategoryPresenter {
   state: CategoryPresenterState;

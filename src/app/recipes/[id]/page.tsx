@@ -25,7 +25,7 @@ export default function Page({ params }: PageProps) {
       actions.setRecipeId(resolvedParams.id);
     };
     fetchRecipeId();
-  }, [params]);
+  }, [params, actions]);
 
   if (state.loading) {
     return <Loading />;

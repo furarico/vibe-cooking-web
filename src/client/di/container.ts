@@ -17,8 +17,8 @@ import { CategoryService } from '@/client/services/category-service';
 import { RecipeListService } from '@/client/services/recipe-list-service';
 import { RecipeService } from '@/client/services/recipe-service';
 import { DefaultApi } from '@/lib/api-client';
-import { VibeCookingService } from '../services/vibe-cooking-service';
 import { LocalStorageRepository } from '../repositories/implementations/local-storage-repository';
+import { VibeCookingService } from '../services/vibe-cooking-service';
 
 export interface DIContainer {
   audioPlayerService: AudioPlayerService;
@@ -41,7 +41,7 @@ export const createDIContainer = (): DIContainer => {
   // 音声認識リポジトリの作成（Web Speech API優先、フォールバックでMediaRecorder）
   const speechRecognitionRepository: SpeechRecognitionRepository =
     typeof window !== 'undefined' &&
-      ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)
+    ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)
       ? new WebSpeechRecognitionRepository()
       : new MediaRecorderSpeechRepository();
 

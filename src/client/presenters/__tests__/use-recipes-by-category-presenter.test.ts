@@ -8,8 +8,12 @@ beforeAll(() => {
   console.error = (...args) => {
     if (
       typeof args[0] === 'string' &&
-      (args[0].includes('An update to TestComponent inside a test was not wrapped in act') ||
-       args[0].includes('The current testing environment is not configured to support act'))
+      (args[0].includes(
+        'An update to TestComponent inside a test was not wrapped in act'
+      ) ||
+        args[0].includes(
+          'The current testing environment is not configured to support act'
+        ))
     ) {
       return;
     }
@@ -56,9 +60,11 @@ describe('useRecipesByCategoryPresenter', () => {
 
   it('recipeServiceが指定されたカテゴリIDで呼び出される', () => {
     renderHook(() => useRecipesByCategoryPresenter(categoryId));
-    
+
     // recipeServiceのgetRecipesByCategoryIdが呼び出されることを確認
-    expect(mockRecipeService.getRecipesByCategoryId).toHaveBeenCalledWith(categoryId);
+    expect(mockRecipeService.getRecipesByCategoryId).toHaveBeenCalledWith(
+      categoryId
+    );
   });
 
   it('fetchRecipesByCategoryメソッドが存在する', () => {

@@ -55,10 +55,10 @@ describe('useRecipeDetailPresenter', () => {
     jest.clearAllMocks();
 
     // useDIのモック設定
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockUseDI.mockReturnValue({
       recipeService: mockRecipeService,
       vibeCookingService: mockVibeCookingService,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
     // デフォルトのモック実装
@@ -129,7 +129,9 @@ describe('useRecipeDetailPresenter', () => {
         result.current.actions.onAddToVibeCookingListButtonTapped();
       });
 
-      expect(mockVibeCookingService.addVibeCookingRecipeId).toHaveBeenCalledWith('1');
+      expect(
+        mockVibeCookingService.addVibeCookingRecipeId
+      ).toHaveBeenCalledWith('1');
     });
 
     it('すでにリストに追加されている場合は削除するべき', async () => {
@@ -153,12 +155,18 @@ describe('useRecipeDetailPresenter', () => {
         result.current.actions.onAddToVibeCookingListButtonTapped();
       });
 
-      expect(mockVibeCookingService.removeVibeCookingRecipeId).toHaveBeenCalledWith('1');
+      expect(
+        mockVibeCookingService.removeVibeCookingRecipeId
+      ).toHaveBeenCalledWith('1');
     });
 
     it('リストが上限に達している場合はエラーを表示するべき', async () => {
       // モックでリストが上限に達している状態を設定
-      mockVibeCookingService.getVibeCookingRecipeIds.mockReturnValue(['1', '2', '3']);
+      mockVibeCookingService.getVibeCookingRecipeIds.mockReturnValue([
+        '1',
+        '2',
+        '3',
+      ]);
 
       const { result } = renderHook(() => useRecipeDetailPresenter());
 
@@ -178,7 +186,9 @@ describe('useRecipeDetailPresenter', () => {
       });
 
       // 追加されないことを確認
-      expect(mockVibeCookingService.addVibeCookingRecipeId).not.toHaveBeenCalled();
+      expect(
+        mockVibeCookingService.addVibeCookingRecipeId
+      ).not.toHaveBeenCalled();
     });
   });
 });
