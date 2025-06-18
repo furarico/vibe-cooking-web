@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full min-w-xs max-w-xl min-h-screen mx-auto p-2 bg-slate-50`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased container w-full min-w-xs h-screen mx-auto p-2 bg-slate-50`}
       >
         <DIProvider>
           <ServiceWorkerRegistration />

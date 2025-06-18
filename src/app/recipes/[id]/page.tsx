@@ -56,39 +56,43 @@ export default function Page({ params }: PageProps) {
 
   return (
     <Suspense fallback={<Loading />}>
-      <div className="flex flex-col gap-8">
-        {/* レシピ画像 */}
-        <Image
-          src={
-            state.recipe.imageUrl && state.recipe.imageUrl.length > 0
-              ? state.recipe.imageUrl
-              : (process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL ?? '')
-          }
-          alt={state.recipe.title || 'レシピ画像'}
-          width={600}
-          height={300}
-          className="w-full h-[300px] object-cover rounded-lg border-2 border-slate-200"
-          priority
-        />
+      <div className="flex flex-col gap-8 lg:flex-row">
+        <div className="lg:w-[50%] flex flex-col gap-8">
+          {/* レシピ画像 */}
+          <Image
+            src={
+              state.recipe.imageUrl && state.recipe.imageUrl.length > 0
+                ? state.recipe.imageUrl
+                : (process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL ?? '')
+            }
+            alt={state.recipe.title || 'レシピ画像'}
+            width={600}
+            height={300}
+            className="w-full h-[300px] object-cover rounded-lg border-2 border-slate-200"
+            priority
+          />
 
-        <RecipeDetailHeader
-          title={state.recipe.title || ''}
-          description={state.recipe.description || ''}
-          tags={state.recipe.tags || []}
-        />
+          <RecipeDetailHeader
+            title={state.recipe.title || ''}
+            description={state.recipe.description || ''}
+            tags={state.recipe.tags || []}
+          />
 
-        {/* 調理時間カード */}
-        <div className="flex flex-row items-center justify-center gap-2">
-          <TimeCard variant="prep" number={state.recipe.prepTime || 0} />
-          <TimeCard variant="cook" number={state.recipe.cookTime || 0} />
-          <TimeCard variant="servings" number={state.recipe.servings || 0} />
+          {/* 調理時間カード */}
+          <div className="flex flex-row items-center justify-center gap-2">
+            <TimeCard variant="prep" number={state.recipe.prepTime || 0} />
+            <TimeCard variant="cook" number={state.recipe.cookTime || 0} />
+            <TimeCard variant="servings" number={state.recipe.servings || 0} />
+          </div>
         </div>
 
-        {/* 材料リスト */}
-        <Ingredients ingredients={ingredientsData} />
+        <div className="lg:w-[50%] flex flex-col gap-8 lg:py-4">
+          {/* 材料リスト */}
+          <Ingredients ingredients={ingredientsData} />
 
-        {/* 作成手順 */}
-        <Instructions steps={instructionsData} />
+          {/* 作成手順 */}
+          <Instructions steps={instructionsData} />
+        </div>
       </div>
 
       <FixedBottomButton

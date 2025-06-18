@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import * as React from 'react';
+import { Card } from './card';
 import { IngredientsItem, IngredientsItemProps } from './ingredients-item';
 
 interface IngredientsProps {
@@ -18,22 +19,19 @@ const Ingredients: React.FC<IngredientsProps> = ({
   }));
 
   return (
-    <div
-      className={cn(
-        'w-full flex items-center flex-col gap-4 p-4 bg-white rounded-md border border-slate-200 text-center',
-        className
-      )}
-    >
-      <h2 className="text-xl font-bold text-slate-600">材料</h2>
-      {ingredientsWithId.map(ingredient => (
-        <IngredientsItem
-          key={ingredient.id} // 生成したidをkeyに使う
-          name={ingredient.name}
-          amount={ingredient.amount}
-          unit={ingredient.unit}
-          note={ingredient.note}
-        />
-      ))}
+    <div className={cn('w-full flex flex-col gap-4', className)}>
+      <h2 className="text-lg font-bold">材料</h2>
+      <Card className="p-4 flex flex-col gap-2">
+        {ingredientsWithId.map(ingredient => (
+          <IngredientsItem
+            key={ingredient.id} // 生成したidをkeyに使う
+            name={ingredient.name}
+            amount={ingredient.amount}
+            unit={ingredient.unit}
+            note={ingredient.note}
+          />
+        ))}
+      </Card>
     </div>
   );
 };
