@@ -66,9 +66,9 @@ export default function Page({ params }: PageProps) {
                 : (process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL ?? '')
             }
             alt={state.recipe.title || 'レシピ画像'}
-            width={600}
-            height={300}
-            className="w-full h-[300px] object-cover rounded-lg border-2 border-slate-200"
+            width={800}
+            height={450}
+            className="w-full object-cover rounded-lg border-2 border-slate-200"
             priority
           />
 
