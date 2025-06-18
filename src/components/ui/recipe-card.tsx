@@ -12,7 +12,7 @@ const recipeCardVariants = cva(
   {
     variants: {
       variant: {
-        card: 'max-w-[240px] flex-col',
+        card: 'max-w-[220px] flex-col',
         row: 'flex-row items-center',
       },
     },
@@ -58,7 +58,7 @@ const RecipeCard = React.forwardRef<HTMLDivElement, RecipeCardProps>(
         {/* Recipe Image */}
         <div
           className={cn(
-            'rounded relative overflow-hidden',
+            'relative overflow-hidden',
             variant === 'row'
               ? 'w-[100px] h-[100px] flex-shrink-0'
               : 'w-full h-[100px]'
@@ -69,7 +69,7 @@ const RecipeCard = React.forwardRef<HTMLDivElement, RecipeCardProps>(
             alt={imageAlt}
             fill
             sizes="200px"
-            className="object-cover border-2 border-slate-200"
+            className="object-cover rounded border-1 border-slate-200"
           />
         </div>
 

@@ -7,7 +7,6 @@ import { Instructions } from '@/components/ui/instructions';
 import { Loading } from '@/components/ui/loading';
 import { NoContent } from '@/components/ui/no-content';
 import { RecipeDetailHeader } from '@/components/ui/recipe-detail-header';
-import { SelectCount } from '@/components/ui/select-count';
 import { TimeCard } from '@/components/ui/time-card';
 import Image from 'next/image';
 import { Suspense, useEffect } from 'react';
@@ -57,7 +56,7 @@ export default function Page({ params }: PageProps) {
 
   return (
     <Suspense fallback={<Loading />}>
-      <div className="mb-40 flex flex-col gap-8">
+      <div className="flex flex-col gap-8">
         {/* レシピ画像 */}
         <Image
           src={
@@ -113,16 +112,6 @@ export default function Page({ params }: PageProps) {
             className: state.vibeCookingRecipeIds.includes(state.recipeId ?? '')
               ? 'text-red-500 border-red-500 hover:text-red-500 hover:border-red-500'
               : '',
-          },
-          {
-            href: '/candidates',
-            children: (
-              <div className="flex items-center justify-center gap-2">
-                <SelectCount count={state.vibeCookingRecipeIds.length} />
-                <span>Vibe Cooking リスト</span>
-              </div>
-            ),
-            variant: 'outline',
           },
         ]}
       />
