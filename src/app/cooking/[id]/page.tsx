@@ -79,7 +79,7 @@ export default function Page({ params }: PageProps) {
         currentStep={state.currentStep + 1}
       />
 
-      {state.speechStatus === 'listening' ? (
+      {state.audioRecognitionStatus === 'listening' ? (
         <MicIcon className="h-10 w-10 text-green-500" />
       ) : (
         <MicOffIcon className="h-10 w-10 text-red-500" />

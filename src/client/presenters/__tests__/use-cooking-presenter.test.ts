@@ -21,14 +21,18 @@ const mockRecipeService = {
 const mockAudioPlayerService = {
   isPlaying: jest.fn().mockReturnValue(false),
   getCurrentAudioUrl: jest.fn().mockReturnValue(null),
+  getAudioPlayerStatus: jest.fn().mockReturnValue('idle'),
   playAudio: jest.fn(),
   stopAudio: jest.fn(),
+  pauseAudio: jest.fn(),
+  resumeAudio: jest.fn(),
+  setVolume: jest.fn(),
   addListener: jest.fn(),
   removeListener: jest.fn(),
 } as Partial<AudioPlayerService> as jest.Mocked<AudioPlayerService>;
 
 const mockAudioRecognitionService = {
-  getSpeechStatus: jest.fn().mockReturnValue('idle'),
+  getAudioRecognitionStatus: jest.fn().mockReturnValue('idle'),
   getTranscript: jest.fn().mockReturnValue(''),
   getInterimTranscript: jest.fn().mockReturnValue(''),
   getTriggerHistory: jest.fn().mockReturnValue([]),
@@ -80,12 +84,11 @@ describe('useCookingPresenter', () => {
       expect(result.current.state.currentStep).toBe(0);
       expect(result.current.state.totalSteps).toBe(0);
       expect(result.current.state.carouselApi).toBeNull();
-      expect(result.current.state.speechStatus).toBe('idle');
+      expect(result.current.state.audioRecognitionStatus).toBe('idle');
       expect(result.current.state.transcript).toBe('');
       expect(result.current.state.interimTranscript).toBe('');
       expect(result.current.state.triggerHistory).toEqual([]);
-      expect(result.current.state.audioStatus.isPlaying).toBe(false);
-      expect(result.current.state.audioStatus.currentAudioUrl).toBeNull();
+      expect(result.current.state.audioPlayerStatus).toBe('idle');
     });
   });
 

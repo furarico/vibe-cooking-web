@@ -3,17 +3,19 @@ export interface AudioPlayerService {
   stopAudio(): void;
   pauseAudio(): void;
   resumeAudio(): void;
-  isPlaying(): boolean;
+  getAudioPlayerStatus(): AudioPlayerStatus;
   getCurrentAudioUrl(): string | null;
   setVolume(volume: number): void;
   addListener(listener: () => void): void;
   removeListener(listener: () => void): void;
 }
 
+export type AudioPlayerStatus = 'idle' | 'playing' | 'paused' | 'stopped';
+
 export class AudioPlayerServiceImpl implements AudioPlayerService {
   private audio: HTMLAudioElement | null = null;
   private currentAudioUrl: string | null = null;
-  private isCurrentlyPlaying = false;
+  private status: AudioPlayerStatus = 'idle';
   private listeners: Set<() => void> = new Set();
 
   async playAudio(audioUrl: string, forceRestart = false): Promise<void> {
@@ -21,7 +23,7 @@ export class AudioPlayerServiceImpl implements AudioPlayerService {
     if (
       !forceRestart &&
       this.currentAudioUrl === audioUrl &&
-      this.isCurrentlyPlaying
+      this.status === 'playing'
     ) {
       return;
     }
@@ -40,29 +42,29 @@ export class AudioPlayerServiceImpl implements AudioPlayerService {
       this.audio.addEventListener('canplay', () => {});
 
       this.audio.addEventListener('play', () => {
-        this.isCurrentlyPlaying = true;
+        this.status = 'playing';
         this.notifyListeners();
       });
 
       this.audio.addEventListener('pause', () => {
-        this.isCurrentlyPlaying = false;
+        this.status = 'paused';
         this.notifyListeners();
       });
 
       this.audio.addEventListener('ended', () => {
-        this.isCurrentlyPlaying = false;
+        this.status = 'stopped';
         this.notifyListeners();
       });
 
       this.audio.addEventListener('error', () => {
-        this.isCurrentlyPlaying = false;
+        this.status = 'stopped';
         this.notifyListeners();
       });
 
       // 音声を再生
       await this.audio.play();
     } catch (error) {
-      this.isCurrentlyPlaying = false;
+      this.status = 'stopped';
       this.currentAudioUrl = null;
       this.notifyListeners();
       throw error;
@@ -75,25 +77,25 @@ export class AudioPlayerServiceImpl implements AudioPlayerService {
       this.audio.currentTime = 0;
       this.audio = null;
     }
-    this.isCurrentlyPlaying = false;
+    this.status = 'stopped';
     this.currentAudioUrl = null;
     this.notifyListeners();
   }
 
   pauseAudio(): void {
-    if (this.audio && this.isCurrentlyPlaying) {
+    if (this.audio && this.status === 'playing') {
       this.audio.pause();
     }
   }
 
   resumeAudio(): void {
-    if (this.audio && !this.isCurrentlyPlaying) {
+    if (this.audio && this.status === 'paused') {
       this.audio.play();
     }
   }
 
-  isPlaying(): boolean {
-    return this.isCurrentlyPlaying;
+  getAudioPlayerStatus(): AudioPlayerStatus {
+    return this.status;
   }
 
   getCurrentAudioUrl(): string | null {

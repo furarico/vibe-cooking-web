@@ -1,12 +1,13 @@
 'use client';
 
 import { useDI } from '@/client/di/providers';
-import { SpeechStatus } from '@/client/services/audio-recognition-service';
+import { AudioRecognitionStatus } from '@/client/services/audio-recognition-service';
 import { CarouselApi } from '@/components/ui/carousel';
 import { CookingInstructionCardProps } from '@/components/ui/cooking-instruction-card';
 import { Recipe } from '@/lib/api-client';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { AudioPlayerStatus } from '../services/audio-player-service';
 
 export interface CookingPresenterState {
   recipeId: string | null;
@@ -18,13 +19,10 @@ export interface CookingPresenterState {
   cards: CookingInstructionCardProps[];
 
   // 音声再生状態
-  audioStatus: {
-    isPlaying: boolean;
-    currentAudioUrl: string | null;
-  };
+  audioPlayerStatus: AudioPlayerStatus;
 
   // 音声認識状態
-  speechStatus: SpeechStatus;
+  audioRecognitionStatus: AudioRecognitionStatus;
   transcript: string;
   interimTranscript: string;
   triggerHistory: string[];
@@ -56,14 +54,12 @@ export const useCookingPresenter = (): CookingPresenter => {
       currentStep: 0,
       totalSteps: 0,
       cards: [],
-      speechStatus: audioRecognitionService.getSpeechStatus(),
+      audioPlayerStatus: audioPlayerService.getAudioPlayerStatus(),
+      audioRecognitionStatus:
+        audioRecognitionService.getAudioRecognitionStatus(),
       transcript: audioRecognitionService.getTranscript(),
       interimTranscript: audioRecognitionService.getInterimTranscript(),
       triggerHistory: audioRecognitionService.getTriggerHistory(),
-      audioStatus: {
-        isPlaying: audioPlayerService.isPlaying(),
-        currentAudioUrl: audioPlayerService.getCurrentAudioUrl(),
-      },
     };
   });
 
@@ -120,14 +116,12 @@ export const useCookingPresenter = (): CookingPresenter => {
     const updateState = () => {
       setState(prev => ({
         ...prev,
-        speechStatus: audioRecognitionService.getSpeechStatus(),
+        audioPlayerStatus: audioPlayerService.getAudioPlayerStatus(),
+        audioRecognitionStatus:
+          audioRecognitionService.getAudioRecognitionStatus(),
         transcript: audioRecognitionService.getTranscript(),
         interimTranscript: audioRecognitionService.getInterimTranscript(),
         triggerHistory: audioRecognitionService.getTriggerHistory(),
-        audioStatus: {
-          isPlaying: audioPlayerService.isPlaying(),
-          currentAudioUrl: audioPlayerService.getCurrentAudioUrl(),
-        },
       }));
     };
 
