@@ -82,7 +82,7 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
   private handleSpeechResult(finalText: string, interimText: string): void {
     if (finalText) {
       // トリガーワード検知
-      const { hasNext, hasPrev } = this.detectTriggerWords(finalText);
+      const { hasNext, hasPrev, hasAgain } = this.detectTriggerWords(finalText);
 
       if (hasNext) {
         this.triggerHistory.push(
@@ -93,6 +93,12 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
       if (hasPrev) {
         this.triggerHistory.push(
           `${new Date().toLocaleTimeString()}: 前トリガー検知 - "${finalText}"`
+        );
+        this.notifyListeners();
+      }
+      if (hasAgain) {
+        this.triggerHistory.push(
+          `${new Date().toLocaleTimeString()}: 再度トリガー検知 - "${finalText}"`
         );
         this.notifyListeners();
       }
@@ -129,6 +135,7 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
   private detectTriggerWords(text: string): {
     hasNext: boolean;
     hasPrev: boolean;
+    hasAgain: boolean;
   } {
     const nextKeywords = [
       '次',
@@ -153,6 +160,23 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
       'もどって',
       '戻って',
     ];
+    const againKeywords = [
+      'もう一度',
+      'もういちど',
+      'モウイチド',
+      'もう1度',
+      'もう１度',
+      'again',
+      'アゲイン',
+      'repeat',
+      'リピート',
+      '繰り返し',
+      'くりかえし',
+      'もっかい',
+      'もういっかい',
+      'もういっちょう',
+      'もう一回',
+    ];
 
     const normalizedText = text.toLowerCase();
 
@@ -164,7 +188,11 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
       normalizedText.includes(keyword.toLowerCase())
     );
 
-    return { hasNext, hasPrev };
+    const hasAgain = againKeywords.some(keyword =>
+      normalizedText.includes(keyword.toLowerCase())
+    );
+
+    return { hasNext, hasPrev, hasAgain };
   }
 
   getAudioRecognitionStatus(): AudioRecognitionStatus {

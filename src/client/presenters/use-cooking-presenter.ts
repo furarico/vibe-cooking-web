@@ -210,6 +210,17 @@ export const useCookingPresenter = (): CookingPresenter => {
         //toast.info('最初のステップです');
       }
     }
+
+    // もう一度トリガーの場合
+    if (latestTrigger.includes('再度トリガー検知')) {
+      // ステップを一時的に変更して元に戻すことで音声再生をトリガー
+      const currentStep = state.currentStep;
+      actions.setCurrentStep(-1);
+      setTimeout(() => {
+        actions.setCurrentStep(currentStep);
+      }, 10);
+      //toast.success('音声を再生し直しました');
+    }
   }, [state.triggerHistory]);
 
   return {
