@@ -17,7 +17,7 @@ export const useRecipesByCategoryPresenter = (
 ): RecipesByCategoryPresenterState & RecipesByCategoryPresenterActions => {
   const { recipeService } = useDI();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchRecipesByCategory = useCallback(
     async (categoryId: string) => {
@@ -38,7 +38,7 @@ export const useRecipesByCategoryPresenter = (
 
   useEffect(() => {
     fetchRecipesByCategory(categoryId);
-  }, [fetchRecipesByCategory, categoryId]);
+  }, [categoryId, fetchRecipesByCategory]);
 
   return {
     recipes,

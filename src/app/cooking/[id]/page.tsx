@@ -11,7 +11,8 @@ import {
 import { CookingInstructionCard } from '@/components/ui/cooking-instruction-card';
 import { FixedBottomButton } from '@/components/ui/fixed-bottom-button';
 import { ProgressBar } from '@/components/ui/instruction-progress';
-import Loading from '@/components/ui/loading';
+import { Loading } from '@/components/ui/loading';
+import { NoContent } from '@/components/ui/no-content';
 import { RecipeCard } from '@/components/ui/recipe-card';
 import { useEffect } from 'react';
 
@@ -23,23 +24,19 @@ export default function Page({ params }: PageProps) {
   const { state, actions } = useCookingPresenter();
 
   useEffect(() => {
-    const fetchRecipeId = async () => {
+    const setRecipeId = async () => {
       const resolvedParams = await params;
-      await actions.fetchRecipe(resolvedParams.id);
+      actions.setRecipeId(resolvedParams.id);
     };
-    fetchRecipeId();
-  }, [params, actions.fetchRecipe]);
+    setRecipeId();
+  }, [params, actions]);
 
   if (state.loading) {
     return <Loading />;
   }
 
   if (!state.recipe) {
-    return (
-      <div className="flex items-center justify-center">
-        <p className="text-lg text-gray-600">レシピが見つかりません</p>
-      </div>
-    );
+    return <NoContent text="レシピが見つかりません" />;
   }
 
   return (

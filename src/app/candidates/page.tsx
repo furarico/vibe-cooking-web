@@ -1,0 +1,58 @@
+'use client';
+import { useCandidatesPresenter } from '@/client/presenters/use-candidates-persenter';
+import { FixedBottomButton } from '@/components/ui/fixed-bottom-button';
+import { Loading } from '@/components/ui/loading';
+import { NoContent } from '@/components/ui/no-content';
+import { RecipeCard } from '@/components/ui/recipe-card';
+import Link from 'next/link';
+
+export default function Page() {
+  const { state, actions } = useCandidatesPresenter();
+
+  if (state.loading) {
+    return <Loading />;
+  }
+
+  return (
+    <>
+      <div className="flex flex-col gap-4">
+        {state.recipes.length === 0 ? (
+          <NoContent text="調理するレシピがありません" />
+        ) : (
+          <div className="flex flex-col gap-4">
+            {state.recipes.map(recipe => (
+              <Link key={recipe.id} href={`/recipes/${recipe.id}`}>
+                <RecipeCard
+                  variant="row"
+                  title={recipe.title ?? ''}
+                  description={recipe.description ?? ''}
+                  tags={recipe.tags ?? []}
+                  cookingTime={(recipe.prepTime ?? 0) + (recipe.cookTime ?? 0)}
+                  imageUrl={
+                    recipe.imageUrl && recipe.imageUrl.length > 0
+                      ? recipe.imageUrl
+                      : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png'
+                  }
+                  imageAlt={recipe.title ?? ''}
+                  onDelete={() =>
+                    recipe.id && actions.onDeleteRecipe(recipe.id)
+                  }
+                />
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <FixedBottomButton
+        buttons={[
+          {
+            href: '/recipes/cooking',
+            children: 'Vibe Cookingを始める',
+            variant: 'default',
+          },
+        ]}
+      />
+    </>
+  );
+}

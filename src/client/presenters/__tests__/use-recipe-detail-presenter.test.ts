@@ -1,6 +1,7 @@
 import { useDI } from '@/client/di/providers';
 import { useRecipeDetailPresenter } from '@/client/presenters/use-recipe-detail-presenter';
 import { RecipeService } from '@/client/services/recipe-service';
+import { VibeCookingService } from '@/client/services/vibe-cooking-service';
 import { Recipe } from '@/lib/api-client';
 import { act, renderHook } from '@testing-library/react';
 
@@ -13,6 +14,14 @@ const mockRecipeService = jest.createMockFromModule<RecipeService>(
 ) as jest.Mocked<RecipeService>;
 mockRecipeService.getAllRecipes = jest.fn<Promise<Recipe[]>, []>();
 mockRecipeService.getRecipeById = jest.fn<Promise<Recipe | null>, [string]>();
+
+// モックされたVibeCookingService
+const mockVibeCookingService = jest.createMockFromModule<VibeCookingService>(
+  '@/client/services/vibe-cooking-service'
+) as jest.Mocked<VibeCookingService>;
+mockVibeCookingService.getVibeCookingRecipeIds = jest.fn<string[], []>();
+mockVibeCookingService.addVibeCookingRecipeId = jest.fn<void, [string]>();
+mockVibeCookingService.removeVibeCookingRecipeId = jest.fn<void, [string]>();
 
 // モックされたuseDI
 const mockUseDI = useDI as jest.MockedFunction<typeof useDI>;
@@ -47,305 +56,139 @@ describe('useRecipeDetailPresenter', () => {
 
     // useDIのモック設定
     mockUseDI.mockReturnValue({
-      prisma: {} as typeof import('@/lib/database').prisma,
       recipeService: mockRecipeService,
-    });
+      vibeCookingService: mockVibeCookingService,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
 
     // デフォルトのモック実装
     mockRecipeService.getRecipeById.mockResolvedValue(mockRecipe);
+    mockVibeCookingService.getVibeCookingRecipeIds.mockReturnValue([]);
   });
 
   describe('初期状態', () => {
     it('正しい初期状態を持つべき', () => {
       const { result } = renderHook(() => useRecipeDetailPresenter());
 
-      expect(result.current.recipe).toBeNull();
-      expect(result.current.loading).toBe(false);
-      expect(result.current.currentStep).toBe(0);
-      expect(result.current.isCompleted).toBe(false);
+      expect(result.current.state.recipe).toBeNull();
+      expect(result.current.state.loading).toBe(false);
+      expect(result.current.state.currentStep).toBe(0);
+      expect(result.current.state.isCompleted).toBe(false);
+      expect(result.current.state.recipeId).toBeNull();
+      expect(result.current.state.vibeCookingRecipeIds).toEqual([]);
     });
   });
 
-  describe('fetchRecipe', () => {
-    it('レシピを正常に取得できるべき', async () => {
+  describe('setRecipeId', () => {
+    it('レシピIDを設定できるべき', async () => {
       const { result } = renderHook(() => useRecipeDetailPresenter());
 
       await act(async () => {
-        await result.current.fetchRecipe('1');
+        result.current.actions.setRecipeId('1');
+      });
+
+      expect(result.current.state.recipeId).toBe('1');
+    });
+
+    it('レシピIDを設定したときにレシピを取得するべき', async () => {
+      const { result } = renderHook(() => useRecipeDetailPresenter());
+
+      await act(async () => {
+        result.current.actions.setRecipeId('1');
+      });
+
+      // Wait for useEffect to complete
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 0));
       });
 
       expect(mockRecipeService.getRecipeById).toHaveBeenCalledWith('1');
-      expect(result.current.recipe).toEqual(mockRecipe);
-      expect(result.current.loading).toBe(false);
-      expect(result.current.currentStep).toBe(0);
-      expect(result.current.isCompleted).toBe(false);
-    });
-
-    it('レシピ取得中はローディング状態になるべき', async () => {
-      // 長時間かかるPromiseを作成
-      let resolvePromise: (value: Recipe) => void;
-      const longRunningPromise = new Promise<Recipe>(resolve => {
-        resolvePromise = resolve;
-      });
-
-      mockRecipeService.getRecipeById.mockReturnValue(longRunningPromise);
-
-      const { result } = renderHook(() => useRecipeDetailPresenter());
-
-      act(() => {
-        result.current.fetchRecipe('1');
-      });
-
-      // ローディング状態を確認
-      expect(result.current.loading).toBe(true);
-
-      // Promise を解決
-      await act(async () => {
-        resolvePromise!(mockRecipe);
-        await longRunningPromise;
-      });
-
-      expect(result.current.loading).toBe(false);
-    });
-
-    it('レシピが見つからない場合はローディングが停止するべき', async () => {
-      mockRecipeService.getRecipeById.mockResolvedValue(null);
-
-      const { result } = renderHook(() => useRecipeDetailPresenter());
-
-      await act(async () => {
-        await result.current.fetchRecipe('999');
-      });
-
-      expect(result.current.loading).toBe(false);
-      expect(result.current.recipe).toBeNull();
-    });
-
-    it('エラー時はローディングが停止するべき', async () => {
-      const errorMessage = 'ネットワークエラー';
-      mockRecipeService.getRecipeById.mockRejectedValue(
-        new Error(errorMessage)
-      );
-
-      const { result } = renderHook(() => useRecipeDetailPresenter());
-
-      await act(async () => {
-        await result.current.fetchRecipe('1');
-      });
-
-      expect(result.current.loading).toBe(false);
-      expect(result.current.recipe).toBeNull();
+      expect(result.current.state.recipe).toEqual(mockRecipe);
+      expect(result.current.state.loading).toBe(false);
+      expect(result.current.state.currentStep).toBe(0);
+      expect(result.current.state.isCompleted).toBe(false);
     });
   });
 
-  describe('setCurrentStep', () => {
-    it('有効なステップ番号を設定できるべき', async () => {
+  describe('onAddToVibeCookingListButtonTapped', () => {
+    it('Vibe Cooking リストに追加できるべき', async () => {
       const { result } = renderHook(() => useRecipeDetailPresenter());
 
-      // まずレシピを取得
+      // レシピIDを設定
       await act(async () => {
-        await result.current.fetchRecipe('1');
+        result.current.actions.setRecipeId('1');
       });
 
-      // ステップを設定
+      // Wait for recipe to be loaded
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
+
+      // Vibe Cooking リストに追加
       act(() => {
-        result.current.setCurrentStep(1);
+        result.current.actions.onAddToVibeCookingListButtonTapped();
       });
 
-      expect(result.current.currentStep).toBe(1);
-      expect(result.current.isCompleted).toBe(false);
+      expect(
+        mockVibeCookingService.addVibeCookingRecipeId
+      ).toHaveBeenCalledWith('1');
     });
 
-    it('最大ステップ数を超えた場合は最大値に制限されるべき', async () => {
+    it('すでにリストに追加されている場合は削除するべき', async () => {
+      // モックでリストに既に追加されている状態を設定
+      mockVibeCookingService.getVibeCookingRecipeIds.mockReturnValue(['1']);
+
       const { result } = renderHook(() => useRecipeDetailPresenter());
 
-      // まずレシピを取得
+      // レシピIDを設定
       await act(async () => {
-        await result.current.fetchRecipe('1');
+        result.current.actions.setRecipeId('1');
       });
 
-      // 最大値を超えるステップを設定
+      // Wait for recipe to be loaded
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
+
+      // Vibe Cooking リストから削除
       act(() => {
-        result.current.setCurrentStep(10);
+        result.current.actions.onAddToVibeCookingListButtonTapped();
       });
 
-      const maxStep = (mockRecipe.instructions?.length || 1) - 1;
-      expect(result.current.currentStep).toBe(maxStep);
-      expect(result.current.isCompleted).toBe(true);
+      expect(
+        mockVibeCookingService.removeVibeCookingRecipeId
+      ).toHaveBeenCalledWith('1');
     });
 
-    it('負の値を設定した場合は0に制限されるべき', async () => {
+    it('リストが上限に達している場合はエラーを表示するべき', async () => {
+      // モックでリストが上限に達している状態を設定
+      mockVibeCookingService.getVibeCookingRecipeIds.mockReturnValue([
+        '1',
+        '2',
+        '3',
+      ]);
+
       const { result } = renderHook(() => useRecipeDetailPresenter());
 
-      // まずレシピを取得
+      // レシピIDを設定
       await act(async () => {
-        await result.current.fetchRecipe('1');
+        result.current.actions.setRecipeId('4');
       });
 
-      // 負の値を設定
-      act(() => {
-        result.current.setCurrentStep(-1);
-      });
-
-      expect(result.current.currentStep).toBe(0);
-      expect(result.current.isCompleted).toBe(false);
-    });
-
-    it('レシピが読み込まれていない場合は何も変更されないべき', () => {
-      const { result } = renderHook(() => useRecipeDetailPresenter());
-
-      const initialState = { ...result.current };
-
-      act(() => {
-        result.current.setCurrentStep(1);
-      });
-
-      expect(result.current).toEqual(initialState);
-    });
-  });
-
-  describe('nextStep', () => {
-    it('次のステップに進めるべき', async () => {
-      const { result } = renderHook(() => useRecipeDetailPresenter());
-
-      // まずレシピを取得
+      // Wait for recipe to be loaded
       await act(async () => {
-        await result.current.fetchRecipe('1');
+        await new Promise(resolve => setTimeout(resolve, 0));
       });
 
-      // 次のステップに進む
+      // Vibe Cooking リストに追加しようとする
       act(() => {
-        result.current.nextStep();
+        result.current.actions.onAddToVibeCookingListButtonTapped();
       });
 
-      expect(result.current.currentStep).toBe(1);
-      expect(result.current.isCompleted).toBe(false);
-    });
-
-    it('最後のステップでは完了状態になるべき', async () => {
-      const { result } = renderHook(() => useRecipeDetailPresenter());
-
-      // まずレシピを取得
-      await act(async () => {
-        await result.current.fetchRecipe('1');
-      });
-
-      const maxStep = (mockRecipe.instructions?.length || 1) - 1;
-
-      // 最後のステップまで進む
-      act(() => {
-        result.current.setCurrentStep(maxStep);
-      });
-
-      expect(result.current.currentStep).toBe(maxStep);
-      expect(result.current.isCompleted).toBe(true);
-    });
-
-    it('最後のステップを超えないべき', async () => {
-      const { result } = renderHook(() => useRecipeDetailPresenter());
-
-      // まずレシピを取得
-      await act(async () => {
-        await result.current.fetchRecipe('1');
-      });
-
-      const maxStep = (mockRecipe.instructions?.length || 1) - 1;
-
-      // 最後のステップに設定
-      act(() => {
-        result.current.setCurrentStep(maxStep);
-      });
-
-      // さらに次のステップに進もうとする
-      act(() => {
-        result.current.nextStep();
-      });
-
-      expect(result.current.currentStep).toBe(maxStep);
-      expect(result.current.isCompleted).toBe(true);
-    });
-  });
-
-  describe('prevStep', () => {
-    it('前のステップに戻れるべき', async () => {
-      const { result } = renderHook(() => useRecipeDetailPresenter());
-
-      // まずレシピを取得
-      await act(async () => {
-        await result.current.fetchRecipe('1');
-      });
-
-      // ステップを進める
-      act(() => {
-        result.current.setCurrentStep(2);
-      });
-
-      // 前のステップに戻る
-      act(() => {
-        result.current.prevStep();
-      });
-
-      expect(result.current.currentStep).toBe(1);
-      expect(result.current.isCompleted).toBe(false);
-    });
-
-    it('最初のステップより前には戻れないべき', async () => {
-      const { result } = renderHook(() => useRecipeDetailPresenter());
-
-      // まずレシピを取得
-      await act(async () => {
-        await result.current.fetchRecipe('1');
-      });
-
-      // 最初のステップで前のステップに戻ろうとする
-      act(() => {
-        result.current.prevStep();
-      });
-
-      expect(result.current.currentStep).toBe(0);
-      expect(result.current.isCompleted).toBe(false);
-    });
-  });
-
-  describe('resetProgress', () => {
-    it('進行状況をリセットできるべき', async () => {
-      const { result } = renderHook(() => useRecipeDetailPresenter());
-
-      // まずレシピを取得
-      await act(async () => {
-        await result.current.fetchRecipe('1');
-      });
-
-      // ステップを進める
-      act(() => {
-        result.current.setCurrentStep(2);
-      });
-
-      // 進行状況をリセット
-      act(() => {
-        result.current.resetProgress();
-      });
-
-      expect(result.current.currentStep).toBe(0);
-      expect(result.current.isCompleted).toBe(false);
-    });
-  });
-
-  describe('markCompleted', () => {
-    it('完了状態に設定できるべき', async () => {
-      const { result } = renderHook(() => useRecipeDetailPresenter());
-
-      // まずレシピを取得
-      await act(async () => {
-        await result.current.fetchRecipe('1');
-      });
-
-      // 完了状態に設定
-      act(() => {
-        result.current.markCompleted();
-      });
-
-      expect(result.current.isCompleted).toBe(true);
+      // 追加されないことを確認
+      expect(
+        mockVibeCookingService.addVibeCookingRecipeId
+      ).not.toHaveBeenCalled();
     });
   });
 });

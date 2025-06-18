@@ -1,5 +1,5 @@
 import { useRecipesByCategoryPresenter } from '@/client/presenters/use-recipes-by-category-presenter';
-import Loading from '@/components/ui/loading';
+import { Loading } from '@/components/ui/loading';
 import { RecipeCardList } from '@/components/ui/recipe-card-list';
 import { Category } from '@/lib/api-client';
 import Link from 'next/link';
