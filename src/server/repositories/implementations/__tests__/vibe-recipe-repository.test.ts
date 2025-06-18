@@ -90,17 +90,17 @@ describe('VibeRecipeRepository', () => {
     it('新しいVibeRecipeを作成して返すべき', async () => {
       const recipeIds = ['recipe1', 'recipe2'];
       const instructions = [
-        { instructionId: 'inst1', step: 1 },
-        { instructionId: 'inst2', step: 2 },
+        { instructionId: 'inst1', step: 1, recipeId: 'recipe1' },
+        { instructionId: 'inst2', step: 2, recipeId: 'recipe2' },
       ];
 
       const createdVibeRecipe = {
         id: 'new-vibe-recipe',
         recipeIds,
         vibeInstructions: instructions.map(inst => ({
-          id: `vi-${inst.step}`,
           instructionId: inst.instructionId,
           step: inst.step,
+          recipeId: inst.recipeId,
           vibeRecipeId: 'new-vibe-recipe',
         })),
         createdAt: new Date(),
@@ -117,9 +117,10 @@ describe('VibeRecipeRepository', () => {
         data: {
           recipeIds,
           vibeInstructions: {
-            create: instructions.map(({ instructionId, step }) => ({
+            create: instructions.map(({ instructionId, step, recipeId }) => ({
               instructionId,
               step,
+              recipeId,
             })),
           },
         },
@@ -134,9 +135,9 @@ describe('VibeRecipeRepository', () => {
     it('指定されたrecipeIdsに紐づくInstructionsを返すべき', async () => {
       const recipeIds = ['recipe1', 'recipe2'];
       const instructions = [
-        { id: 'inst1', description: '材料を切る' },
-        { id: 'inst2', description: 'フライパンを温める' },
-        { id: 'inst3', description: '調味料を加える' },
+        { id: 'inst1', description: '材料を切る', recipeId: 'recipe1' },
+        { id: 'inst2', description: 'フライパンを温める', recipeId: 'recipe1' },
+        { id: 'inst3', description: '調味料を加える', recipeId: 'recipe2' },
       ];
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -155,6 +156,7 @@ describe('VibeRecipeRepository', () => {
         select: {
           id: true,
           description: true,
+          recipeId: true,
         },
       });
     });
