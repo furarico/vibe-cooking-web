@@ -252,7 +252,7 @@ components:
           items:
             type: string
           description: 関連するレシピIDの配列
-        VibeInstructions:
+        vibeInstructions:
           type: array
           items:
             $ref: '#/components/schemas/VibeInstruction'
