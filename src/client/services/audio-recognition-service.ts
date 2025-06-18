@@ -1,17 +1,13 @@
-import { RecipeRepository } from '@/client/repositories/implementations/recipe-repository';
 import type {
   SpeechRecognitionErrorEvent,
   SpeechRecognitionRepository,
 } from '@/client/repositories/interfaces/i-speech-recognition-repository';
-import { AudioPlayerServiceImpl } from '@/client/services/audio-player-service';
-import { RecipeService } from '@/client/services/recipe-service';
-import { DefaultApi } from '@/lib/api-client';
 
 export interface AudioRecognitionService {
   // 音声認識関連
   startSpeechRecognition(): Promise<void>;
   stopSpeechRecognition(): void;
-  getSpeechStatus(): SpeechStatus;
+  getAudioRecognitionStatus(): AudioRecognitionStatus;
   getTranscript(): string;
   getInterimTranscript(): string;
   getTriggerHistory(): string[];
@@ -23,26 +19,18 @@ export interface AudioRecognitionService {
   removeListener(listener: () => void): void;
 }
 
-export type SpeechStatus =
+export type AudioRecognitionStatus =
   | 'idle'
   | 'listening'
   | 'processing'
   | 'success'
   | 'error';
 
-export interface AudioRecognitionServiceDependencies {
-  speechRecognitionRepository: import('@/client/repositories/interfaces/i-speech-recognition-repository').SpeechRecognitionRepository;
-  recipeService: import('@/client/services/recipe-service').RecipeService;
-  audioPlayerService: import('@/client/services/audio-player-service').AudioPlayerService;
-}
-
 export class AudioRecognitionServiceImpl implements AudioRecognitionService {
-  private speechRecognitionRepository: import('@/client/repositories/interfaces/i-speech-recognition-repository').SpeechRecognitionRepository;
-  private recipeService: import('@/client/services/recipe-service').RecipeService;
-  private audioPlayerService: import('@/client/services/audio-player-service').AudioPlayerService;
+  private speechRecognitionRepository: SpeechRecognitionRepository;
 
   // 音声認識状態
-  private status: SpeechStatus = 'idle';
+  private status: AudioRecognitionStatus = 'idle';
   private transcript = '';
   private interimTranscript = '';
   private triggerHistory: string[] = [];
@@ -52,10 +40,6 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
 
   constructor(speechRecognitionRepository: SpeechRecognitionRepository) {
     this.speechRecognitionRepository = speechRecognitionRepository;
-    this.recipeService = new RecipeService(
-      new RecipeRepository(new DefaultApi())
-    );
-    this.audioPlayerService = new AudioPlayerServiceImpl();
   }
 
   // イベントリスナー管理
@@ -183,7 +167,7 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
     return { hasNext, hasPrev };
   }
 
-  getSpeechStatus(): SpeechStatus {
+  getAudioRecognitionStatus(): AudioRecognitionStatus {
     return this.status;
   }
 
