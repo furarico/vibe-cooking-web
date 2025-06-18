@@ -2,8 +2,6 @@
 CREATE TABLE "vibe_recipes" (
     "id" TEXT NOT NULL,
     "recipeIds" TEXT[],
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "vibe_recipes_pkey" PRIMARY KEY ("id")
 );
