@@ -11,9 +11,13 @@ export interface IVibeRecipeRepository {
   ): Promise<VibeRecipeWithInstructions | null>;
   create(
     recipeIds: string[],
-    instructions: Array<{ instructionId: string; step: number }>
+    instructions: Array<{
+      instructionId: string;
+      step: number;
+      recipeId: string;
+    }>
   ): Promise<VibeRecipeWithInstructions>;
   getInstructionsByRecipeIds(
     recipeIds: string[]
-  ): Promise<Array<{ id: string; description: string }>>;
+  ): Promise<Array<{ id: string; description: string; recipeId: string }>>;
 }

@@ -3,12 +3,14 @@ import { GoogleGenAI, Type } from '@google/genai';
 export interface GeminiInstruction {
   id: string;
   description: string;
+  recipeId: string;
 }
 
 export interface GeminiResponse {
   instructions: Array<{
     instructionId: string;
     step: number;
+    recipeId: string;
   }>;
 }
 
@@ -32,9 +34,9 @@ export class GeminiClient {
 レシピ ID: ${JSON.stringify(recipeIds)}
 
 各Instructionの詳細:
-${instructions.map(inst => `- ID: ${inst.id}, 説明: ${inst.description}`).join('\n')}
+${instructions.map(inst => `- ID: ${inst.id}, レシピID: ${inst.recipeId}, 説明: ${inst.description}`).join('\n')}
 
-これらを最適な調理手順となるように並び替え、各InstructionのIDと並び替え後のステップ番号のペアをJSON形式で返してください。
+これらを最適な調理手順となるように並び替え、各InstructionのID、レシピID、並び替え後のステップ番号のペアをJSON形式で返してください。
 調理の効率性と論理的な順序を考慮して、最も適切な手順順序を決定してください。`;
 
     const response = await this.genAI.models.generateContent({
@@ -58,8 +60,12 @@ ${instructions.map(inst => `- ID: ${inst.id}, 説明: ${inst.description}`).join
                     type: Type.NUMBER,
                     description: '並び替え後のステップ番号',
                   },
+                  recipeId: {
+                    type: Type.STRING,
+                    description: 'Instructionが属するレシピのID',
+                  },
                 },
-                required: ['instructionId', 'step'],
+                required: ['instructionId', 'step', 'recipeId'],
               },
             },
           },

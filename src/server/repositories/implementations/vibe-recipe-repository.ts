@@ -35,15 +35,20 @@ export class VibeRecipeRepository implements IVibeRecipeRepository {
 
   async create(
     recipeIds: string[],
-    instructions: Array<{ instructionId: string; step: number }>
+    instructions: Array<{
+      instructionId: string;
+      step: number;
+      recipeId: string;
+    }>
   ): Promise<VibeRecipeWithInstructions> {
     return await this.prisma.vibeRecipe.create({
       data: {
         recipeIds,
         vibeInstructions: {
-          create: instructions.map(({ instructionId, step }) => ({
+          create: instructions.map(({ instructionId, step, recipeId }) => ({
             instructionId,
             step,
+            recipeId,
           })),
         },
       },
@@ -55,7 +60,7 @@ export class VibeRecipeRepository implements IVibeRecipeRepository {
 
   async getInstructionsByRecipeIds(
     recipeIds: string[]
-  ): Promise<Array<{ id: string; description: string }>> {
+  ): Promise<Array<{ id: string; description: string; recipeId: string }>> {
     const instructions = await this.prisma.instruction.findMany({
       where: {
         recipeId: {
@@ -65,6 +70,7 @@ export class VibeRecipeRepository implements IVibeRecipeRepository {
       select: {
         id: true,
         description: true,
+        recipeId: true,
       },
     });
 
