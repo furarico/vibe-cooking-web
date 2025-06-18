@@ -14,6 +14,7 @@ import { ProgressBar } from '@/components/ui/instruction-progress';
 import { Loading } from '@/components/ui/loading';
 import { NoContent } from '@/components/ui/no-content';
 import { RecipeCard } from '@/components/ui/recipe-card';
+import { MicIcon } from 'lucide-react';
 import { useEffect } from 'react';
 
 interface PageProps {
@@ -29,7 +30,8 @@ export default function Page({ params }: PageProps) {
       actions.setRecipeId(resolvedParams.id);
     };
     setRecipeId();
-  }, [params, actions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params, actions.setRecipeId]);
 
   if (state.loading) {
     return <Loading />;
@@ -75,6 +77,8 @@ export default function Page({ params }: PageProps) {
         totalSteps={state.totalSteps}
         currentStep={state.currentStep + 1}
       />
+
+      <MicIcon className="h-10 w-10" />
 
       <FixedBottomButton
         buttons={[
