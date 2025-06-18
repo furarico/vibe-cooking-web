@@ -86,7 +86,7 @@ describe('AudioPlayerServiceImpl', () => {
 
   describe('初期状態', () => {
     it('初期状態では再生中ではない', () => {
-      expect(service.isPlaying()).toBe(false);
+      expect(service.getAudioPlayerStatus()).toBe('idle');
       expect(service.getCurrentAudioUrl()).toBeNull();
     });
   });
@@ -97,34 +97,34 @@ describe('AudioPlayerServiceImpl', () => {
     it('音声再生が成功する', async () => {
       await service.playAudio(testUrl);
 
-      expect(service.isPlaying()).toBe(true);
+      expect(service.getAudioPlayerStatus()).toBe('playing');
       expect(service.getCurrentAudioUrl()).toBe(testUrl);
     });
 
     it('同じ音声を再生中に再度再生しようとしても何もしない', async () => {
       await service.playAudio(testUrl);
-      expect(service.isPlaying()).toBe(true);
+      expect(service.getAudioPlayerStatus()).toBe('playing');
       expect(service.getCurrentAudioUrl()).toBe(testUrl);
 
       // 同じ音声を再度再生しようとする
       await service.playAudio(testUrl);
 
       // 状態が変わらないことを確認
-      expect(service.isPlaying()).toBe(true);
+      expect(service.getAudioPlayerStatus()).toBe('playing');
       expect(service.getCurrentAudioUrl()).toBe(testUrl);
     });
 
     it('forceRestartフラグがtrueの場合は同じ音声でも再生し直す', async () => {
       // 最初の再生
       await service.playAudio(testUrl);
-      expect(service.isPlaying()).toBe(true);
+      expect(service.getAudioPlayerStatus()).toBe('playing');
       expect(service.getCurrentAudioUrl()).toBe(testUrl);
 
       // forceRestart = true で同じ音声を再生
       await service.playAudio(testUrl, true);
 
       // 再生が継続されていることを確認
-      expect(service.isPlaying()).toBe(true);
+      expect(service.getAudioPlayerStatus()).toBe('playing');
       expect(service.getCurrentAudioUrl()).toBe(testUrl);
     });
 
@@ -150,7 +150,7 @@ describe('AudioPlayerServiceImpl', () => {
       }) as unknown as typeof Audio;
 
       await expect(service.playAudio(testUrl)).rejects.toThrow('Play failed');
-      expect(service.isPlaying()).toBe(false);
+      expect(service.getAudioPlayerStatus()).toBe('stopped');
       expect(service.getCurrentAudioUrl()).toBeNull();
 
       global.Audio = originalAudio;
@@ -161,11 +161,11 @@ describe('AudioPlayerServiceImpl', () => {
   describe('stopAudio', () => {
     it('再生中の音声を停止する', async () => {
       await service.playAudio('https://example.com/test.mp3');
-      expect(service.isPlaying()).toBe(true);
+      expect(service.getAudioPlayerStatus()).toBe('playing');
 
       service.stopAudio();
 
-      expect(service.isPlaying()).toBe(false);
+      expect(service.getAudioPlayerStatus()).toBe('stopped');
       expect(service.getCurrentAudioUrl()).toBeNull();
     });
 
@@ -177,11 +177,11 @@ describe('AudioPlayerServiceImpl', () => {
   describe('pauseAudio', () => {
     it('再生中の音声を一時停止する', async () => {
       await service.playAudio('https://example.com/test.mp3');
-      expect(service.isPlaying()).toBe(true);
+      expect(service.getAudioPlayerStatus()).toBe('playing');
 
       service.pauseAudio();
 
-      expect(service.isPlaying()).toBe(false);
+      expect(service.getAudioPlayerStatus()).toBe('paused');
       expect(service.getCurrentAudioUrl()).toBe('https://example.com/test.mp3'); // URLは保持される
     });
 
@@ -194,11 +194,11 @@ describe('AudioPlayerServiceImpl', () => {
     it('一時停止中の音声を再開する', async () => {
       await service.playAudio('https://example.com/test.mp3');
       service.pauseAudio();
-      expect(service.isPlaying()).toBe(false);
+      expect(service.getAudioPlayerStatus()).toBe('paused');
 
       service.resumeAudio();
 
-      expect(service.isPlaying()).toBe(true);
+      expect(service.getAudioPlayerStatus()).toBe('playing');
     });
 
     it('音声がない状態で再開を呼んでもエラーにならない', () => {
@@ -271,13 +271,13 @@ describe('AudioPlayerServiceImpl', () => {
       service.addListener(listener);
 
       await service.playAudio('https://example.com/test.mp3');
-      expect(service.isPlaying()).toBe(true);
+      expect(service.getAudioPlayerStatus()).toBe('playing');
 
       // 音声終了をシミュレート
       const mockAudio = (service as { audio: MockAudioElement }).audio;
       mockAudio.triggerEnded();
 
-      expect(service.isPlaying()).toBe(false);
+      expect(service.getAudioPlayerStatus()).toBe('stopped');
       expect(listener).toHaveBeenCalled();
     });
 
@@ -286,13 +286,13 @@ describe('AudioPlayerServiceImpl', () => {
       service.addListener(listener);
 
       await service.playAudio('https://example.com/test.mp3');
-      expect(service.isPlaying()).toBe(true);
+      expect(service.getAudioPlayerStatus()).toBe('playing');
 
       // 音声エラーをシミュレート
       const mockAudio = (service as { audio: MockAudioElement }).audio;
       mockAudio.triggerError(new Error('Audio error'));
 
-      expect(service.isPlaying()).toBe(false);
+      expect(service.getAudioPlayerStatus()).toBe('stopped');
       expect(listener).toHaveBeenCalled();
     });
   });

@@ -21,8 +21,12 @@ const mockRecipeService = {
 const mockAudioPlayerService = {
   isPlaying: jest.fn().mockReturnValue(false),
   getCurrentAudioUrl: jest.fn().mockReturnValue(null),
+  getAudioPlayerStatus: jest.fn().mockReturnValue('idle'),
   playAudio: jest.fn(),
   stopAudio: jest.fn(),
+  pauseAudio: jest.fn(),
+  resumeAudio: jest.fn(),
+  setVolume: jest.fn(),
   addListener: jest.fn(),
   removeListener: jest.fn(),
 } as Partial<AudioPlayerService> as jest.Mocked<AudioPlayerService>;
@@ -84,8 +88,7 @@ describe('useCookingPresenter', () => {
       expect(result.current.state.transcript).toBe('');
       expect(result.current.state.interimTranscript).toBe('');
       expect(result.current.state.triggerHistory).toEqual([]);
-      expect(result.current.state.audioStatus.isPlaying).toBe(false);
-      expect(result.current.state.audioStatus.currentAudioUrl).toBeNull();
+      expect(result.current.state.audioPlayerStatus).toBe('idle');
     });
   });
 
