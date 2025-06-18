@@ -14,7 +14,7 @@ import { ProgressBar } from '@/components/ui/instruction-progress';
 import { Loading } from '@/components/ui/loading';
 import { NoContent } from '@/components/ui/no-content';
 import { RecipeCard } from '@/components/ui/recipe-card';
-import { MicIcon } from 'lucide-react';
+import { MicIcon, MicOffIcon } from 'lucide-react';
 import { useEffect } from 'react';
 
 interface PageProps {
@@ -59,12 +59,13 @@ export default function Page({ params }: PageProps) {
 
       <Carousel className="w-[calc(100%-96px)]" setApi={actions.setCarouselApi}>
         <CarouselContent>
-          {state.recipe.instructions?.map(instruction => (
-            <CarouselItem key={instruction.step}>
+          {state.cards.map(card => (
+            <CarouselItem key={card.step}>
               <CookingInstructionCard
-                step={instruction.step}
-                title={instruction.title}
-                description={instruction.description}
+                step={card.step}
+                title={card.title}
+                description={card.description}
+                imageUrl={card.imageUrl}
               />
             </CarouselItem>
           ))}
@@ -78,7 +79,11 @@ export default function Page({ params }: PageProps) {
         currentStep={state.currentStep + 1}
       />
 
-      <MicIcon className="h-10 w-10" />
+      {state.speechStatus === 'listening' ? (
+        <MicIcon className="h-10 w-10 text-green-500" />
+      ) : (
+        <MicOffIcon className="h-10 w-10 text-red-500" />
+      )}
 
       <FixedBottomButton
         buttons={[

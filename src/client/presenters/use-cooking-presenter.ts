@@ -3,6 +3,7 @@
 import { useDI } from '@/client/di/providers';
 import { SpeechStatus } from '@/client/services/audio-recognition-service';
 import { CarouselApi } from '@/components/ui/carousel';
+import { CookingInstructionCardProps } from '@/components/ui/cooking-instruction-card';
 import { Recipe } from '@/lib/api-client';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -14,6 +15,7 @@ export interface CookingPresenterState {
   loading: boolean;
   currentStep: number;
   totalSteps: number;
+  cards: CookingInstructionCardProps[];
 
   // 音声再生状態
   audioStatus: {
@@ -53,6 +55,7 @@ export const useCookingPresenter = (): CookingPresenter => {
       loading: false,
       currentStep: 0,
       totalSteps: 0,
+      cards: [],
       speechStatus: audioRecognitionService.getSpeechStatus(),
       transcript: audioRecognitionService.getTranscript(),
       interimTranscript: audioRecognitionService.getInterimTranscript(),
@@ -81,6 +84,13 @@ export const useCookingPresenter = (): CookingPresenter => {
           loading: false,
           currentStep: 0,
           totalSteps: recipe.instructions?.length ?? 0,
+          cards:
+            recipe.instructions?.map(instruction => ({
+              step: instruction.step,
+              title: instruction.title,
+              description: instruction.description,
+              imageUrl: instruction.imageUrl ?? null,
+            })) ?? [],
         }));
       } catch {
         setState(prev => ({ ...prev, loading: false }));

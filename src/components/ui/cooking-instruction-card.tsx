@@ -4,10 +4,10 @@ import Image from 'next/image';
 import * as React from 'react';
 
 interface CookingInstructionCardProps {
-  step: number;
+  step: number | null;
   title: string;
   description: string;
-  imageUrl?: string;
+  imageUrl: string | null;
 }
 
 const CookingInstructionCard = React.forwardRef<
@@ -18,14 +18,14 @@ const CookingInstructionCard = React.forwardRef<
     <Card ref={ref}>
       <CardHeader>
         <div className="flex flex-row items-center gap-2">
-          <StepBadge step={step} />
+          {step && <StepBadge step={step} />}
           <div className="text-xl font-bold text-gray-900">{title}</div>
         </div>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col items-center gap-4">
           <p className="w-full text-sm text-gray-900">{description}</p>
-          {imageUrl && (
+          {imageUrl && imageUrl.length > 0 && (
             <Image
               src={imageUrl}
               alt={title}
