@@ -43,25 +43,6 @@ export class VibeRecipeService {
       instructions
     );
 
-    // デバッグ情報を出力
-    console.log('=== Gemini Debug Info ===');
-    console.log(
-      'Available instructions:',
-      instructions.map(inst => ({
-        id: inst.id,
-        recipeId: inst.recipeId,
-        description: inst.description.substring(0, 50) + '...',
-      }))
-    );
-    console.log(
-      'Gemini returned instruction IDs:',
-      geminiResponse.instructionIds
-    );
-    console.log(
-      'Gemini full response:',
-      JSON.stringify(geminiResponse, null, 2)
-    );
-
     // 3. GeminiのレスポンスからVibeInstructionデータを作成
     const instructionMap = new Map(instructions.map(inst => [inst.id, inst]));
     const availableIds = new Set(instructions.map(inst => inst.id));

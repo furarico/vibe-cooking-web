@@ -78,10 +78,7 @@ describe('VibeRecipeService', () => {
       ];
 
       const geminiResponse = {
-        instructions: [
-          { instructionId: 'inst2', step: 1 },
-          { instructionId: 'inst1', step: 2 },
-        ],
+        instructionIds: ['inst2', 'inst1'],
       };
 
       const newVibeRecipe: VibeRecipe = {
@@ -129,10 +126,18 @@ describe('VibeRecipeService', () => {
         recipeIds,
         instructions
       );
-      expect(mockVibeRecipeRepository.create).toHaveBeenCalledWith(
-        recipeIds,
-        geminiResponse.instructions
-      );
+      expect(mockVibeRecipeRepository.create).toHaveBeenCalledWith(recipeIds, [
+        {
+          instructionId: 'inst2',
+          step: 1,
+          recipeId: undefined,
+        },
+        {
+          instructionId: 'inst1',
+          step: 2,
+          recipeId: undefined,
+        },
+      ]);
     });
 
     it('指定されたレシピIDに対応するInstructionが見つからない場合、エラーを投げるべき', async () => {
