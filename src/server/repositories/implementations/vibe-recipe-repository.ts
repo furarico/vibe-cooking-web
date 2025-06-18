@@ -1,4 +1,4 @@
-import { PrismaClient, VibeRecipe, VibeInstruction } from '@prisma/client';
+import { PrismaClient, VibeInstruction, VibeRecipe } from '@prisma/client';
 import { IVibeRecipeRepository } from '../interfaces/i-vibe-recipe-repository';
 
 // vibeInstructionsを含む拡張型を定義
@@ -9,7 +9,9 @@ type VibeRecipeWithInstructions = VibeRecipe & {
 export class VibeRecipeRepository implements IVibeRecipeRepository {
   constructor(private prisma: PrismaClient) {}
 
-  async findByRecipeIds(recipeIds: string[]): Promise<VibeRecipeWithInstructions | null> {
+  async findByRecipeIds(
+    recipeIds: string[]
+  ): Promise<VibeRecipeWithInstructions | null> {
     // recipeIdsの配列が完全に一致するVibeRecipeを検索
     const sortedRecipeIds = [...recipeIds].sort();
 
