@@ -16,8 +16,7 @@ const mockRecipes: Recipe[] = [
     ingredients: [],
     instructions: [],
     tags: ['和風', 'カレー', 'チキン', '家族向け'],
-    imageUrl:
-      'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png',
+    imageUrl: process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL,
     category: {
       id: '1',
       name: 'メイン料理',
@@ -36,8 +35,7 @@ const mockRecipes: Recipe[] = [
     ingredients: [],
     instructions: [],
     tags: ['洋食', 'ハンバーグ', '手作り', '肉料理'],
-    imageUrl:
-      'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png',
+    imageUrl: process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL,
     category: {
       id: '1',
       name: 'メイン料理',
@@ -56,8 +54,7 @@ const mockRecipes: Recipe[] = [
     ingredients: [],
     instructions: [],
     tags: ['中華', '野菜', 'ヘルシー', '簡単'],
-    imageUrl:
-      'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png',
+    imageUrl: process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL,
     category: {
       id: '2',
       name: '副菜',
@@ -76,8 +73,7 @@ const mockRecipes: Recipe[] = [
     ingredients: [],
     instructions: [],
     tags: ['イタリアン', 'パスタ', 'クリーム', 'エビ'],
-    imageUrl:
-      'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png',
+    imageUrl: process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL,
     category: {
       id: '1',
       name: 'メイン料理',
@@ -96,8 +92,7 @@ const mockRecipes: Recipe[] = [
     ingredients: [],
     instructions: [],
     tags: ['洋食', 'オムライス', '卵料理', '定番'],
-    imageUrl:
-      'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png',
+    imageUrl: process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL,
     category: {
       id: '1',
       name: 'メイン料理',
@@ -183,8 +178,7 @@ export const ManyRecipes: Story = {
         ingredients: [],
         instructions: [],
         tags: ['和食', '鶏肉', '揚げ物', '定番'],
-        imageUrl:
-          'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png',
+        imageUrl: process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL,
         category: { id: '1', name: 'メイン料理' },
         createdAt: '2024-01-06T00:00:00Z',
         updatedAt: '2024-01-06T00:00:00Z',
@@ -200,8 +194,7 @@ export const ManyRecipes: Story = {
         ingredients: [],
         instructions: [],
         tags: ['和食', 'みそ汁', '汁物', '定番'],
-        imageUrl:
-          'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png',
+        imageUrl: process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL,
         category: { id: '3', name: '汁物' },
         createdAt: '2024-01-07T00:00:00Z',
         updatedAt: '2024-01-07T00:00:00Z',

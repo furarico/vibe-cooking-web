@@ -37,8 +37,7 @@ export const Default: Story = {
     step: 1,
     title: '野菜を切る',
     description: '玉ねぎを薄切りに、人参を細切りにします。',
-    imageUrl:
-      'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png',
+    imageUrl: process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL,
   },
 };
 

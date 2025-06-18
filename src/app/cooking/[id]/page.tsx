@@ -52,7 +52,7 @@ export default function Page({ params }: PageProps) {
         imageUrl={
           state.recipe.imageUrl && state.recipe.imageUrl.length > 0
             ? state.recipe.imageUrl
-            : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png'
+            : process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL
         }
         imageAlt={state.recipe.title || ''}
       />
