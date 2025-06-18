@@ -13,35 +13,31 @@ export default function Page() {
     return <Loading />;
   }
 
+  if (state.recipes.length === 0) {
+    return <NoContent text="調理するレシピがありません" />;
+  }
+
   return (
     <>
       <div className="flex flex-col gap-4">
-        {state.recipes.length === 0 ? (
-          <NoContent text="調理するレシピがありません" />
-        ) : (
-          <div className="flex flex-col gap-4">
-            {state.recipes.map(recipe => (
-              <Link key={recipe.id} href={`/recipes/${recipe.id}`}>
-                <RecipeCard
-                  variant="row"
-                  title={recipe.title ?? ''}
-                  description={recipe.description ?? ''}
-                  tags={recipe.tags ?? []}
-                  cookingTime={(recipe.prepTime ?? 0) + (recipe.cookTime ?? 0)}
-                  imageUrl={
-                    recipe.imageUrl && recipe.imageUrl.length > 0
-                      ? recipe.imageUrl
-                      : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png'
-                  }
-                  imageAlt={recipe.title ?? ''}
-                  onDelete={() =>
-                    recipe.id && actions.onDeleteRecipe(recipe.id)
-                  }
-                />
-              </Link>
-            ))}
-          </div>
-        )}
+        {state.recipes.map(recipe => (
+          <Link key={recipe.id} href={`/recipes/${recipe.id}`}>
+            <RecipeCard
+              variant="row"
+              title={recipe.title ?? ''}
+              description={recipe.description ?? ''}
+              tags={recipe.tags ?? []}
+              cookingTime={(recipe.prepTime ?? 0) + (recipe.cookTime ?? 0)}
+              imageUrl={
+                recipe.imageUrl && recipe.imageUrl.length > 0
+                  ? recipe.imageUrl
+                  : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png'
+              }
+              imageAlt={recipe.title ?? ''}
+              onDelete={() => recipe.id && actions.onDeleteRecipe(recipe.id)}
+            />
+          </Link>
+        ))}
       </div>
 
       <FixedBottomButton
