@@ -46,7 +46,7 @@ function RecipesContent() {
                 imageUrl={
                   recipe.imageUrl && recipe.imageUrl.length > 0
                     ? recipe.imageUrl
-                    : process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL
+                    : (process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL ?? '')
                 }
                 imageAlt={recipe.title || 'レシピ画像'}
               />

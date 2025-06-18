@@ -31,7 +31,7 @@ export default function Page() {
               imageUrl={
                 recipe.imageUrl && recipe.imageUrl.length > 0
                   ? recipe.imageUrl
-                  : process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL
+                  : (process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL ?? '')
               }
               imageAlt={recipe.title ?? ''}
               onDelete={() => recipe.id && actions.onDeleteRecipe(recipe.id)}

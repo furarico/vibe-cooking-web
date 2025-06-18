@@ -55,18 +55,16 @@ export default function Page({ params }: PageProps) {
       audioUrl: instruction.audioUrl || '',
     })) || [];
 
-  // 画像URLの処理（デフォルト画像を設定）
-  const imageUrl =
-    state.recipe.imageUrl && state.recipe.imageUrl.length > 0
-      ? state.recipe.imageUrl
-      : process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL;
-
   return (
     <Suspense fallback={<Loading />}>
       <div className="mb-40 flex flex-col gap-8">
         {/* レシピ画像 */}
         <Image
-          src={imageUrl}
+          src={
+            state.recipe.imageUrl && state.recipe.imageUrl.length > 0
+              ? state.recipe.imageUrl
+              : (process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL ?? '')
+          }
           alt={state.recipe.title || 'レシピ画像'}
           width={600}
           height={300}

@@ -30,7 +30,7 @@ export function RecipeCardList({ recipes, className }: RecipeCardListProps) {
               imageUrl={
                 recipe.imageUrl && recipe.imageUrl.length > 0
                   ? recipe.imageUrl
-                  : process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL
+                  : (process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL ?? '')
               }
               imageAlt={recipe.title ?? ''}
               className="cursor-pointer h-full"
