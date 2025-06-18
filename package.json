@@ -29,6 +29,7 @@
   "dependencies": {
     "@firebase/app-check": "^0.10.0",
     "@google-cloud/cloud-sql-connector": "^1.8.1",
+    "@google/genai": "^1.5.1",
     "@prisma/client": "^6.9.0",
     "@radix-ui/react-progress": "^1.1.7",
     "class-variance-authority": "^0.7.1",

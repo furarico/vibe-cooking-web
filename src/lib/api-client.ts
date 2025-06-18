@@ -7,6 +7,7 @@ export type Recipe = components['schemas']['Recipe'];
 export type Ingredient = components['schemas']['Ingredient'];
 export type Instruction = components['schemas']['Instruction'];
 export type Category = components['schemas']['Category'];
+export type VibeRecipe = components['schemas']['VibeRecipe'];
 
 export type RecipesGet200Response = {
   recipes?: Recipe[];
