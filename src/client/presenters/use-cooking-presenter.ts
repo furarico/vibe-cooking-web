@@ -30,6 +30,7 @@ export interface CookingPresenterState {
 
 export interface CookingPresenterActions {
   setRecipeId: (id: string) => void;
+  fetchRecipe: (id: string) => Promise<void>;
   setCurrentStep: (step: number) => void;
   setCarouselApi: (api: CarouselApi) => void;
 }
@@ -63,12 +64,39 @@ export const useCookingPresenter = (): CookingPresenter => {
     };
   });
 
+  // レシピ取得関数
+  const fetchRecipe = useCallback(
+    async (id: string) => {
+      setState(prev => ({ ...prev, loading: true }));
+      try {
+        const recipe = await recipeService.getRecipeById(id);
+        if (!recipe) {
+          setState(prev => ({ ...prev, loading: false }));
+          toast.error('レシピが見つかりませんでした');
+          return;
+        }
+        setState(prev => ({
+          ...prev,
+          recipe,
+          loading: false,
+          currentStep: 0,
+          totalSteps: recipe.instructions?.length ?? 0,
+        }));
+      } catch {
+        setState(prev => ({ ...prev, loading: false }));
+        toast.error('レシピの取得に失敗しました');
+      }
+    },
+    [recipeService]
+  );
+
   // アクションの定義
   const actions: CookingPresenterActions = {
     // レシピ詳細取得
     setRecipeId: useCallback((id: string) => {
       setState(prev => ({ ...prev, recipeId: id }));
     }, []),
+    fetchRecipe,
     setCurrentStep: useCallback((step: number) => {
       setState(prev => ({ ...prev, currentStep: step }));
     }, []),
@@ -103,33 +131,12 @@ export const useCookingPresenter = (): CookingPresenter => {
   }, [audioRecognitionService, audioPlayerService]);
 
   useEffect(() => {
-    const fetchRecipe = async () => {
-      const id = state.recipeId;
-      if (!id) {
-        return;
-      }
-      setState(prev => ({ ...prev, loading: true }));
-      try {
-        const recipe = await recipeService.getRecipeById(id);
-        if (!recipe) {
-          setState(prev => ({ ...prev, loading: false }));
-          toast.error('レシピが見つかりませんでした');
-          return;
-        }
-        setState(prev => ({
-          ...prev,
-          recipe,
-          loading: false,
-          currentStep: 0,
-          totalSteps: recipe.instructions?.length ?? 0,
-        }));
-      } catch {
-        setState(prev => ({ ...prev, loading: false }));
-        toast.error('レシピの取得に失敗しました');
-      }
-    };
-    fetchRecipe();
-  }, [state.recipeId, recipeService]);
+    const id = state.recipeId;
+    if (!id) {
+      return;
+    }
+    fetchRecipe(id);
+  }, [state.recipeId, fetchRecipe]);
 
   useEffect(() => {
     if (!state.carouselApi) return;
