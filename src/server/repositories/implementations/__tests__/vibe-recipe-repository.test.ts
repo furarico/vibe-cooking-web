@@ -1,16 +1,21 @@
 import { PrismaClient } from '@prisma/client';
 import { VibeRecipeRepository } from '../vibe-recipe-repository';
 
+// モック関数を個別に定義
+const mockVibeRecipeFindMany = jest.fn();
+const mockVibeRecipeCreate = jest.fn();
+const mockInstructionFindMany = jest.fn();
+
 // Prismaクライアントのモック
 const mockPrisma = {
   vibeRecipe: {
-    findMany: jest.fn(),
-    create: jest.fn(),
+    findMany: mockVibeRecipeFindMany,
+    create: mockVibeRecipeCreate,
   },
   instruction: {
-    findMany: jest.fn(),
+    findMany: mockInstructionFindMany,
   },
-} as unknown as jest.Mocked<PrismaClient>;
+} as unknown as PrismaClient;
 
 describe('VibeRecipeRepository', () => {
   let vibeRecipeRepository: VibeRecipeRepository;
@@ -37,7 +42,7 @@ describe('VibeRecipeRepository', () => {
       ];
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      mockPrisma.vibeRecipe.findMany.mockResolvedValue(vibeRecipes as any);
+      mockVibeRecipeFindMany.mockResolvedValue(vibeRecipes as any);
 
       const result = await vibeRecipeRepository.findByRecipeIds(recipeIds);
 
@@ -60,7 +65,7 @@ describe('VibeRecipeRepository', () => {
       ];
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      mockPrisma.vibeRecipe.findMany.mockResolvedValue(vibeRecipes as any);
+      mockVibeRecipeFindMany.mockResolvedValue(vibeRecipes as any);
 
       const result = await vibeRecipeRepository.findByRecipeIds(recipeIds);
 
@@ -78,7 +83,7 @@ describe('VibeRecipeRepository', () => {
       ];
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      mockPrisma.vibeRecipe.findMany.mockResolvedValue(vibeRecipes as any);
+      mockVibeRecipeFindMany.mockResolvedValue(vibeRecipes as any);
 
       const result = await vibeRecipeRepository.findByRecipeIds(recipeIds);
 
@@ -108,7 +113,7 @@ describe('VibeRecipeRepository', () => {
       };
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      mockPrisma.vibeRecipe.create.mockResolvedValue(createdVibeRecipe as any);
+      mockVibeRecipeCreate.mockResolvedValue(createdVibeRecipe as any);
 
       const result = await vibeRecipeRepository.create(recipeIds, instructions);
 
@@ -141,7 +146,7 @@ describe('VibeRecipeRepository', () => {
       ];
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      mockPrisma.instruction.findMany.mockResolvedValue(instructions as any);
+      mockInstructionFindMany.mockResolvedValue(instructions as any);
 
       const result =
         await vibeRecipeRepository.getInstructionsByRecipeIds(recipeIds);
@@ -164,7 +169,7 @@ describe('VibeRecipeRepository', () => {
     it('該当するInstructionがない場合、空配列を返すべき', async () => {
       const recipeIds = ['recipe1', 'recipe2'];
 
-      mockPrisma.instruction.findMany.mockResolvedValue([]);
+      mockInstructionFindMany.mockResolvedValue([]);
 
       const result =
         await vibeRecipeRepository.getInstructionsByRecipeIds(recipeIds);

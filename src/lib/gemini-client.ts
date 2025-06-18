@@ -25,14 +25,34 @@ export class GeminiClient {
     recipeIds: string[],
     instructions: GeminiInstruction[]
   ): Promise<GeminiResponse> {
-    const prompt = `次のレシピ ID に対応する手順（Instruction）を最適な調理順序で並び替えて、InstructionのIDのみを順序通りに配列で返してください。
+    // IDリストを明示的に作成
+    const availableIds = instructions.map(inst => inst.id);
 
-レシピ ID: ${JSON.stringify(recipeIds)}
+    const prompt = `以下の手順（Instruction）を最適な調理順序で並び替えて、提供されたInstructionのIDのみを順序通りに配列で返してください。
 
-各Instructionの詳細:
-${instructions.map(inst => `- ID: ${inst.id}, レシピID: ${inst.recipeId}, 説明: ${inst.description}`).join('\n')}
+**重要な制約:**
+1. 以下の有効なIDリストのIDのみを使用してください
+2. 新しいIDを生成してはいけません
+3. リストにないIDを使用してはいけません
+4. 全てのIDを1回ずつ含める必要があります
+5. IDの重複は禁止です
 
-調理の効率性と論理的な順序を考慮して、最も適切な手順順序でInstructionのIDを配列で返してください。`;
+**有効なIDリスト:**
+${availableIds.map(id => `- ${id}`).join('\n')}
+
+**対象レシピ ID:** ${JSON.stringify(recipeIds)}
+
+**Instructionの詳細:**
+${instructions
+  .map(
+    inst => `ID: ${inst.id}
+レシピID: ${inst.recipeId}
+説明: ${inst.description}
+---`
+  )
+  .join('\n')}
+
+上記の制約に従い、調理の効率性と論理的な順序を考慮して、有効なIDリストのIDのみを使用した最適な手順順序の配列を作成してください。`;
 
     const response = await this.genAI.models.generateContent({
       model: 'gemini-2.0-flash-lite',
@@ -61,7 +81,46 @@ ${instructions.map(inst => `- ID: ${inst.id}, レシピID: ${inst.recipeId}, 説
       if (!text) {
         throw new Error('Empty response from Gemini');
       }
-      return JSON.parse(text) as GeminiResponse;
+
+      const parsedResponse = JSON.parse(text) as GeminiResponse;
+
+      // レスポンスの検証
+      if (
+        !parsedResponse.instructionIds ||
+        !Array.isArray(parsedResponse.instructionIds)
+      ) {
+        throw new Error(
+          'Invalid response format: instructionIds must be an array'
+        );
+      }
+
+      // 重複チェック
+      const uniqueIds = new Set(parsedResponse.instructionIds);
+      if (uniqueIds.size !== parsedResponse.instructionIds.length) {
+        console.warn('Gemini returned duplicate IDs, removing duplicates');
+        parsedResponse.instructionIds = Array.from(uniqueIds);
+      }
+
+      // 有効なIDのセット
+      const validIdSet = new Set(availableIds);
+
+      // 無効なIDをログ出力
+      const invalidIds = parsedResponse.instructionIds.filter(
+        id => !validIdSet.has(id)
+      );
+      if (invalidIds.length > 0) {
+        console.warn('Gemini returned invalid IDs:', invalidIds);
+      }
+
+      // 不足しているIDをログ出力
+      const missingIds = availableIds.filter(
+        id => !parsedResponse.instructionIds.includes(id)
+      );
+      if (missingIds.length > 0) {
+        console.warn('Gemini missed IDs:', missingIds);
+      }
+
+      return parsedResponse;
     } catch (error) {
       throw new Error(`Failed to parse Gemini response as JSON: ${error}`);
     }

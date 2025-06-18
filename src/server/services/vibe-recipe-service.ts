@@ -44,25 +44,53 @@ export class VibeRecipeService {
     );
 
     // デバッグ情報を出力
+    console.log('=== Gemini Debug Info ===');
     console.log(
-      'Available instruction IDs:',
-      instructions.map(inst => inst.id)
+      'Available instructions:',
+      instructions.map(inst => ({
+        id: inst.id,
+        recipeId: inst.recipeId,
+        description: inst.description.substring(0, 50) + '...',
+      }))
     );
     console.log(
       'Gemini returned instruction IDs:',
       geminiResponse.instructionIds
     );
+    console.log(
+      'Gemini full response:',
+      JSON.stringify(geminiResponse, null, 2)
+    );
 
     // 3. GeminiのレスポンスからVibeInstructionデータを作成
     const instructionMap = new Map(instructions.map(inst => [inst.id, inst]));
-    const vibeInstructionsData = geminiResponse.instructionIds.map(
+    const availableIds = new Set(instructions.map(inst => inst.id));
+
+    // Geminiから返されたIDのうち、実際に存在するもののみを使用
+    const validInstructionIds = geminiResponse.instructionIds.filter(id => {
+      const isValid = availableIds.has(id);
+      if (!isValid) {
+        console.warn(
+          `Instruction with ID ${id} not found in available instructions, skipping`
+        );
+      }
+      return isValid;
+    });
+
+    // 不足しているIDがある場合は、利用可能なIDで補完
+    const missingIds = instructions
+      .map(inst => inst.id)
+      .filter(id => !validInstructionIds.includes(id));
+
+    if (missingIds.length > 0) {
+      console.warn(`Adding missing instruction IDs: ${missingIds.join(', ')}`);
+      validInstructionIds.push(...missingIds);
+    }
+
+    const vibeInstructionsData = validInstructionIds.map(
       (instructionId, index) => {
         const originalInstruction = instructionMap.get(instructionId);
         if (!originalInstruction) {
-          console.error(
-            `Instruction with ID ${instructionId} not found in available instructions:`,
-            instructions.map(inst => inst.id)
-          );
           throw new Error(`Instruction with ID ${instructionId} not found`);
         }
         return {
