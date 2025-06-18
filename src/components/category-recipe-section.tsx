@@ -14,14 +14,13 @@ export function CategoryRecipeSection({ category }: { category: Category }) {
 
   return (
     <Suspense fallback={<Loading />}>
-      <div className="mb-8">
+      <div className="mt-8 mb-4 flex flex-row justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-900">{category.name}</h2>
         <Link href={`/recipes?category=${category.name}`}>
-          <h2 className="text-2xl font-bold mb-4 text-gray-900">
-            {category.name}
-          </h2>
+          <span className="text-md text-slate-600 underline">もっと見る</span>
         </Link>
-        {loading ? <Loading /> : <RecipeCardList recipes={recipes} />}
       </div>
+      {loading ? <Loading /> : <RecipeCardList recipes={recipes} />}
     </Suspense>
   );
 }
