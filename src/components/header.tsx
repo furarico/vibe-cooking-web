@@ -1,35 +1,25 @@
 'use client';
 
+import Icon from '@/app/favicon.ico';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeftIcon, SearchIcon } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
+import { ListIcon, SearchIcon } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const router = useRouter();
-  const pathname = usePathname();
-
-  const handleGoBack = () => {
-    const pathSegments = pathname.split('/').filter(Boolean);
-    if (pathSegments.length > 0) {
-      pathSegments.pop(); // 最後のセグメントを削除
-      const parentPath =
-        pathSegments.length > 0 ? `/${pathSegments.join('/')}` : '/';
-      router.push(parentPath);
-    } else {
-      router.push('/');
-    }
-  };
 
   return (
     <header className="w-full p-2 flex justify-between items-center gap-2">
-      {pathname !== '/' && (
-        <Button variant="outline" size="icon" onClick={handleGoBack}>
-          <ArrowLeftIcon className="w-4 h-4" />
-        </Button>
-      )}
+      <Button variant="outline" size="icon" asChild>
+        <Link href="/">
+          <Image src={Icon} alt="Vibe Cooking" width={24} height={24} />
+        </Link>
+      </Button>
       <form
         className="w-full flex flex-row items-center gap-2"
         action={() => {
@@ -46,6 +36,11 @@ const Header: React.FC = () => {
           <SearchIcon className="w-4 h-4" />
         </Button>
       </form>
+      <Button variant="outline" size="icon" asChild>
+        <Link href="/candidates">
+          <ListIcon className="w-4 h-4" />
+        </Link>
+      </Button>
     </header>
   );
 };

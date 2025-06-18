@@ -38,6 +38,11 @@ export default function RootLayout({
           <FirebaseInit />
           <Header />
           <main className="w-full p-2">{children}</main>
+          <footer className="w-full px-2 pt-16 pb-40">
+            <div className="text-center text-xs text-slate-500">
+              <p>© 2025 Vibe Cooking</p>
+            </div>
+          </footer>
           <Toaster />
         </DIProvider>
       </body>

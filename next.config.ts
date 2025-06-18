@@ -10,27 +10,15 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'r2.vibe-cooking.furari.co',
+        hostname: 'r2.vibe-cooking.app',
         port: '',
-        pathname: '/**',
+        pathname: '/images/**',
       },
       {
         protocol: 'https',
-        hostname: 'r2.dev.vibe-cooking.furari.co',
+        hostname: 'dev.r2.vibe-cooking.app',
         port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'picsum.photos',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-        port: '',
-        pathname: '/**',
+        pathname: '/images/**',
       },
     ],
   },

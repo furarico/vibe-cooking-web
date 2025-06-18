@@ -10,23 +10,27 @@ export interface RecipeListPresenterState {
   recipes: Recipe[];
   loading: boolean;
   filters: RecipeListFilters;
+  vibeCookingRecipeIds: string[];
 }
 
-export interface RecipeListPresenterActions {
-  fetchRecipes: (filters?: RecipeListFilters) => Promise<void>;
-  setFilters: (filters: RecipeListFilters) => void;
-  refreshRecipes: () => Promise<void>;
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface RecipeListPresenterActions {}
+
+export interface RecipeListPresenter {
+  state: RecipeListPresenterState;
+  actions: RecipeListPresenterActions;
 }
 
 export const useRecipeListPresenter = (
   initialFilters?: RecipeListFilters
-): RecipeListPresenterState & RecipeListPresenterActions => {
-  const { recipeListService } = useDI();
+): RecipeListPresenter => {
+  const { recipeListService, vibeCookingService } = useDI();
 
   const [state, setState] = useState<RecipeListPresenterState>({
     recipes: [],
     loading: true,
     filters: initialFilters || {},
+    vibeCookingRecipeIds: [],
   });
 
   const fetchRecipes = useCallback(
@@ -46,22 +50,25 @@ export const useRecipeListPresenter = (
     [recipeListService, state.filters]
   );
 
-  const setFilters = useCallback((filters: RecipeListFilters) => {
-    setState(prev => ({ ...prev, filters }));
-  }, []);
-
-  const refreshRecipes = useCallback(async () => {
-    await fetchRecipes(state.filters);
-  }, [fetchRecipes, state.filters]);
+  const actions: RecipeListPresenterActions = {};
 
   useEffect(() => {
+    const getVibeCookingRecipeIds = () => {
+      const vibeCookingRecipeIds = vibeCookingService.getVibeCookingRecipeIds();
+      setState(prev => ({ ...prev, vibeCookingRecipeIds }));
+    };
+
     fetchRecipes(initialFilters);
-  }, [fetchRecipes, initialFilters]);
+    getVibeCookingRecipeIds();
+
+    window.addEventListener('focus', getVibeCookingRecipeIds);
+    return () => {
+      window.removeEventListener('focus', getVibeCookingRecipeIds);
+    };
+  }, [initialFilters, fetchRecipes, vibeCookingService]);
 
   return {
-    ...state,
-    fetchRecipes,
-    setFilters,
-    refreshRecipes,
+    state,
+    actions,
   };
 };

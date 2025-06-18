@@ -1,5 +1,4 @@
 import { CategoryRepository } from '@/client/repositories/implementations/category-repository';
-import { LocalStorageSavedRecipeRepository } from '@/client/repositories/implementations/local-storage-saved-recipe-repository';
 import { RecipeRepository } from '@/client/repositories/implementations/recipe-repository';
 import {
   MediaRecorderSpeechRepository,
@@ -17,8 +16,9 @@ import {
 import { CategoryService } from '@/client/services/category-service';
 import { RecipeListService } from '@/client/services/recipe-list-service';
 import { RecipeService } from '@/client/services/recipe-service';
-import { SavedRecipeService } from '@/client/services/saved-recipe-service';
 import { DefaultApi } from '@/lib/api-client';
+import { LocalStorageRepository } from '../repositories/implementations/local-storage-repository';
+import { VibeCookingService } from '../services/vibe-cooking-service';
 
 export interface DIContainer {
   audioPlayerService: AudioPlayerService;
@@ -26,7 +26,7 @@ export interface DIContainer {
   categoryService: CategoryService;
   recipeListService: RecipeListService;
   recipeService: RecipeService;
-  savedRecipeService: SavedRecipeService;
+  vibeCookingService: VibeCookingService;
 }
 
 export const createDIContainer = (): DIContainer => {
@@ -34,9 +34,9 @@ export const createDIContainer = (): DIContainer => {
   const apiClient = new DefaultApi();
 
   // Repository の作成
-  const recipeRepository = new RecipeRepository(apiClient);
   const categoryRepository = new CategoryRepository(apiClient);
-  const savedRecipeRepository = new LocalStorageSavedRecipeRepository();
+  const localStorageRepository = new LocalStorageRepository();
+  const recipeRepository = new RecipeRepository(apiClient);
 
   // 音声認識リポジトリの作成（Web Speech API優先、フォールバックでMediaRecorder）
   const speechRecognitionRepository: SpeechRecognitionRepository =
@@ -53,7 +53,7 @@ export const createDIContainer = (): DIContainer => {
   const categoryService = new CategoryService(categoryRepository);
   const recipeListService = new RecipeListService(recipeRepository);
   const recipeService = new RecipeService(recipeRepository);
-  const savedRecipeService = new SavedRecipeService(savedRecipeRepository);
+  const vibeCookingService = new VibeCookingService(localStorageRepository);
 
   return {
     audioPlayerService,
@@ -61,6 +61,6 @@ export const createDIContainer = (): DIContainer => {
     categoryService,
     recipeListService,
     recipeService,
-    savedRecipeService,
+    vibeCookingService,
   };
 };

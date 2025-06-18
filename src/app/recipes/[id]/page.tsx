@@ -1,84 +1,43 @@
 'use client';
 
 import { useRecipeDetailPresenter } from '@/client/presenters/use-recipe-detail-presenter';
-import { useSavedRecipePresenter } from '@/client/presenters/use-saved-recipe-presenter';
 import { FixedBottomButton } from '@/components/ui/fixed-bottom-button';
 import { Ingredients } from '@/components/ui/ingredients';
 import { Instructions } from '@/components/ui/instructions';
-import Loading from '@/components/ui/loading';
+import { Loading } from '@/components/ui/loading';
+import { NoContent } from '@/components/ui/no-content';
 import { RecipeDetailHeader } from '@/components/ui/recipe-detail-header';
-import { SelectCount } from '@/components/ui/select-count';
 import { TimeCard } from '@/components/ui/time-card';
-import { getSavedRecipesCount } from '@/lib/local-storage';
 import Image from 'next/image';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect } from 'react';
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
 export default function Page({ params }: PageProps) {
-  const [recipeId, setRecipeId] = useState<string>('');
-  const [savedCount, setSavedCount] = useState(0);
-  const { recipe, loading, fetchRecipe } = useRecipeDetailPresenter();
-  const { isSaved, canSave, saveRecipe } = useSavedRecipePresenter(recipeId);
+  const { state, actions } = useRecipeDetailPresenter();
 
   useEffect(() => {
     const fetchRecipeId = async () => {
       const resolvedParams = await params;
-      setRecipeId(resolvedParams.id);
+      actions.setRecipeId(resolvedParams.id);
     };
     fetchRecipeId();
-  }, [params]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params, actions.setRecipeId]);
 
-  useEffect(() => {
-    if (!recipeId) return;
-    fetchRecipe(recipeId);
-  }, [recipeId, fetchRecipe]);
-
-  useEffect(() => {
-    const updateSavedCount = () => {
-      setSavedCount(getSavedRecipesCount());
-    };
-
-    updateSavedCount();
-
-    const handleFocus = () => {
-      updateSavedCount();
-    };
-
-    window.addEventListener('focus', handleFocus);
-
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-    };
-  }, []);
-
-  // 追加ボタンクリック時の処理
-  const handleAddRecipe = () => {
-    if (!isSaved && canSave) {
-      const success = saveRecipe();
-      if (success) {
-        setSavedCount(getSavedRecipesCount()); // カウントを更新
-      }
-    }
-  };
-
-  if (loading) {
+  if (state.loading) {
     return <Loading />;
   }
 
-  if (!recipe) {
-    return (
-      <div className="flex items-center justify-center">
-        <p className="text-lg text-gray-600">レシピが見つかりません</p>
-      </div>
-    );
+  if (!state.recipe) {
+    return <NoContent text="レシピが見つかりません" />;
   }
 
   // APIから取得したデータを材料コンポーネント用に変換
   const ingredientsData =
-    recipe.ingredients?.map(ingredient => ({
+    state.recipe.ingredients?.map(ingredient => ({
       name: ingredient.name || '',
       amount: ingredient.amount || '',
       unit: ingredient.unit || '',
@@ -87,7 +46,7 @@ export default function Page({ params }: PageProps) {
 
   // APIから取得したデータを手順コンポーネント用に変換
   const instructionsData =
-    recipe.instructions?.map(instruction => ({
+    state.recipe.instructions?.map(instruction => ({
       step: instruction.step || 0,
       title: instruction.title || '',
       description: instruction.description || '',
@@ -95,19 +54,17 @@ export default function Page({ params }: PageProps) {
       audioUrl: instruction.audioUrl || '',
     })) || [];
 
-  // 画像URLの処理（デフォルト画像を設定）
-  const imageUrl =
-    recipe.imageUrl && recipe.imageUrl.length > 0
-      ? recipe.imageUrl
-      : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png';
-
   return (
     <Suspense fallback={<Loading />}>
-      <div className="mb-40 flex flex-col gap-8">
+      <div className="flex flex-col gap-8">
         {/* レシピ画像 */}
         <Image
-          src={imageUrl}
-          alt={recipe.title || 'レシピ画像'}
+          src={
+            state.recipe.imageUrl && state.recipe.imageUrl.length > 0
+              ? state.recipe.imageUrl
+              : (process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL ?? '')
+          }
+          alt={state.recipe.title || 'レシピ画像'}
           width={600}
           height={300}
           className="w-full h-[300px] object-cover rounded-lg border-2 border-slate-200"
@@ -115,16 +72,16 @@ export default function Page({ params }: PageProps) {
         />
 
         <RecipeDetailHeader
-          title={recipe.title || ''}
-          description={recipe.description || ''}
-          tags={recipe.tags || []}
+          title={state.recipe.title || ''}
+          description={state.recipe.description || ''}
+          tags={state.recipe.tags || []}
         />
 
         {/* 調理時間カード */}
         <div className="flex flex-row items-center justify-center gap-2">
-          <TimeCard variant="prep" number={recipe.prepTime || 0} />
-          <TimeCard variant="cook" number={recipe.cookTime || 0} />
-          <TimeCard variant="servings" number={recipe.servings || 0} />
+          <TimeCard variant="prep" number={state.recipe.prepTime || 0} />
+          <TimeCard variant="cook" number={state.recipe.cookTime || 0} />
+          <TimeCard variant="servings" number={state.recipe.servings || 0} />
         </div>
 
         {/* 材料リスト */}
@@ -136,39 +93,25 @@ export default function Page({ params }: PageProps) {
 
       <FixedBottomButton
         buttons={[
-          /*
           {
-            href: `/recipes/${recipeId}/cooking`,
-            children: 'Vibe Cooking をはじめる',
-          },
-        */
-          {
-            onClick: isSaved || !canSave ? undefined : handleAddRecipe,
-            href: isSaved && !canSave ? undefined : undefined,
-            children: isSaved
-              ? '✓ 追加済み'
-              : !canSave
-                ? '保存上限に達しています（3/3）'
-                : 'お気に入りに追加',
-            variant: isSaved ? 'default' : 'outline',
-            disabled: isSaved || !canSave,
-            className: isSaved
-              ? 'bg-slate-300 text-white cursor-not-allowed opacity-70 border-0'
-              : !canSave
-                ? 'bg-slate-300 text-slate-600 cursor-not-allowed opacity-70 border-0'
-                : 'bg-black text-white hover:bg-slate-600 transition-all duration-200 font-medium border-0',
+            href: `/cooking/${state.recipeId}`,
+            children: 'このレシピのみで Vibe Cooking をはじめる',
           },
           {
-            href: '/recipes/add',
-            children: (
-              <div className="flex items-center justify-center w-full gap-2">
-                <SelectCount count={savedCount} />
-                <span>保存済みレシピ一覧</span>
-              </div>
-            ),
-            variant: 'ghost',
-            className:
-              'text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200 hover:border-gray-300 transition-all duration-200',
+            onClick: actions.onAddToVibeCookingListButtonTapped,
+            href: '#',
+            children: state.vibeCookingRecipeIds.includes(state.recipeId ?? '')
+              ? 'Vibe Cooking リストから削除'
+              : state.vibeCookingRecipeIds.length >= 3
+                ? 'Vibe Cooking リストの上限に達しています'
+                : 'Vibe Cooking リストに追加',
+            variant: state.vibeCookingRecipeIds.includes(state.recipeId ?? '')
+              ? 'outline'
+              : 'default',
+            disabled: state.vibeCookingRecipeIds.length >= 3 || !state.recipeId,
+            className: state.vibeCookingRecipeIds.includes(state.recipeId ?? '')
+              ? 'text-red-500 border-red-500 hover:text-red-500 hover:border-red-500'
+              : '',
           },
         ]}
       />

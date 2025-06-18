@@ -11,8 +11,10 @@ import {
 import { CookingInstructionCard } from '@/components/ui/cooking-instruction-card';
 import { FixedBottomButton } from '@/components/ui/fixed-bottom-button';
 import { ProgressBar } from '@/components/ui/instruction-progress';
-import Loading from '@/components/ui/loading';
+import { Loading } from '@/components/ui/loading';
+import { NoContent } from '@/components/ui/no-content';
 import { RecipeCard } from '@/components/ui/recipe-card';
+import { MicIcon, MicOffIcon } from 'lucide-react';
 import { useEffect } from 'react';
 
 interface PageProps {
@@ -23,23 +25,20 @@ export default function Page({ params }: PageProps) {
   const { state, actions } = useCookingPresenter();
 
   useEffect(() => {
-    const fetchRecipeId = async () => {
+    const setRecipeId = async () => {
       const resolvedParams = await params;
-      await actions.fetchRecipe(resolvedParams.id);
+      actions.setRecipeId(resolvedParams.id);
     };
-    fetchRecipeId();
-  }, [params, actions.fetchRecipe]);
+    setRecipeId();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params, actions.setRecipeId]);
 
   if (state.loading) {
     return <Loading />;
   }
 
   if (!state.recipe) {
-    return (
-      <div className="flex items-center justify-center">
-        <p className="text-lg text-gray-600">レシピが見つかりません</p>
-      </div>
-    );
+    return <NoContent text="レシピが見つかりません" />;
   }
 
   return (
@@ -53,19 +52,20 @@ export default function Page({ params }: PageProps) {
         imageUrl={
           state.recipe.imageUrl && state.recipe.imageUrl.length > 0
             ? state.recipe.imageUrl
-            : 'https://r2.vibe-cooking.furari.co/images/recipe-thumbnails/default.png'
+            : (process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL ?? '')
         }
         imageAlt={state.recipe.title || ''}
       />
 
       <Carousel className="w-[calc(100%-96px)]" setApi={actions.setCarouselApi}>
         <CarouselContent>
-          {state.recipe.instructions?.map(instruction => (
-            <CarouselItem key={instruction.step}>
+          {state.cards.map(card => (
+            <CarouselItem key={card.step}>
               <CookingInstructionCard
-                step={instruction.step}
-                title={instruction.title}
-                description={instruction.description}
+                step={card.step}
+                title={card.title}
+                description={card.description}
+                imageUrl={card.imageUrl}
               />
             </CarouselItem>
           ))}
@@ -78,6 +78,12 @@ export default function Page({ params }: PageProps) {
         totalSteps={state.totalSteps}
         currentStep={state.currentStep + 1}
       />
+
+      {state.speechStatus === 'listening' ? (
+        <MicIcon className="h-10 w-10 text-green-500" />
+      ) : (
+        <MicOffIcon className="h-10 w-10 text-red-500" />
+      )}
 
       <FixedBottomButton
         buttons={[

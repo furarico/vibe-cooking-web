@@ -1,4 +1,4 @@
-import Loading from '@/components/ui/loading';
+import { Loading } from '@/components/ui/loading';
 import type { Meta, StoryObj } from '@storybook/nextjs';
 
 const meta = {

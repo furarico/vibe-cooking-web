@@ -3,16 +3,19 @@
 import { useDI } from '@/client/di/providers';
 import { SpeechStatus } from '@/client/services/audio-recognition-service';
 import { CarouselApi } from '@/components/ui/carousel';
+import { CookingInstructionCardProps } from '@/components/ui/cooking-instruction-card';
 import { Recipe } from '@/lib/api-client';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 export interface CookingPresenterState {
+  recipeId: string | null;
   recipe: Recipe | null;
   carouselApi: CarouselApi | null;
   loading: boolean;
   currentStep: number;
   totalSteps: number;
+  cards: CookingInstructionCardProps[];
 
   // 音声再生状態
   audioStatus: {
@@ -28,6 +31,7 @@ export interface CookingPresenterState {
 }
 
 export interface CookingPresenterActions {
+  setRecipeId: (id: string) => void;
   fetchRecipe: (id: string) => Promise<void>;
   setCurrentStep: (step: number) => void;
   setCarouselApi: (api: CarouselApi) => void;
@@ -45,11 +49,13 @@ export const useCookingPresenter = (): CookingPresenter => {
   // 状態の初期化
   const [state, setState] = useState<CookingPresenterState>(() => {
     return {
+      recipeId: null,
       recipe: null,
       carouselApi: null,
       loading: false,
       currentStep: 0,
       totalSteps: 0,
+      cards: [],
       speechStatus: audioRecognitionService.getSpeechStatus(),
       transcript: audioRecognitionService.getTranscript(),
       interimTranscript: audioRecognitionService.getInterimTranscript(),
@@ -61,33 +67,46 @@ export const useCookingPresenter = (): CookingPresenter => {
     };
   });
 
+  // レシピ取得関数
+  const fetchRecipe = useCallback(
+    async (id: string) => {
+      setState(prev => ({ ...prev, loading: true }));
+      try {
+        const recipe = await recipeService.getRecipeById(id);
+        if (!recipe) {
+          setState(prev => ({ ...prev, loading: false }));
+          toast.error('レシピが見つかりませんでした');
+          return;
+        }
+        setState(prev => ({
+          ...prev,
+          recipe,
+          loading: false,
+          currentStep: 0,
+          totalSteps: recipe.instructions?.length ?? 0,
+          cards:
+            recipe.instructions?.map(instruction => ({
+              step: instruction.step,
+              title: instruction.title,
+              description: instruction.description,
+              imageUrl: instruction.imageUrl ?? null,
+            })) ?? [],
+        }));
+      } catch {
+        setState(prev => ({ ...prev, loading: false }));
+        toast.error('レシピの取得に失敗しました');
+      }
+    },
+    [recipeService]
+  );
+
   // アクションの定義
   const actions: CookingPresenterActions = {
     // レシピ詳細取得
-    fetchRecipe: useCallback(
-      async (id: string) => {
-        setState(prev => ({ ...prev, loading: true }));
-        try {
-          const recipe = await recipeService.getRecipeById(id);
-          if (!recipe) {
-            setState(prev => ({ ...prev, loading: false }));
-            toast.error('レシピが見つかりませんでした');
-            return;
-          }
-          setState(prev => ({
-            ...prev,
-            recipe,
-            loading: false,
-            currentStep: 0,
-            totalSteps: recipe.instructions?.length ?? 0,
-          }));
-        } catch {
-          setState(prev => ({ ...prev, loading: false }));
-          toast.error('レシピの取得に失敗しました');
-        }
-      },
-      [recipeService]
-    ),
+    setRecipeId: useCallback((id: string) => {
+      setState(prev => ({ ...prev, recipeId: id }));
+    }, []),
+    fetchRecipe,
     setCurrentStep: useCallback((step: number) => {
       setState(prev => ({ ...prev, currentStep: step }));
     }, []),
@@ -122,6 +141,14 @@ export const useCookingPresenter = (): CookingPresenter => {
   }, [audioRecognitionService, audioPlayerService]);
 
   useEffect(() => {
+    const id = state.recipeId;
+    if (!id) {
+      return;
+    }
+    fetchRecipe(id);
+  }, [state.recipeId, fetchRecipe]);
+
+  useEffect(() => {
     if (!state.carouselApi) return;
 
     const updateCurrentStep = () => {
@@ -150,7 +177,12 @@ export const useCookingPresenter = (): CookingPresenter => {
       const audioUrl =
         state.recipe?.instructions?.[state.currentStep]?.audioUrl;
       if (audioUrl) {
-        await audioPlayerService.playAudio(audioUrl);
+        try {
+          await audioPlayerService.playAudio(audioUrl);
+        } catch (error) {
+          console.warn('Audio playback failed:', error);
+          toast.error('音声の再生に失敗しました');
+        }
       }
     };
     playCurrentStepAudio();
