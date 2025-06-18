@@ -32,9 +32,10 @@ export async function POST(request: NextRequest) {
       id: result.vibeRecipe.id,
       recipeIds: result.vibeRecipe.recipeIds,
       vibeInstructions: result.vibeRecipe.vibeInstructions.map(
-        (vi: { instructionId: string; step: number }) => ({
+        (vi: { instructionId: string; step: number; recipeId: string }) => ({
           instructionId: vi.instructionId,
           step: vi.step,
+          recipeId: vi.recipeId,
         })
       ),
     };

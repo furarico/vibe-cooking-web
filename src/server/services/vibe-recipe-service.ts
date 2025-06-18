@@ -43,10 +43,40 @@ export class VibeRecipeService {
       instructions
     );
 
-    // 3. 新規VibeRecipeを作成・保存
+    // デバッグ情報を出力
+    console.log(
+      'Available instruction IDs:',
+      instructions.map(inst => inst.id)
+    );
+    console.log(
+      'Gemini returned instruction IDs:',
+      geminiResponse.instructionIds
+    );
+
+    // 3. GeminiのレスポンスからVibeInstructionデータを作成
+    const instructionMap = new Map(instructions.map(inst => [inst.id, inst]));
+    const vibeInstructionsData = geminiResponse.instructionIds.map(
+      (instructionId, index) => {
+        const originalInstruction = instructionMap.get(instructionId);
+        if (!originalInstruction) {
+          console.error(
+            `Instruction with ID ${instructionId} not found in available instructions:`,
+            instructions.map(inst => inst.id)
+          );
+          throw new Error(`Instruction with ID ${instructionId} not found`);
+        }
+        return {
+          instructionId,
+          step: index + 1, // 1から始まるステップ番号
+          recipeId: originalInstruction.recipeId,
+        };
+      }
+    );
+
+    // 4. 新規VibeRecipeを作成・保存
     const newVibeRecipe = await this.vibeRecipeRepository.create(
       recipeIds,
-      geminiResponse.instructions
+      vibeInstructionsData
     );
 
     return {

@@ -7,11 +7,7 @@ export interface GeminiInstruction {
 }
 
 export interface GeminiResponse {
-  instructions: Array<{
-    instructionId: string;
-    step: number;
-    recipeId: string;
-  }>;
+  instructionIds: string[];
 }
 
 export class GeminiClient {
@@ -29,15 +25,14 @@ export class GeminiClient {
     recipeIds: string[],
     instructions: GeminiInstruction[]
   ): Promise<GeminiResponse> {
-    const prompt = `次のレシピ ID に対応する手順（Instruction）の ID と並び替え後の手順番号（step）を最適な調理順序で返してください。
+    const prompt = `次のレシピ ID に対応する手順（Instruction）を最適な調理順序で並び替えて、InstructionのIDのみを順序通りに配列で返してください。
 
 レシピ ID: ${JSON.stringify(recipeIds)}
 
 各Instructionの詳細:
 ${instructions.map(inst => `- ID: ${inst.id}, レシピID: ${inst.recipeId}, 説明: ${inst.description}`).join('\n')}
 
-これらを最適な調理手順となるように並び替え、各InstructionのID、レシピID、並び替え後のステップ番号のペアをJSON形式で返してください。
-調理の効率性と論理的な順序を考慮して、最も適切な手順順序を決定してください。`;
+調理の効率性と論理的な順序を考慮して、最も適切な手順順序でInstructionのIDを配列で返してください。`;
 
     const response = await this.genAI.models.generateContent({
       model: 'gemini-2.0-flash-lite',
@@ -47,29 +42,16 @@ ${instructions.map(inst => `- ID: ${inst.id}, レシピID: ${inst.recipeId}, 説
         responseSchema: {
           type: Type.OBJECT,
           properties: {
-            instructions: {
+            instructionIds: {
               type: Type.ARRAY,
               items: {
-                type: Type.OBJECT,
-                properties: {
-                  instructionId: {
-                    type: Type.STRING,
-                    description: 'InstructionのID',
-                  },
-                  step: {
-                    type: Type.NUMBER,
-                    description: '並び替え後のステップ番号',
-                  },
-                  recipeId: {
-                    type: Type.STRING,
-                    description: 'Instructionが属するレシピのID',
-                  },
-                },
-                required: ['instructionId', 'step', 'recipeId'],
+                type: Type.STRING,
+                description: '並び替え後のInstructionのID',
               },
+              description: '最適な調理順序で並び替えられたInstructionのID配列',
             },
           },
-          required: ['instructions'],
+          required: ['instructionIds'],
         },
       },
     });
