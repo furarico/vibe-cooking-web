@@ -42,8 +42,8 @@ export function FixedBottomButton({ buttons }: FixedBottomButtonProps) {
   const router = useRouter();
 
   return (
-    <div className="w-full fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200">
-      <div className="max-w-xl mx-auto px-4 pt-4 pb-12 lg:pb-4">
+    <div className="w-full fixed bottom-0 left-0 right-0 pb-[env(safe-area-inset-bottom)] bg-white border-t border-slate-200">
+      <div className="max-w-xl mx-auto p-4">
         <div className="flex flex-col gap-3">
           {buttons.map((button, index) => {
             // onClickとhrefの両方が設定されている場合

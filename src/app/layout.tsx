@@ -2,7 +2,7 @@ import { DIProvider } from '@/client/di/providers';
 import { Header } from '@/components/header';
 import ServiceWorkerRegistration from '@/components/service-worker-registration';
 import { Toaster } from '@/components/ui/sonner';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { FirebaseInit } from './firebase-init';
 import './globals.css';
@@ -23,6 +23,11 @@ export const metadata: Metadata = {
   appleWebApp: true,
 };
 
+export const viewport: Viewport = {
+  initialScale: 1,
+  viewportFit: 'cover',
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -31,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased container w-full min-w-xs h-screen mx-auto p-2 bg-slate-50`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased container w-full min-w-xs h-screen mx-auto p-2 pb-[env(safe-area-inset-bottom)] bg-slate-50`}
       >
         <DIProvider>
           <ServiceWorkerRegistration />
