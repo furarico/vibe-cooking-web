@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs';
 import { ProgressBar } from './instruction-progress';
 
 const meta: Meta<typeof ProgressBar> = {
-  title: 'UI/ProgressBar',
+  title: 'Components/ProgressBar',
   component: ProgressBar,
   tags: ['autodocs'], // Docs タブの自動生成を促す
   parameters: {

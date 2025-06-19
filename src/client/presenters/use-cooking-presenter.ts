@@ -6,8 +6,8 @@ import {
   AudioRecognitionStatus,
   TriggerType,
 } from '@/client/services/audio-recognition-service';
+import { CookingInstructionCardProps } from '@/components/cooking-instruction-card';
 import { CarouselApi } from '@/components/ui/carousel';
-import { CookingInstructionCardProps } from '@/components/ui/cooking-instruction-card';
 import { Recipe } from '@/lib/api-client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';

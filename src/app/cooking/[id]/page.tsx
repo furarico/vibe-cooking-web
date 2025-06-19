@@ -1,6 +1,11 @@
 'use client';
 
 import { useCookingPresenter } from '@/client/presenters/use-cooking-presenter';
+import { CookingInstructionCard } from '@/components/cooking-instruction-card';
+import { ProgressBar } from '@/components/instruction-progress';
+import { RecipeCard } from '@/components/recipe-card';
+import { Loading } from '@/components/tools/loading';
+import { NoContent } from '@/components/tools/no-content';
 import {
   Carousel,
   CarouselContent,
@@ -8,12 +13,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { CookingInstructionCard } from '@/components/ui/cooking-instruction-card';
-import { FixedBottomButton } from '@/components/ui/fixed-bottom-button';
-import { ProgressBar } from '@/components/ui/instruction-progress';
-import { Loading } from '@/components/ui/loading';
-import { NoContent } from '@/components/ui/no-content';
-import { RecipeCard } from '@/components/ui/recipe-card';
+import { usePageButton } from '@/hooks/use-buttom-buttons';
 import { MicIcon, MicOffIcon } from 'lucide-react';
 import { useEffect } from 'react';
 
@@ -33,6 +33,16 @@ export default function Page({ params }: PageProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params, actions.setRecipeId]);
 
+  // ボタンの設定
+  usePageButton(
+    {
+      id: 'end-cooking',
+      href: `/recipes/${state.recipe?.id}`,
+      children: 'Vibe Cooking をおわる',
+    },
+    [state.recipe?.id]
+  );
+
   if (state.loading) {
     return <Loading />;
   }
@@ -42,57 +52,55 @@ export default function Page({ params }: PageProps) {
   }
 
   return (
-    <div className="flex flex-col items-center gap-8">
-      <RecipeCard
-        variant="row"
-        title={state.recipe.title || ''}
-        description={state.recipe.description || ''}
-        tags={state.recipe.tags || []}
-        cookingTime={state.recipe.cookTime || 0}
-        imageUrl={
-          state.recipe.imageUrl && state.recipe.imageUrl.length > 0
-            ? state.recipe.imageUrl
-            : (process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL ?? '')
-        }
-        imageAlt={state.recipe.title || ''}
-      />
+    <div className="flex flex-col gap-8 lg:flex-row">
+      <div className="flex flex-col items-center gap-8">
+        <RecipeCard
+          variant="row"
+          title={state.recipe.title || ''}
+          description={state.recipe.description || ''}
+          tags={state.recipe.tags || []}
+          cookingTime={state.recipe.cookTime || 0}
+          imageUrl={
+            state.recipe.imageUrl && state.recipe.imageUrl.length > 0
+              ? state.recipe.imageUrl
+              : (process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL ?? '')
+          }
+          imageAlt={state.recipe.title || ''}
+        />
+      </div>
 
-      <Carousel className="w-[calc(100%-96px)]" setApi={actions.setCarouselApi}>
-        <CarouselContent>
-          {state.cards.map(card => (
-            <CarouselItem key={card.step}>
-              <CookingInstructionCard
-                step={card.step}
-                title={card.title}
-                description={card.description}
-                imageUrl={card.imageUrl}
-              />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
-      </Carousel>
+      <div className="flex flex-col items-center gap-8">
+        <Carousel
+          className="w-[calc(100%-96px)]"
+          setApi={actions.setCarouselApi}
+        >
+          <CarouselContent>
+            {state.cards.map(card => (
+              <CarouselItem key={card.step}>
+                <CookingInstructionCard
+                  step={card.step}
+                  title={card.title}
+                  description={card.description}
+                  imageUrl={card.imageUrl}
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
 
-      <ProgressBar
-        totalSteps={state.totalSteps}
-        currentStep={state.currentStep + 1}
-      />
+        <ProgressBar
+          totalSteps={state.totalSteps}
+          currentStep={state.currentStep + 1}
+        />
 
-      {state.audioRecognitionStatus === 'listening' ? (
-        <MicIcon className="h-10 w-10 text-green-500" />
-      ) : (
-        <MicOffIcon className="h-10 w-10 text-red-500" />
-      )}
-
-      <FixedBottomButton
-        buttons={[
-          {
-            href: `/recipes/${state.recipe.id}`,
-            children: 'Vibe Cooking をおわる',
-          },
-        ]}
-      />
+        {state.audioRecognitionStatus === 'listening' ? (
+          <MicIcon className="h-10 w-10 text-green-500" />
+        ) : (
+          <MicOffIcon className="h-10 w-10 text-red-500" />
+        )}
+      </div>
     </div>
   );
 }

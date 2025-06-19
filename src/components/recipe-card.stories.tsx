@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
+import { action } from 'storybook/internal/actions';
 import { RecipeCard } from './recipe-card';
 
 const meta: Meta<typeof RecipeCard> = {
-  title: 'UI/RecipeCard',
+  title: 'Components/RecipeCard',
   component: RecipeCard,
   parameters: {
     layout: 'centered',
@@ -44,7 +45,7 @@ export const Default: Story = {
     description: 'トマトとバジルの香りが食欲をそそる定番のパスタレシピです。',
     tags: ['イタリアン', 'パスタ'],
     cookingTime: 30,
-    imageUrl: 'https://picsum.photos/188/98?random=1',
+    imageUrl: 'https://r2.vibe-cooking.app/images/default.png',
     imageAlt: '美味しいパスタの写真',
   },
 };
@@ -56,7 +57,7 @@ export const LongTitle: Story = {
     description: 'じっくり煮込んだミートソースが絶品のボロネーゼです。',
     tags: ['イタリアン', 'パスタ', 'ミート'],
     cookingTime: 45,
-    imageUrl: 'https://picsum.photos/188/98?random=2',
+    imageUrl: 'https://r2.vibe-cooking.app/images/default.png',
     imageAlt: 'ボロネーゼパスタの写真',
   },
 };
@@ -69,7 +70,7 @@ export const LongDescription: Story = {
       'スパイスから作る本格的なカレーライス。野菜とお肉がたっぷり入って栄養満点です。家族みんなで楽しめる定番の味です。',
     tags: ['カレー', 'スパイス', '家族向け'],
     cookingTime: 60,
-    imageUrl: 'https://picsum.photos/188/98?random=3',
+    imageUrl: 'https://r2.vibe-cooking.app/images/default.png',
     imageAlt: 'カレーライスの写真',
   },
 };
@@ -81,59 +82,31 @@ export const ManyTags: Story = {
     description: '新鮮な野菜をたっぷり使ったヘルシーなサラダです。',
     tags: ['ヘルシー', 'サラダ', 'ベジタリアン', '低カロリー', 'ビタミン'],
     cookingTime: 15,
-    imageUrl: 'https://picsum.photos/188/98?random=4',
+    imageUrl: 'https://r2.vibe-cooking.app/images/default.png',
     imageAlt: 'ヘルシーサラダの写真',
   },
 };
 
-export const QuickRecipe: Story = {
+export const Row: Story = {
   args: {
     variant: 'row',
     title: '簡単おにぎり',
     description: '忙しい朝にも簡単に作れるおにぎりです。',
     tags: ['和食', '簡単'],
     cookingTime: 5,
-    imageUrl: 'https://picsum.photos/188/98?random=5',
+    imageUrl: 'https://r2.vibe-cooking.app/images/default.png',
     imageAlt: 'おにぎりの写真',
   },
 };
 
-// 異なる幅でのテスト用ストーリー
-export const SmallWidth: Story = {
+export const WithDelete: Story = {
   args: {
-    variant: 'card',
-    title: '小さい幅テスト',
-    description: '幅が小さい場合のレイアウトテストです。',
-    tags: ['テスト'],
+    variant: 'row',
+    title: '美味しいパスタ',
+    description: 'トマトとバジルの香りが食欲をそそる定番のパスタレシピです。',
+    tags: ['イタリアン', 'パスタ'],
     cookingTime: 20,
-    imageUrl: 'https://picsum.photos/188/98?random=6',
-    imageAlt: 'テスト画像',
+    imageUrl: 'https://r2.vibe-cooking.app/images/default.png',
+    onDelete: action('delete'),
   },
-  decorators: [
-    Story => (
-      <div style={{ width: '120px' }}>
-        <Story />
-      </div>
-    ),
-  ],
-};
-
-export const LargeWidth: Story = {
-  args: {
-    variant: 'card',
-    title: '大きい幅テスト',
-    description:
-      '幅が大きい場合のレイアウトテストです。テキストの折り返しや全体のバランスを確認できます。',
-    tags: ['テスト', '大きい幅'],
-    cookingTime: 25,
-    imageUrl: 'https://picsum.photos/188/98?random=7',
-    imageAlt: 'テスト画像',
-  },
-  decorators: [
-    Story => (
-      <div style={{ width: '400px' }}>
-        <Story />
-      </div>
-    ),
-  ],
 };

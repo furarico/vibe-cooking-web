@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs';
 import { StepBadge } from './step-badge';
 
 const meta: Meta<typeof StepBadge> = {
-  title: 'UI/StepBadge',
+  title: 'Components/StepBadge',
   component: StepBadge,
   parameters: {
     layout: 'centered',

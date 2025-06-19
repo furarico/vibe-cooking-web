@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs';
 import { RecipeDetailHeader } from './recipe-detail-header';
 
 const meta: Meta<typeof RecipeDetailHeader> = {
-  title: 'UI/RecipeDetailHeader',
+  title: 'Components/RecipeDetailHeader',
   component: RecipeDetailHeader,
   parameters: {
     layout: 'centered',

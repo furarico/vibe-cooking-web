@@ -1,8 +1,8 @@
-import { Loading } from '@/components/ui/loading';
+import { Loading } from '@/components/tools/loading';
 import type { Meta, StoryObj } from '@storybook/nextjs';
 
 const meta = {
-  title: 'UI/Loading',
+  title: 'Tools/Loading',
   component: Loading,
   parameters: {
     layout: 'centered',

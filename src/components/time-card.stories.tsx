@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs';
 import { TimeCard } from './time-card';
 
 const meta: Meta<typeof TimeCard> = {
-  title: 'UI/TimeCard',
+  title: 'Components/TimeCard',
   component: TimeCard,
   parameters: {
     layout: 'centered',

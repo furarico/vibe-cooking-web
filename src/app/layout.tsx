@@ -1,7 +1,12 @@
+import ServiceWorkerRegistration from '@/app/service-worker-registration';
 import { DIProvider } from '@/client/di/providers';
+import { Footer } from '@/components/footer';
 import { Header } from '@/components/header';
-import ServiceWorkerRegistration from '@/components/service-worker-registration';
 import { Toaster } from '@/components/ui/sonner';
+import {
+  ButtomButtons,
+  ButtomButtonsProvider,
+} from '@/contexts/buttom-buttons-context';
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { FirebaseInit } from './firebase-init';
@@ -36,19 +41,22 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased container w-full min-w-xs h-screen mx-auto p-2 pb-[env(safe-area-inset-bottom)] bg-slate-50`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full min-w-xs h-screen pb-[env(safe-area-inset-bottom)] bg-slate-50`}
       >
         <DIProvider>
-          <ServiceWorkerRegistration />
-          <FirebaseInit />
-          <Header />
-          <main className="w-full p-2">{children}</main>
-          <footer className="w-full px-2 pt-16 pb-40">
-            <div className="text-center text-xs text-slate-500">
-              <p>© 2025 Vibe Cooking</p>
+          <ButtomButtonsProvider>
+            <ServiceWorkerRegistration />
+            <FirebaseInit />
+            <div className="h-full flex flex-col">
+              <Header className="container mx-auto p-2" />
+              <main className="w-full h-full container mx-auto p-2 overflow-y-scroll scrollbar-hide">
+                {children}
+                <Footer className="container mx-auto p-4" />
+              </main>
+              <ButtomButtons />
             </div>
-          </footer>
-          <Toaster />
+            <Toaster />
+          </ButtomButtonsProvider>
         </DIProvider>
       </body>
     </html>

@@ -1,13 +1,13 @@
 'use client';
 
 import { useRecipeDetailPresenter } from '@/client/presenters/use-recipe-detail-presenter';
-import { FixedBottomButton } from '@/components/ui/fixed-bottom-button';
-import { Ingredients } from '@/components/ui/ingredients';
-import { Instructions } from '@/components/ui/instructions';
-import { Loading } from '@/components/ui/loading';
-import { NoContent } from '@/components/ui/no-content';
-import { RecipeDetailHeader } from '@/components/ui/recipe-detail-header';
-import { TimeCard } from '@/components/ui/time-card';
+import { Ingredients } from '@/components/ingredients';
+import { Instructions } from '@/components/instructions';
+import { RecipeDetailHeader } from '@/components/recipe-detail-header';
+import { TimeCard } from '@/components/time-card';
+import { Loading } from '@/components/tools/loading';
+import { NoContent } from '@/components/tools/no-content';
+import { usePageButtons } from '@/hooks/use-buttom-buttons';
 import Image from 'next/image';
 import { Suspense, useEffect } from 'react';
 
@@ -26,6 +26,42 @@ export default function Page({ params }: PageProps) {
     fetchRecipeId();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params, actions.setRecipeId]);
+
+  // ボタンの設定
+  usePageButtons(
+    [
+      {
+        id: 'start-cooking',
+        href: `/cooking/${state.recipeId}`,
+        children: 'このレシピのみで Vibe Cooking をはじめる',
+      },
+      {
+        id: 'toggle-vibe-list',
+        onClick: actions.onAddToVibeCookingListButtonTapped,
+        href: '#',
+        children: state.vibeCookingRecipeIds.includes(state.recipeId ?? '')
+          ? 'Vibe Cooking リストから削除'
+          : state.vibeCookingRecipeIds.length >= 3
+            ? 'Vibe Cooking リストの上限に達しています'
+            : 'Vibe Cooking リストに追加',
+        variant: state.vibeCookingRecipeIds.includes(state.recipeId ?? '')
+          ? 'outline'
+          : 'default',
+        disabled:
+          (!state.vibeCookingRecipeIds.includes(state.recipeId ?? '') &&
+            state.vibeCookingRecipeIds.length >= 3) ||
+          !state.recipeId,
+        className: state.vibeCookingRecipeIds.includes(state.recipeId ?? '')
+          ? 'text-red-500 border-red-500 hover:text-red-500 hover:border-red-500'
+          : '',
+      },
+    ],
+    [
+      state.recipeId,
+      state.vibeCookingRecipeIds,
+      actions.onAddToVibeCookingListButtonTapped,
+    ]
+  );
 
   if (state.loading) {
     return <Loading />;
@@ -94,31 +130,6 @@ export default function Page({ params }: PageProps) {
           <Instructions steps={instructionsData} />
         </div>
       </div>
-
-      <FixedBottomButton
-        buttons={[
-          {
-            href: `/cooking/${state.recipeId}`,
-            children: 'このレシピのみで Vibe Cooking をはじめる',
-          },
-          {
-            onClick: actions.onAddToVibeCookingListButtonTapped,
-            href: '#',
-            children: state.vibeCookingRecipeIds.includes(state.recipeId ?? '')
-              ? 'Vibe Cooking リストから削除'
-              : state.vibeCookingRecipeIds.length >= 3
-                ? 'Vibe Cooking リストの上限に達しています'
-                : 'Vibe Cooking リストに追加',
-            variant: state.vibeCookingRecipeIds.includes(state.recipeId ?? '')
-              ? 'outline'
-              : 'default',
-            disabled: state.vibeCookingRecipeIds.length >= 3 || !state.recipeId,
-            className: state.vibeCookingRecipeIds.includes(state.recipeId ?? '')
-              ? 'text-red-500 border-red-500 hover:text-red-500 hover:border-red-500'
-              : '',
-          },
-        ]}
-      />
     </Suspense>
   );
 }
