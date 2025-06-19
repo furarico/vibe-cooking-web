@@ -1,11 +1,14 @@
-import { type ButtonConfig, useButtomButtons } from '@/contexts/buttom-buttons-context';
+import {
+  type ButtonConfig,
+  useButtomButtons,
+} from '@/contexts/buttom-buttons-context';
 import { useEffect } from 'react';
 
 /**
  * ページ固有のボタンを設定するためのカスタムフック
  * @param buttons 設定するボタンの配列
  * @param deps 依存配列（ボタンの内容が変わる条件）
- * 
+ *
  * @example
  * ```tsx
  * // 複数ボタンの設定例
@@ -43,7 +46,7 @@ export function usePageButtons(buttons: ButtonConfig[], deps: unknown[] = []) {
  * 単一のボタンを設定するためのカスタムフック
  * @param button 設定するボタン
  * @param deps 依存配列（ボタンの内容が変わる条件）
- * 
+ *
  * @example
  * ```tsx
  * // 単一ボタンの設定例
@@ -61,11 +64,11 @@ export function usePageButton(button: ButtonConfig, deps: unknown[] = []) {
 
 /**
  * 動的にボタンを追加・削除するためのカスタムフック
- * 
+ *
  * @example
  * ```tsx
  * const { addButton, removeButton, clearButtons } = useDynamicButtons();
- * 
+ *
  * // ボタンを動的に追加
  * const handleAddButton = () => {
  *   addButton({
@@ -74,7 +77,7 @@ export function usePageButton(button: ButtonConfig, deps: unknown[] = []) {
  *     children: '動的に追加されたボタン'
  *   });
  * };
- * 
+ *
  * // ボタンを削除
  * const handleRemoveButton = () => {
  *   removeButton('dynamic-button');
@@ -89,4 +92,4 @@ export function useDynamicButtons() {
     removeButton,
     clearButtons,
   };
-} 
+}

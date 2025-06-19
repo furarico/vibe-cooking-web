@@ -1,11 +1,11 @@
-import { Timer } from 'lucide-react';
+import { Timer, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import * as React from 'react';
 
-import { SelectRevert } from '@/components/select-revert';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { cva } from 'class-variance-authority';
+import { Button } from './ui/button';
 
 const recipeCardVariants = cva(
   'w-full items-stretch flex gap-4 rounded-md border border-slate-200 bg-white p-4 shadow-md transition-all hover:shadow-lg cursor-pointer',
@@ -112,11 +112,9 @@ const RecipeCard = React.forwardRef<HTMLDivElement, RecipeCardProps>(
 
         {/* Delete Button */}
         {onDelete && (
-          <SelectRevert
-            onClick={() => {
-              onDelete();
-            }}
-          />
+          <Button variant="ghost" size="icon" onClick={onDelete}>
+            <Trash2 className="w-4 h-4 text-red-600 items-center" />
+          </Button>
         )}
       </Card>
     );
