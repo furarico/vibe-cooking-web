@@ -1,6 +1,6 @@
 import { useRecipesByCategoryPresenter } from '@/client/presenters/use-recipes-by-category-presenter';
-import { Loading } from '@/components/ui/loading';
-import { RecipeCardList } from '@/components/ui/recipe-card-list';
+import { RecipeCardList } from '@/components/recipe-card-list';
+import { Loading } from '@/components/tools/loading';
 import { Category } from '@/lib/api-client';
 import Link from 'next/link';
 import { Suspense } from 'react';

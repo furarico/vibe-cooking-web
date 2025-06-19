@@ -1,8 +1,8 @@
+import { CookingInstructionCard } from '@/components/cooking-instruction-card';
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import { CookingInstructionCard } from './cooking-instruction-card';
 
 const meta: Meta<typeof CookingInstructionCard> = {
-  title: 'UI/CookingInstructionCard',
+  title: 'Components/CookingInstructionCard',
   component: CookingInstructionCard,
   tags: ['autodocs'],
   parameters: {

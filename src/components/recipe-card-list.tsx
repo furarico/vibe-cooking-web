@@ -1,4 +1,4 @@
-import { RecipeCard } from '@/components/ui/recipe-card';
+import { RecipeCard } from '@/components/recipe-card';
 import { Recipe } from '@/lib/api-client';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';

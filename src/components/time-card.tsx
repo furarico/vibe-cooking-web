@@ -1,8 +1,8 @@
 import * as React from 'react';
 
+import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { ClockIcon, UsersIcon } from 'lucide-react';
-import { Card } from './card';
 
 interface TimeCardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant: 'prep' | 'cook' | 'servings';

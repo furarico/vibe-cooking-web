@@ -1,5 +1,5 @@
+import { StepBadge } from '@/components/step-badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { StepBadge } from '@/components/ui/step-badge';
 import Image from 'next/image';
 import * as React from 'react';
 

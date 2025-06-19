@@ -1,11 +1,11 @@
 'use client';
 
 import { useRecipeListPresenter } from '@/client/presenters/use-recipe-list-presenter';
-import { FixedBottomButton } from '@/components/ui/fixed-bottom-button';
-import { Loading } from '@/components/ui/loading';
-import { NoContent } from '@/components/ui/no-content';
-import { RecipeCard } from '@/components/ui/recipe-card';
-import { SelectCount } from '@/components/ui/select-count';
+import { RecipeCard } from '@/components/recipe-card';
+import { SelectCount } from '@/components/select-count';
+import { Loading } from '@/components/tools/loading';
+import { NoContent } from '@/components/tools/no-content';
+import { usePageButtons } from '@/hooks/use-buttom-buttons';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useMemo } from 'react';
@@ -24,6 +24,22 @@ function RecipesContent() {
   );
 
   const { state } = useRecipeListPresenter(filters);
+
+  usePageButtons([
+    {
+      id: 'toggle-vibe-list',
+      href: '/candidates',
+      children: (
+        <div className="flex items-center justify-center w-full gap-2">
+          <SelectCount count={state.vibeCookingRecipeIds.length} />
+          <span>Vibe Cooking リスト</span>
+        </div>
+      ),
+      variant: 'ghost',
+      className:
+        'w-full text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200 hover:border-gray-300 transition-all duration-200',
+    },
+  ]);
 
   if (state.loading) {
     return <Loading />;
@@ -54,22 +70,6 @@ function RecipesContent() {
           ))}
         </div>
       )}
-      <FixedBottomButton
-        buttons={[
-          {
-            href: '/candidates',
-            children: (
-              <div className="flex items-center justify-center w-full gap-2">
-                <SelectCount count={state.vibeCookingRecipeIds.length} />
-                <span>Vibe Cooking リスト</span>
-              </div>
-            ),
-            variant: 'ghost',
-            className:
-              'w-full text-gray-600 hover:text-gray-800 hover:bg-gray-100 border border-gray-200 hover:border-gray-300 transition-all duration-200',
-          },
-        ]}
-      />
     </>
   );
 }

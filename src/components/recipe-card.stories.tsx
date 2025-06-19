@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs';
 import { RecipeCard } from './recipe-card';
 
 const meta: Meta<typeof RecipeCard> = {
-  title: 'UI/RecipeCard',
+  title: 'Components/RecipeCard',
   component: RecipeCard,
   parameters: {
     layout: 'centered',

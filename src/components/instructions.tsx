@@ -1,6 +1,6 @@
+import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
-import { Card } from './card';
 import { InstructionsItem, InstructionsItemProps } from './instructions-item';
 
 interface InstructionsProps {

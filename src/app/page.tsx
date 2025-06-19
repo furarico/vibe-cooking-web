@@ -2,8 +2,8 @@
 
 import { useCategoryPresenter } from '@/client/presenters/use-category-presenter';
 import { CategoryRecipeSection } from '@/components/category-recipe-section';
-import { Loading } from '@/components/ui/loading';
-import { NoContent } from '@/components/ui/no-content';
+import { Loading } from '@/components/tools/loading';
+import { NoContent } from '@/components/tools/no-content';
 import { Suspense } from 'react';
 
 export default function Page() {

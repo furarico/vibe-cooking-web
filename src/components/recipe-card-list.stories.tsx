@@ -103,7 +103,7 @@ const mockRecipes: Recipe[] = [
 ];
 
 const meta: Meta<typeof RecipeCardList> = {
-  title: 'UI/RecipeCardList',
+  title: 'Components/RecipeCardList',
   component: RecipeCardList,
   parameters: {
     layout: 'padded',

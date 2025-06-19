@@ -2,10 +2,10 @@ import { Timer } from 'lucide-react';
 import Image from 'next/image';
 import * as React from 'react';
 
+import { SelectRevert } from '@/components/select-revert';
+import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { cva } from 'class-variance-authority';
-import { Card } from './card';
-import { SelectRevert } from './select-revert';
 
 const recipeCardVariants = cva(
   'w-full items-stretch flex gap-4 rounded-md border border-slate-200 bg-white p-4 shadow-md transition-all hover:shadow-lg cursor-pointer',

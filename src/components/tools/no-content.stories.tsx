@@ -1,8 +1,8 @@
-import { NoContent } from '@/components/ui/no-content';
+import { NoContent } from '@/components/tools/no-content';
 import type { Meta, StoryObj } from '@storybook/nextjs';
 
 const meta = {
-  title: 'UI/NoContent',
+  title: 'Tools/NoContent',
   component: NoContent,
   parameters: {
     layout: 'centered',

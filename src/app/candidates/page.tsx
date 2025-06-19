@@ -1,13 +1,22 @@
 'use client';
 import { useCandidatesPresenter } from '@/client/presenters/use-candidates-persenter';
-import { FixedBottomButton } from '@/components/ui/fixed-bottom-button';
-import { Loading } from '@/components/ui/loading';
-import { NoContent } from '@/components/ui/no-content';
-import { RecipeCard } from '@/components/ui/recipe-card';
+import { RecipeCard } from '@/components/recipe-card';
+import { Loading } from '@/components/tools/loading';
+import { NoContent } from '@/components/tools/no-content';
+import { usePageButtons } from '@/hooks/use-buttom-buttons';
 import Link from 'next/link';
 
 export default function Page() {
   const { state, actions } = useCandidatesPresenter();
+
+  usePageButtons([
+    {
+      id: 'start-cooking',
+      href: `/recipes/cooking?recipeIds=${state.recipes.map(recipe => recipe.id).join(',')}`,
+      children: 'Vibe Cookingを始める',
+      variant: 'default',
+    },
+  ]);
 
   if (state.loading) {
     return <Loading />;
@@ -39,16 +48,6 @@ export default function Page() {
           </Link>
         ))}
       </div>
-
-      <FixedBottomButton
-        buttons={[
-          {
-            href: `/recipes/cooking?recipeIds=${state.recipes.map(recipe => recipe.id).join(',')}`,
-            children: 'Vibe Cookingを始める',
-            variant: 'default',
-          },
-        ]}
-      />
     </>
   );
 }

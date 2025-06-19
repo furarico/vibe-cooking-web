@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import * as React from 'react';
-import { Card } from './card';
 import { IngredientsItem, IngredientsItemProps } from './ingredients-item';
+import { Card } from './ui/card';
 
 interface IngredientsProps {
   ingredients: IngredientsItemProps[];
