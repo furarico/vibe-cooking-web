@@ -144,9 +144,10 @@ vibe-cooking-web/
 │   │   ├── api/                # API Routes
 │   │   ├── recipes/            # レシピ関連ページ
 │   │   │   ├── [id]/           # レシピ詳細
-│   │   │   │   └── cooking/    # 調理モードページ
 │   │   │   └── page.tsx        # レシピ一覧
-│   │   ├── voice-cooking/      # 音声クッキングページ
+│   │   ├── cooking/            # 調理モードページ
+│   │   │   └── [id]/           # 調理手順表示
+│   │   ├── candidates/         # バイブレシピ候補ページ
 │   │   ├── layout.tsx         # ルートレイアウト
 │   │   ├── page.tsx           # ホームページ
 │   │   ├── firebase-init.tsx  # Firebase初期化コンポーネント
@@ -221,12 +222,12 @@ pnpm api:preview
 
 ### 主要機能
 
-🎤 **音声クッキング** (`/voice-cooking`)
-- 音声認識でレシピを選択・操作
-- 音声ガイドで手順をナビゲーション
-- リアルタイム音声認識とコマンド処理
+🎵 **バイブレシピ機能** (`/candidates`)
+- 音声入力から対話的にレシピ候補を生成・選択
+- 複数のレシピを組み合わせた革新的な料理体験
+- AIによるパーソナライズされたレシピ提案
 
-🍳 **調理モード** (`/recipes/{id}/cooking`)
+🍳 **調理モード** (`/cooking/{id}`)
 - カルーセル形式の手順表示
 - 進捗トラッキングとステップナビゲーション
 - 各手順の音声ガイド自動再生
@@ -240,6 +241,7 @@ pnpm api:preview
 - `GET /recipes` - レシピ一覧取得（テキスト検索、タグフィルター、カテゴリフィルター対応）
 - `GET /recipes/{id}` - レシピ詳細取得
 - `GET /categories` - カテゴリ一覧取得
+- `POST /vibe-recipe` - バイブレシピ作成（指定されたレシピIDsからバイブレシピを作成）
 
 ## 🎨 開発ガイドライン
 
@@ -299,6 +301,8 @@ GOOGLE_APPLICATION_CREDENTIALS=path/to/service-account-key.json
 - **Ingredient**: 材料名、分量、単位、備考
 - **Instruction**: 手順番号、タイトル、説明、推定時間、画像URL、**音声ファイルURL**
 - **Category**: カテゴリ名（ご飯、おかず、デザート、汁物など）
+- **VibeRecipe**: 音声入力から生成されるレシピ候補、関連するレシピIDsとVibe手順の配列
+- **VibeInstruction**: VibeRecipeの手順、手順ID、バイブレシピの手順番号、レシピID
 
 ## 🎨 UIコンポーネントシステム
 
