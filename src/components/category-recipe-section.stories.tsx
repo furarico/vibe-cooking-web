@@ -2,13 +2,6 @@ import { sampleCategories, sampleRecipes } from '@/lib/mock-data';
 import type { Meta, StoryObj } from '@storybook/nextjs';
 import { CategoryRecipeSection } from './category-recipe-section';
 
-// プレゼンターのモック
-const mockUseRecipesByCategoryPresenter = jest.fn();
-
-jest.mock('@/client/presenters/use-recipes-by-category-presenter', () => ({
-  useRecipesByCategoryPresenter: mockUseRecipesByCategoryPresenter,
-}));
-
 const meta: Meta<typeof CategoryRecipeSection> = {
   title: 'Components/CategoryRecipeSection',
   component: CategoryRecipeSection,
@@ -18,6 +11,14 @@ const meta: Meta<typeof CategoryRecipeSection> = {
       description: {
         component:
           'カテゴリ別のレシピ一覧を表示するセクションコンポーネント。カテゴリ名とレシピカードリストを表示し、「もっと見る」ボタンを提供します。',
+      },
+    },
+    mockData: {
+      useRecipesByCategoryPresenter: {
+        recipes: sampleRecipes.filter(
+          recipe => recipe.category.id === sampleCategories[0].id
+        ),
+        loading: false,
       },
     },
   },
@@ -44,14 +45,14 @@ export const Default: Story = {
           'デフォルトのカテゴリレシピセクション表示。レシピが存在する場合の表示例です。',
       },
     },
-  },
-  beforeEach: () => {
-    mockUseRecipesByCategoryPresenter.mockReturnValue({
-      recipes: sampleRecipes.filter(
-        recipe => recipe.category.id === sampleCategories[0].id
-      ),
-      loading: false,
-    });
+    mockData: {
+      useRecipesByCategoryPresenter: {
+        recipes: sampleRecipes.filter(
+          recipe => recipe.category.id === sampleCategories[0].id
+        ),
+        loading: false,
+      },
+    },
   },
 };
 
@@ -66,14 +67,14 @@ export const WithManyRecipes: Story = {
           '複数のレシピがある場合の表示例。「もっと見る」ボタンの有用性を確認できます。',
       },
     },
-  },
-  beforeEach: () => {
-    mockUseRecipesByCategoryPresenter.mockReturnValue({
-      recipes: sampleRecipes.filter(
-        recipe => recipe.category.id === sampleCategories[1].id
-      ),
-      loading: false,
-    });
+    mockData: {
+      useRecipesByCategoryPresenter: {
+        recipes: sampleRecipes.filter(
+          recipe => recipe.category.id === sampleCategories[1].id
+        ),
+        loading: false,
+      },
+    },
   },
 };
 
@@ -88,12 +89,12 @@ export const Loading: Story = {
           'レシピデータの読み込み中の表示状態。ローディングスピナーが表示されます。',
       },
     },
-  },
-  beforeEach: () => {
-    mockUseRecipesByCategoryPresenter.mockReturnValue({
-      recipes: [],
-      loading: true,
-    });
+    mockData: {
+      useRecipesByCategoryPresenter: {
+        recipes: [],
+        loading: true,
+      },
+    },
   },
 };
 
@@ -108,12 +109,12 @@ export const EmptyRecipes: Story = {
           'カテゴリにレシピが存在しない場合の表示状態。セクション全体が表示されません。',
       },
     },
-  },
-  beforeEach: () => {
-    mockUseRecipesByCategoryPresenter.mockReturnValue({
-      recipes: [],
-      loading: false,
-    });
+    mockData: {
+      useRecipesByCategoryPresenter: {
+        recipes: [],
+        loading: false,
+      },
+    },
   },
 };
 
@@ -128,14 +129,14 @@ export const DesertCategory: Story = {
           'デザートカテゴリの表示例。異なるカテゴリでの表示確認に使用します。',
       },
     },
-  },
-  beforeEach: () => {
-    mockUseRecipesByCategoryPresenter.mockReturnValue({
-      recipes: sampleRecipes.filter(
-        recipe => recipe.category.id === sampleCategories[2].id
-      ),
-      loading: false,
-    });
+    mockData: {
+      useRecipesByCategoryPresenter: {
+        recipes: sampleRecipes.filter(
+          recipe => recipe.category.id === sampleCategories[2].id
+        ),
+        loading: false,
+      },
+    },
   },
 };
 
@@ -149,12 +150,12 @@ export const LongCategoryName: Story = {
         story: '長いカテゴリ名での表示例。レイアウトの確認に使用します。',
       },
     },
-  },
-  beforeEach: () => {
-    mockUseRecipesByCategoryPresenter.mockReturnValue({
-      recipes: sampleRecipes.slice(0, 2),
-      loading: false,
-    });
+    mockData: {
+      useRecipesByCategoryPresenter: {
+        recipes: sampleRecipes.slice(0, 2),
+        loading: false,
+      },
+    },
   },
 };
 
@@ -172,13 +173,13 @@ export const MobileView: Story = {
           'モバイル表示でのカテゴリレシピセクション。レスポンシブデザインの確認に使用します。',
       },
     },
-  },
-  beforeEach: () => {
-    mockUseRecipesByCategoryPresenter.mockReturnValue({
-      recipes: sampleRecipes.filter(
-        recipe => recipe.category.id === sampleCategories[1].id
-      ),
-      loading: false,
-    });
+    mockData: {
+      useRecipesByCategoryPresenter: {
+        recipes: sampleRecipes.filter(
+          recipe => recipe.category.id === sampleCategories[1].id
+        ),
+        loading: false,
+      },
+    },
   },
 };
