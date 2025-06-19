@@ -9,7 +9,7 @@ import {
 import { CarouselApi } from '@/components/ui/carousel';
 import { CookingInstructionCardProps } from '@/components/ui/cooking-instruction-card';
 import { Recipe } from '@/lib/api-client';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 export interface CookingPresenterState {
@@ -107,19 +107,22 @@ export const useCookingPresenter = (): CookingPresenter => {
   }, [state.recipe, state.currentStep, audioPlayerService]);
 
   // アクションの定義
-  const actions: CookingPresenterActions = {
-    // レシピ詳細取得
-    setRecipeId: useCallback((id: string) => {
-      setState(prev => ({ ...prev, recipeId: id }));
-    }, []),
-    fetchRecipe,
-    setCurrentStep: useCallback((step: number) => {
-      setState(prev => ({ ...prev, currentStep: step }));
-    }, []),
-    setCarouselApi: useCallback((api: CarouselApi) => {
-      setState(prev => ({ ...prev, carouselApi: api }));
-    }, []),
-  };
+  const actions: CookingPresenterActions = useMemo(
+    () => ({
+      // レシピ詳細取得
+      setRecipeId: (id: string) => {
+        setState(prev => ({ ...prev, recipeId: id }));
+      },
+      fetchRecipe,
+      setCurrentStep: (step: number) => {
+        setState(prev => ({ ...prev, currentStep: step }));
+      },
+      setCarouselApi: (api: CarouselApi) => {
+        setState(prev => ({ ...prev, carouselApi: api }));
+      },
+    }),
+    [fetchRecipe]
+  );
 
   // サービスの状態変更を監視
   useEffect(() => {
@@ -212,7 +215,14 @@ export const useCookingPresenter = (): CookingPresenter => {
     };
 
     handleTrigger(state.triggerType);
-  }, [state.triggerType, playCurrentStepAudio, audioRecognitionService]);
+  }, [
+    state.triggerType,
+    state.currentStep,
+    state.totalSteps,
+    actions,
+    playCurrentStepAudio,
+    audioRecognitionService,
+  ]);
 
   return {
     state,

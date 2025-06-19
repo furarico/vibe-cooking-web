@@ -77,7 +77,8 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
     this.notifyListeners();
   }
 
-  private handleSpeechResult(finalText: string, interimText: string): void {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private handleSpeechResult(finalText: string, _interimText: string): void {
     if (finalText) {
       // トリガーワード検知
       const { hasNext, hasPrev, hasAgain } = this.detectTriggerWords(finalText);
@@ -105,7 +106,8 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
     this.notifyListeners();
   }
 
-  private handleSpeechError(error: Error | SpeechRecognitionErrorEvent): void {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private handleSpeechError(_error: Error | SpeechRecognitionErrorEvent): void {
     this.status = 'error';
     this.notifyListeners();
   }
