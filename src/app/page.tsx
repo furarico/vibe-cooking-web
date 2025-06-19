@@ -1,7 +1,7 @@
 'use client';
 
+import { CategoryRecipeSection } from '@/app/category-recipe-section';
 import { useCategoryPresenter } from '@/client/presenters/use-category-presenter';
-import { CategoryRecipeSection } from '@/components/category-recipe-section';
 import { Loading } from '@/components/tools/loading';
 import { NoContent } from '@/components/tools/no-content';
 import { Suspense } from 'react';

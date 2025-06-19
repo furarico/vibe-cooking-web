@@ -1,7 +1,7 @@
+import { Footer } from '@/app/footer';
+import { Header } from '@/app/header';
 import ServiceWorkerRegistration from '@/app/service-worker-registration';
 import { DIProvider } from '@/client/di/providers';
-import { Footer } from '@/components/footer';
-import { Header } from '@/components/header';
 import { Toaster } from '@/components/ui/sonner';
 import {
   ButtomButtons,

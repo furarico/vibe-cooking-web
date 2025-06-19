@@ -4,7 +4,7 @@ import { Loading } from '@/components/tools/loading';
 import { Category } from '@/lib/api-client';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { Button } from './ui/button';
+import { Button } from '../components/ui/button';
 
 export function CategoryRecipeSection({ category }: { category: Category }) {
   const { recipes, loading } = useRecipesByCategoryPresenter(category.id);
