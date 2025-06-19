@@ -182,6 +182,40 @@ export const useCookingPresenter = (): CookingPresenter => {
     playCurrentStepAudio();
   }, [state.recipe, state.currentStep, audioPlayerService]);
 
+  // 音声認識のトリガーワードに応じてステップを移動
+  useEffect(() => {
+    if (state.triggerHistory.length === 0) return;
+
+    // 最新のトリガーを取得
+    const latestTrigger = state.triggerHistory[state.triggerHistory.length - 1];
+
+    // 次トリガーの場合
+    if (latestTrigger.includes('次トリガー検知')) {
+      const nextStep = state.currentStep + 1;
+      if (nextStep < state.totalSteps) {
+        actions.setCurrentStep(nextStep);
+      }
+    }
+
+    // 前トリガーの場合
+    if (latestTrigger.includes('前トリガー検知')) {
+      const prevStep = state.currentStep - 1;
+      if (prevStep >= 0) {
+        actions.setCurrentStep(prevStep);
+      }
+    }
+
+    // もう一度トリガーの場合
+    if (latestTrigger.includes('再度トリガー検知')) {
+      // ステップを一時的に変更して元に戻すことで音声再生をトリガー
+      const currentStep = state.currentStep;
+      actions.setCurrentStep(-1);
+      setTimeout(() => {
+        actions.setCurrentStep(currentStep);
+      }, 10);
+    }
+  }, [state.triggerHistory]);
+
   return {
     state,
     actions,
