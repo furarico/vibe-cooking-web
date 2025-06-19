@@ -82,10 +82,11 @@
 - `GET /recipes` - レシピ一覧を取得（テキスト検索、タグフィルター、カテゴリフィルター対応）
 - `GET /recipes/{id}` - IDで特定のレシピを取得
 - `GET /categories` - カテゴリ一覧を取得
+- `POST /vibe-recipe` - バイブレシピを作成（音声入力から対話的にレシピを生成）
 
 **主要機能**:
-- **音声クッキング機能**: `/voice-cooking`ページで音声認識とオーディオ再生による対話的な料理体験を提供
-- **調理モード**: `/recipes/{id}/cooking`ページでカルーセル形式の調理手順表示とオーディオガイド機能
+- **バイブレシピ機能**: `/candidates`ページで音声入力から対話的にレシピ候補を生成・選択する機能を提供
+- **調理モード**: `/cooking/{id}`ページでカルーセル形式の調理手順表示とオーディオガイド機能
 - **レシピ検索・表示**: カテゴリ別フィルター、テキスト検索、タグフィルターに対応したレシピ管理機能
 
 ### クライアントサイドアーキテクチャ
@@ -208,6 +209,10 @@ prisma/                 # Prismaスキーマとマイグレーション
 **Instructionスキーマ**: step number、title、description（すべて必須）と、オプションのimageUrl、estimatedTime、audioUrlを持つ順次ステップです。音声クッキング機能に対応するためaudioUrlフィールドが追加されています。
 
 **Categoryスキーマ**: id、name（両方必須）で構成され、複数のレシピを関連付けるカテゴリ情報です。
+
+**VibeRecipeスキーマ**: 音声入力から生成されるレシピ候補のスキーマで、title、description、instructions配列、estimatedTimeを含む対話型レシピ生成機能向けのデータ構造です。
+
+**VibeInstructionスキーマ**: VibeRecipeの手順を表すスキーマで、step、description（両方必須）とオプションのestimatedTime、audioUrlを持つ対話型レシピ手順です。
 
 ### プロジェクト構造の詳細
 
