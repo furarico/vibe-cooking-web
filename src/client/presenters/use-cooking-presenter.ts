@@ -194,7 +194,6 @@ export const useCookingPresenter = (): CookingPresenter => {
       const nextStep = state.currentStep + 1;
       if (nextStep < state.totalSteps) {
         actions.setCurrentStep(nextStep);
-      } else {
       }
     }
 
@@ -203,7 +202,6 @@ export const useCookingPresenter = (): CookingPresenter => {
       const prevStep = state.currentStep - 1;
       if (prevStep >= 0) {
         actions.setCurrentStep(prevStep);
-      } else {
       }
     }
 
