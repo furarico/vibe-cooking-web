@@ -1,8 +1,9 @@
 import { VibeRecipe } from '@/lib/api-client';
+import { withAppCheck } from '@/lib/middleware/app-check';
 import { createDIContainer } from '@/server/di/container';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+async function handlePost(request: NextRequest) {
   try {
     const body = await request.json();
 
@@ -67,3 +68,6 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+// AppCheck 検証付きのPOSTハンドラー
+export const POST = withAppCheck(handlePost);
