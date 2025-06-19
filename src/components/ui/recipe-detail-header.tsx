@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 import * as React from 'react';
 
 interface RecipeDetailHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -13,21 +14,29 @@ const RecipeDetailHeader = React.forwardRef<
 >(({ className, title, description, tags, ...props }, ref) => {
   return (
     <div
-      className={cn('w-full flex flex-col items-start', className)}
+      className={cn('w-full flex flex-col gap-4 items-start', className)}
       ref={ref}
       {...props}
     >
-      {/* タイトルを表示 */}
-      <p className="text-xl font-semibold text-slate-900">{title ?? ''}</p>
-      {/* 説明を表示 */}
-      <p className="text-sm font-medium text-slate-900">{description ?? ''}</p>
+      <div className="flex flex-col gap-2">
+        {/* タイトルを表示 */}
+        <p className="text-xl font-semibold text-slate-900">{title ?? ''}</p>
+        {/* 説明を表示 */}
+        <p className="text-sm font-medium text-slate-900">
+          {description ?? ''}
+        </p>
+      </div>
       {/* タグを表示 */}
       {tags?.length && (
-        <div className="flex flex-wrap gap-2 mt-2">
-          {tags.map((tag, index) => (
-            <span key={`${tag}-${index}`} className="text-sm text-slate-600">
+        <div className="flex flex-wrap gap-2">
+          {tags.map(tag => (
+            <Link
+              key={tag}
+              href={`/recipes?tag=${tag}`}
+              className="text-sm text-slate-600"
+            >
               #{tag}
-            </span>
+            </Link>
           ))}
         </div>
       )}
