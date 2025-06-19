@@ -8,11 +8,8 @@ export interface AudioRecognitionService {
   startSpeechRecognition(): Promise<void>;
   stopSpeechRecognition(): void;
   getAudioRecognitionStatus(): AudioRecognitionStatus;
-  getTranscript(): string;
-  getInterimTranscript(): string;
-  getTriggerHistory(): string[];
-  clearTranscript(): void;
-  clearTriggerHistory(): void;
+  getTriggerType(): TriggerType | null;
+  clearTriggerType(): void;
 
   // イベントリスナー管理
   addListener(listener: () => void): void;
@@ -26,14 +23,14 @@ export type AudioRecognitionStatus =
   | 'success'
   | 'error';
 
+export type TriggerType = 'next' | 'previous' | 'again';
+
 export class AudioRecognitionServiceImpl implements AudioRecognitionService {
   private speechRecognitionRepository: SpeechRecognitionRepository;
 
   // 音声認識状態
   private status: AudioRecognitionStatus = 'idle';
-  private transcript = '';
-  private interimTranscript = '';
-  private triggerHistory: string[] = [];
+  private triggerType: TriggerType | null = null;
 
   // イベントリスナー
   private listeners: Set<() => void> = new Set();
@@ -57,6 +54,7 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
 
   // 音声認識関連の実装
   async startSpeechRecognition(): Promise<void> {
+    if (this.status === 'listening') return;
     try {
       this.status = 'listening';
       this.notifyListeners();
@@ -85,25 +83,16 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
       const { hasNext, hasPrev, hasAgain } = this.detectTriggerWords(finalText);
 
       if (hasNext) {
-        this.triggerHistory.push(
-          `${new Date().toLocaleTimeString()}: 次トリガー検知 - "${finalText}"`
-        );
+        this.triggerType = 'next';
         this.notifyListeners();
-      }
-      if (hasPrev) {
-        this.triggerHistory.push(
-          `${new Date().toLocaleTimeString()}: 前トリガー検知 - "${finalText}"`
-        );
+      } else if (hasPrev) {
+        this.triggerType = 'previous';
         this.notifyListeners();
-      }
-      if (hasAgain) {
-        this.triggerHistory.push(
-          `${new Date().toLocaleTimeString()}: 再度トリガー検知 - "${finalText}"`
-        );
+      } else if (hasAgain) {
+        this.triggerType = 'again';
         this.notifyListeners();
       }
 
-      this.transcript = finalText;
       this.status = 'success';
 
       setTimeout(() => {
@@ -113,16 +102,10 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
       }, 500);
     }
 
-    this.interimTranscript = interimText;
-    if (interimText && !finalText) {
-      this.status = 'processing';
-    }
-
     this.notifyListeners();
   }
 
   private handleSpeechError(error: Error | SpeechRecognitionErrorEvent): void {
-    console.error('Speech recognition error:', error);
     this.status = 'error';
     this.notifyListeners();
   }
@@ -201,25 +184,12 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
     return this.status;
   }
 
-  getTranscript(): string {
-    return this.transcript;
+  getTriggerType(): TriggerType | null {
+    return this.triggerType;
   }
 
-  getInterimTranscript(): string {
-    return this.interimTranscript;
-  }
-
-  getTriggerHistory(): string[] {
-    return [...this.triggerHistory];
-  }
-
-  clearTranscript(): void {
-    this.transcript = '';
-    this.notifyListeners();
-  }
-
-  clearTriggerHistory(): void {
-    this.triggerHistory = [];
+  clearTriggerType(): void {
+    this.triggerType = null;
     this.notifyListeners();
   }
 }
