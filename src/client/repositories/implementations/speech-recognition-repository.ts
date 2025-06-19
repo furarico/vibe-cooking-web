@@ -58,8 +58,6 @@ export class WebSpeechRecognitionRepository
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      console.error('Speech recognition error:', event.error);
-
       // no-speechエラーの場合は自動的に再開を試行
       if (event.error === 'no-speech' && this.shouldRestart) {
         console.log('No speech detected, will restart...');

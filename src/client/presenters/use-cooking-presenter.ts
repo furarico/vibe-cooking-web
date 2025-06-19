@@ -1,13 +1,16 @@
 'use client';
 
 import { useDI } from '@/client/di/providers';
-import { AudioRecognitionStatus } from '@/client/services/audio-recognition-service';
+import { AudioPlayerStatus } from '@/client/services/audio-player-service';
+import {
+  AudioRecognitionStatus,
+  TriggerType,
+} from '@/client/services/audio-recognition-service';
 import { CarouselApi } from '@/components/ui/carousel';
 import { CookingInstructionCardProps } from '@/components/ui/cooking-instruction-card';
 import { Recipe } from '@/lib/api-client';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { AudioPlayerStatus } from '../services/audio-player-service';
 
 export interface CookingPresenterState {
   recipeId: string | null;
@@ -23,9 +26,7 @@ export interface CookingPresenterState {
 
   // 音声認識状態
   audioRecognitionStatus: AudioRecognitionStatus;
-  transcript: string;
-  interimTranscript: string;
-  triggerHistory: string[];
+  triggerType: TriggerType | null;
 }
 
 export interface CookingPresenterActions {
@@ -57,9 +58,7 @@ export const useCookingPresenter = (): CookingPresenter => {
       audioPlayerStatus: audioPlayerService.getAudioPlayerStatus(),
       audioRecognitionStatus:
         audioRecognitionService.getAudioRecognitionStatus(),
-      transcript: audioRecognitionService.getTranscript(),
-      interimTranscript: audioRecognitionService.getInterimTranscript(),
-      triggerHistory: audioRecognitionService.getTriggerHistory(),
+      triggerType: audioRecognitionService.getTriggerType(),
     };
   });
 
@@ -96,20 +95,34 @@ export const useCookingPresenter = (): CookingPresenter => {
     [recipeService]
   );
 
+  const playCurrentStepAudio = useCallback(async () => {
+    const audioUrl = state.recipe?.instructions?.[state.currentStep]?.audioUrl;
+    if (audioUrl) {
+      try {
+        await audioPlayerService.playAudio(audioUrl);
+      } catch {
+        toast.error('音声の再生に失敗しました');
+      }
+    }
+  }, [state.recipe, state.currentStep, audioPlayerService]);
+
   // アクションの定義
-  const actions: CookingPresenterActions = {
-    // レシピ詳細取得
-    setRecipeId: useCallback((id: string) => {
-      setState(prev => ({ ...prev, recipeId: id }));
-    }, []),
-    fetchRecipe,
-    setCurrentStep: useCallback((step: number) => {
-      setState(prev => ({ ...prev, currentStep: step }));
-    }, []),
-    setCarouselApi: useCallback((api: CarouselApi) => {
-      setState(prev => ({ ...prev, carouselApi: api }));
-    }, []),
-  };
+  const actions: CookingPresenterActions = useMemo(
+    () => ({
+      // レシピ詳細取得
+      setRecipeId: (id: string) => {
+        setState(prev => ({ ...prev, recipeId: id }));
+      },
+      fetchRecipe,
+      setCurrentStep: (step: number) => {
+        setState(prev => ({ ...prev, currentStep: step }));
+      },
+      setCarouselApi: (api: CarouselApi) => {
+        setState(prev => ({ ...prev, carouselApi: api }));
+      },
+    }),
+    [fetchRecipe]
+  );
 
   // サービスの状態変更を監視
   useEffect(() => {
@@ -119,9 +132,7 @@ export const useCookingPresenter = (): CookingPresenter => {
         audioPlayerStatus: audioPlayerService.getAudioPlayerStatus(),
         audioRecognitionStatus:
           audioRecognitionService.getAudioRecognitionStatus(),
-        transcript: audioRecognitionService.getTranscript(),
-        interimTranscript: audioRecognitionService.getInterimTranscript(),
-        triggerHistory: audioRecognitionService.getTriggerHistory(),
+        triggerType: audioRecognitionService.getTriggerType(),
       }));
     };
 
@@ -167,54 +178,51 @@ export const useCookingPresenter = (): CookingPresenter => {
   }, [state.carouselApi, state.currentStep]);
 
   useEffect(() => {
-    const playCurrentStepAudio = async () => {
-      const audioUrl =
-        state.recipe?.instructions?.[state.currentStep]?.audioUrl;
-      if (audioUrl) {
-        try {
-          await audioPlayerService.playAudio(audioUrl);
-        } catch (error) {
-          console.warn('Audio playback failed:', error);
-          toast.error('音声の再生に失敗しました');
-        }
-      }
-    };
+    if (state.audioPlayerStatus === 'playing') {
+      audioRecognitionService.stopSpeechRecognition();
+    } else {
+      audioRecognitionService.startSpeechRecognition();
+    }
+  }, [state.audioPlayerStatus, audioRecognitionService]);
+
+  useEffect(() => {
     playCurrentStepAudio();
-  }, [state.recipe, state.currentStep, audioPlayerService]);
+  }, [playCurrentStepAudio]);
 
   // 音声認識のトリガーワードに応じてステップを移動
   useEffect(() => {
-    if (state.triggerHistory.length === 0) return;
+    const handleTrigger = async (triggerType: TriggerType | null) => {
+      if (!triggerType) return;
 
-    // 最新のトリガーを取得
-    const latestTrigger = state.triggerHistory[state.triggerHistory.length - 1];
-
-    // 次トリガーの場合
-    if (latestTrigger.includes('次トリガー検知')) {
-      const nextStep = state.currentStep + 1;
-      if (nextStep < state.totalSteps) {
-        actions.setCurrentStep(nextStep);
+      switch (triggerType) {
+        case 'next':
+          const nextStep = state.currentStep + 1;
+          if (nextStep < state.totalSteps) {
+            actions.setCurrentStep(nextStep);
+          }
+          break;
+        case 'previous':
+          const prevStep = state.currentStep - 1;
+          if (prevStep >= 0) {
+            actions.setCurrentStep(prevStep);
+          }
+          break;
+        case 'again':
+          await playCurrentStepAudio();
+          break;
       }
-    }
+      audioRecognitionService.clearTriggerType();
+    };
 
-    // 前トリガーの場合
-    if (latestTrigger.includes('前トリガー検知')) {
-      const prevStep = state.currentStep - 1;
-      if (prevStep >= 0) {
-        actions.setCurrentStep(prevStep);
-      }
-    }
-
-    // もう一度トリガーの場合
-    if (latestTrigger.includes('再度トリガー検知')) {
-      // ステップを一時的に変更して元に戻すことで音声再生をトリガー
-      const currentStep = state.currentStep;
-      actions.setCurrentStep(-1);
-      setTimeout(() => {
-        actions.setCurrentStep(currentStep);
-      }, 10);
-    }
-  }, [state.triggerHistory]);
+    handleTrigger(state.triggerType);
+  }, [
+    state.triggerType,
+    state.currentStep,
+    state.totalSteps,
+    actions,
+    playCurrentStepAudio,
+    audioRecognitionService,
+  ]);
 
   return {
     state,
