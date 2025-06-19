@@ -67,7 +67,7 @@
 
 ## アーキテクチャ概要
 
-これは**Next.js 15 App Router**プロジェクトで、**TypeScript**、**Tailwind CSS 4**、**shadcn/ui**を使用し、料理・レシピプラットフォーム向けの**APIファースト開発**アプローチで設計されています。
+これは**Next.js 15.3.3 App Router**プロジェクトで、**TypeScript**、**Tailwind CSS 4.1.8**、**shadcn/ui**を使用し、料理・レシピプラットフォーム向けの**APIファースト開発**アプローチで設計されています。**PWA（Progressive Web App）**対応もされており、オフライン機能やホーム画面への追加が可能です。
 
 ### 主要なアーキテクチャパターン
 
@@ -88,6 +88,7 @@
 - **バイブレシピ機能**: `/candidates`ページで音声入力から対話的にレシピ候補を生成・選択する機能を提供
 - **調理モード**: `/cooking/{id}`ページでカルーセル形式の調理手順表示とオーディオガイド機能
 - **レシピ検索・表示**: カテゴリ別フィルター、テキスト検索、タグフィルターに対応したレシピ管理機能
+- **PWA機能**: オフライン対応、ホーム画面への追加、アプリライクな体験
 
 ### クライアントサイドアーキテクチャ
 
@@ -210,9 +211,9 @@ prisma/                 # Prismaスキーマとマイグレーション
 
 **Categoryスキーマ**: id、name（両方必須）で構成され、複数のレシピを関連付けるカテゴリ情報です。
 
-**VibeRecipeスキーマ**: 音声入力から生成されるレシピ候補のスキーマで、title、description、instructions配列、estimatedTimeを含む対話型レシピ生成機能向けのデータ構造です。
+**VibeRecipeスキーマ**: 複数のレシピを組み合わせたバイブレシピを表すスキーマで、recipeIds配列（含まれるレシピIDの配列）とvibeInstructions（並び替えられた手順の配列）を持ちます。
 
-**VibeInstructionスキーマ**: VibeRecipeの手順を表すスキーマで、step、description（両方必須）とオプションのestimatedTime、audioUrlを持つ対話型レシピ手順です。
+**VibeInstructionスキーマ**: VibeRecipeの手順を表すスキーマで、instructionId（元のInstructionのID）、step（並び替え後の手順番号）、recipeId（元のInstructionが属するレシピのID）、vibeRecipeId（所属するVibeRecipeのID）を持ちます。
 
 ### プロジェクト構造の詳細
 
@@ -273,22 +274,31 @@ prisma/                 # Prismaスキーマとマイグレーション
 - `tailwind.config.ts`: shadcn/ui用のTailwind CSS設定
 - `src/lib/utils.ts`: クラス名結合用ユーティリティ（`cn`関数）
 
-**利用可能なコンポーネント**:
+**利用可能なUIコンポーネント**:
 - `Button`: 複数バリアント対応ボタン（default, destructive, outline, secondary, ghost, link）
 - `Card`: カードコンポーネント（Header, Title, Description, Content, Footer）
 - `Input`: 入力フィールドコンポーネント
 - `Carousel`: 画像カルーセルコンポーネント（embla-carousel-reactベース）
 - `Progress`: プログレスバーコンポーネント
-- `Loading`: ローディング表示コンポーネント
 - `Sonner`: トースト通知コンポーネント
+
+**ビジネスコンポーネント**:
 - `RecipeCard`: レシピカード表示コンポーネント
+- `RecipeCardList`: レシピカード一覧表示コンポーネント
+- `RecipeDetailHeader`: レシピ詳細ヘッダーコンポーネント
 - `CookingInstructionCard`: 調理手順カードコンポーネント
 - `InstructionProgress`: 調理進捗表示コンポーネント
 - `Ingredients`: 材料リスト表示コンポーネント
+- `IngredientsItem`: 材料アイテムコンポーネント
 - `Instructions`: 手順リスト表示コンポーネント
+- `InstructionsItem`: 手順アイテムコンポーネント
 - `StepBadge`: ステップ番号バッジコンポーネント
 - `TimeCard`: 時間表示カードコンポーネント
-- `FixedBottomButton`: 画面下部固定ボタンコンポーネント
+- `SelectCount`: 数量選択コンポーネント
+
+**ツールコンポーネント**:
+- `Loading`: ローディング表示コンポーネント
+- `NoContent`: コンテンツなし表示コンポーネント
 
 **依存関係**:
 - `class-variance-authority`: バリアント管理
@@ -301,6 +311,48 @@ prisma/                 # Prismaスキーマとマイグレーション
 - `sonner`: トースト通知ライブラリ
 - `next-themes`: テーマ管理ライブラリ
 - `tw-animate-css`: TailwindCSS用アニメーションユーティリティ
+
+### PWA設定
+
+**Progressive Web App対応**: プロジェクトはPWA機能を提供し、ユーザーがアプリのようにWebサイトを使用できます：
+
+**設定ファイル**:
+- `src/app/manifest.ts`: PWAマニフェストファイル（アプリ名、アイコン、表示モード等を定義）
+- `src/app/service-worker-registration.tsx`: Service Worker登録コンポーネント
+- `public/sw.js`: Service Workerファイル（キャッシュ戦略、オフライン対応等）
+- `public/icon-192x192.png`, `public/icon-512x512.png`: PWAアイコン
+
+**PWA機能**:
+- **インストール可能**: ホーム画面への追加が可能
+- **オフライン対応**: Service Workerによるキャッシュとオフライン機能
+- **アプリライクな体験**: スタンドアローンモードでの表示
+- **レスポンシブデザイン**: モバイルファーストのデザイン
+
+**PWAマニフェスト設定**:
+- アプリ名: "Vibe Cooking"
+- 表示モード: standalone
+- 背景色: #ffffff
+- テーマカラー: #000000
+- アイコン: 192x192、512x512のPNGファイル
+
+### Storybook設定
+
+**コンポーネント開発環境**: Storybookを使用してUIコンポーネントの開発・テスト・ドキュメント化を行います：
+
+**設定ファイル**:
+- `.storybook/main.ts`: Storybook設定（Next.jsフレームワーク、addon設定）
+- `.storybook/preview.ts`: プレビュー設定（グローバルCSS、パラメーター設定）
+
+**Storybook設定**:
+- フレームワーク: `@storybook/nextjs`
+- ストーリーファイル: `src/**/*.stories.@(js|jsx|mjs|ts|tsx)`
+- アドオン: `@storybook/addon-docs`, `@storybook/addon-onboarding`
+- 静的ファイル: `public/`ディレクトリ
+
+**利用可能なストーリー**:
+- 全UIコンポーネント（Button、Card、Input、Carousel、Progress、Sonner）
+- 全ビジネスコンポーネント（Recipe関連、Instruction関連、時間関連コンポーネント）
+- ツールコンポーネント（Loading、NoContent）
 
 ### Firebase設定
 
@@ -353,9 +405,54 @@ prisma/                 # Prismaスキーマとマイグレーション
 
 ### 重要な注意事項
 
-- プロジェクトはパッケージマネージャーとして**pnpm**を使用（npm/yarnではない）
-- 開発サーバーは高速ビルドのために**Turbopack**を含む
-- APIサーバーは`http://localhost:3000/api`で動作（Next.js APIルート）
-- 生成された全てのTypeScript型は**文字列enum**と**ES6+機能**を使用
-- 型定義生成には`openapi-typescript`を使用（軽量で高速）
-- `.gitignore`は`src/types/api.d.ts`を含める（生成されたファイルもコミット対象）
+- **パッケージマネージャー**: pnpm 10.x を使用（npm/yarnではない）
+- **Node.js**: バージョン 22.x を使用
+- **開発サーバー**: 高速ビルドのために**Turbopack**を含む（`pnpm dev`）
+- **APIサーバー**: `http://localhost:3000/api`で動作（Next.js APIルート）
+- **型定義生成**: `openapi-typescript`を使用（軽量で高速）
+- **生成されたファイル**: `src/types/api.d.ts`はコミット対象（手動編集禁止）
+- **AI統合**: Gemini API (`@google/genai`) を使用したバイブレシピ生成機能
+- **データベース**: PostgreSQL + Prisma ORM + Google Cloud SQL Connector
+- **認証**: Firebase Admin SDK + App Check による API保護
+- **PWA**: Service Worker による オフライン対応とキャッシュ機能
+- **テスト**: Jest + Testing Library による単体テスト
+- **コンポーネント開発**: Storybook による UI コンポーネント管理
+
+## 主要な依存関係
+
+### フロントエンド
+- **React**: 19.1.0 - UIライブラリ
+- **Next.js**: 15.3.3 - React フレームワーク
+- **TypeScript**: 5.8.3 - 型安全性
+- **Tailwind CSS**: 4.1.8 - スタイリング
+- **shadcn/ui**: コンポーネントライブラリ
+
+### UI/UX
+- **lucide-react**: 0.514.0 - アイコンライブラリ
+- **embla-carousel-react**: 8.6.0 - カルーセルコンポーネント
+- **sonner**: 2.0.5 - トースト通知
+- **next-themes**: 0.4.6 - テーマ管理
+
+### データベース・API
+- **Prisma**: 6.9.0 - ORM
+- **@prisma/client**: 6.9.0 - Prismaクライアント
+- **@google-cloud/cloud-sql-connector**: 1.8.1 - Cloud SQL接続
+- **openapi-fetch**: 0.14.0 - API クライアント
+
+### AI・認証
+- **@google/genai**: 1.5.1 - Gemini API
+- **firebase**: 11.9.1 - Firebase SDK
+- **firebase-admin**: 13.4.0 - Firebase Admin SDK
+- **@firebase/app-check**: 0.10.0 - App Check
+
+### 開発・テスト
+- **Jest**: 30.0.0 - テストフレームワーク
+- **@testing-library/react**: 16.3.0 - React テストユーティリティ
+- **Storybook**: 9.0.8 - コンポーネント開発環境
+- **ESLint**: 9.28.0 - コード品質チェック
+- **Prettier**: 3.5.3 - コードフォーマット
+
+### ツール
+- **openapi-typescript**: 7.8.0 - OpenAPI型定義生成
+- **@redocly/cli**: 1.34.3 - API ドキュメント生成
+- **dotenv-cli**: 8.0.0 - 環境変数管理
