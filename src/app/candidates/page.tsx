@@ -43,7 +43,7 @@ export default function Page() {
       <FixedBottomButton
         buttons={[
           {
-            href: '/recipes/cooking',
+            href: `/recipes/cooking?recipeIds=${state.recipes.map(recipe => recipe.id).join(',')}`,
             children: 'Vibe Cookingを始める',
             variant: 'default',
           },
