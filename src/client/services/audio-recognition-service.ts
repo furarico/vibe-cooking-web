@@ -146,6 +146,8 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
       'ネクスト',
       'next',
       '進んで',
+      'うぃシェフ',
+      'ウィシェフ',
     ];
     const prevKeywords = [
       '前',

@@ -194,9 +194,7 @@ export const useCookingPresenter = (): CookingPresenter => {
       const nextStep = state.currentStep + 1;
       if (nextStep < state.totalSteps) {
         actions.setCurrentStep(nextStep);
-        //toast.success('次のステップに進みました');
       } else {
-        //toast.info('最後のステップです');
       }
     }
 
@@ -205,9 +203,7 @@ export const useCookingPresenter = (): CookingPresenter => {
       const prevStep = state.currentStep - 1;
       if (prevStep >= 0) {
         actions.setCurrentStep(prevStep);
-        //toast.success('前のステップに戻りました');
       } else {
-        //toast.info('最初のステップです');
       }
     }
 
@@ -219,7 +215,6 @@ export const useCookingPresenter = (): CookingPresenter => {
       setTimeout(() => {
         actions.setCurrentStep(currentStep);
       }, 10);
-      //toast.success('音声を再生し直しました');
     }
   }, [state.triggerHistory]);
 
