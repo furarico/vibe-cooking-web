@@ -53,7 +53,7 @@ export default function Page({ params }: PageProps) {
 
   return (
     <div className="flex flex-col gap-8 lg:flex-row">
-      <div className="flex flex-col items-center gap-8">
+      <div className="lg:w-[50%] flex flex-col items-center gap-8">
         <RecipeCard
           variant="row"
           title={state.recipe.title || ''}
@@ -69,7 +69,7 @@ export default function Page({ params }: PageProps) {
         />
       </div>
 
-      <div className="flex flex-col items-center gap-8">
+      <div className="lg:w-[50%] flex flex-col items-center gap-8">
         <Carousel
           className="w-[calc(100%-96px)]"
           setApi={actions.setCarouselApi}
