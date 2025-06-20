@@ -112,15 +112,15 @@ const RecipeCard = React.forwardRef<HTMLDivElement, RecipeCardProps>(
 
         {/* Delete Button */}
         {onDelete && (
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={(e) => {
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={e => {
               e.stopPropagation();
               e.preventDefault();
               onDelete();
             }}
-            onMouseDown={(e) => {
+            onMouseDown={e => {
               e.stopPropagation();
             }}
           >
