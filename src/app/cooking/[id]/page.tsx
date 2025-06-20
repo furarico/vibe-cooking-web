@@ -24,6 +24,9 @@ interface PageProps {
 export default function Page({ params }: PageProps) {
   const { state, actions } = useCookingPresenter();
 
+  // 最後のステップかどうかを判別
+  const isLastStep = state.currentStep === state.totalSteps - 1;
+
   useEffect(() => {
     const setRecipeId = async () => {
       const resolvedParams = await params;
@@ -111,6 +114,16 @@ export default function Page({ params }: PageProps) {
           <MicIcon className="h-10 w-10 text-green-500" />
         ) : (
           <MicOffIcon className="h-10 w-10 text-red-500" />
+        )}
+      </div>
+      <div>
+        {/* 最後のステップの場合に完了メッセージを表示 */}
+        {isLastStep && (
+          <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+            <p className="text-green-800 font-semibold">
+              🎉 料理完成まであと少しです！
+            </p>
+          </div>
         )}
       </div>
     </div>

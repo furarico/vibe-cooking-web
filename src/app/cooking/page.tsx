@@ -22,6 +22,9 @@ const PageContent = () => {
   const { state, actions } = useVibeCookingPresenter();
   const searchParams = useSearchParams();
 
+  // 最後のステップかどうかを判別
+  const isLastStep = state.currentStep === state.totalSteps - 1;
+
   usePageButtons([
     {
       id: 'end-cooking',
@@ -84,6 +87,14 @@ const PageContent = () => {
         <MicIcon className="h-10 w-10 text-green-500" />
       ) : (
         <MicOffIcon className="h-10 w-10 text-red-500" />
+      )}
+      {/* 最後のステップの場合に完了メッセージを表示 */}
+      {isLastStep && (
+        <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+          <p className="text-green-800 font-semibold">
+            🎉 すべての料理が完成まであと少しです！
+          </p>
+        </div>
       )}
     </div>
   );
