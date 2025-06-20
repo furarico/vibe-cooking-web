@@ -46,7 +46,7 @@ paths:
             type: string
           example: cm123abc456
       responses:
-        "200":
+        '200':
           description: 成功
           content:
             application/json:
@@ -56,7 +56,7 @@ paths:
                   recipes:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Recipe"
+                      $ref: '#/components/schemas/Recipe'
                 required:
                   - recipes
 
@@ -72,13 +72,13 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: 成功
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Recipe"
-        "404":
+                $ref: '#/components/schemas/Recipe'
+        '404':
           description: レシピが見つかりません
 
   /categories:
@@ -86,7 +86,7 @@ paths:
       summary: カテゴリ一覧取得
       description: 全てのカテゴリ一覧を取得
       responses:
-        "200":
+        '200':
           description: 成功
           content:
             application/json:
@@ -96,7 +96,7 @@ paths:
                   categories:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Category"
+                      $ref: '#/components/schemas/Category'
                 required:
                   - categories
 
@@ -116,23 +116,23 @@ paths:
                   items:
                     type: string
                   description: バイブレシピに含めるレシピIDの配列
-                  example: ["cm123abc456", "cm789def012"]
+                  example: ['cm123abc456', 'cm789def012']
               required:
                 - recipeIds
       responses:
-        "200":
+        '200':
           description: 既存のバイブレシピを返します
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/VibeRecipe"
-        "201":
+                $ref: '#/components/schemas/VibeRecipe'
+        '201':
           description: バイブレシピが正常に作成されました
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/VibeRecipe"
-        "400":
+                $ref: '#/components/schemas/VibeRecipe'
+        '400':
           description: 無効なリクエスト
 
 components:
@@ -147,7 +147,7 @@ components:
         description:
           type: string
         category:
-          $ref: "#/components/schemas/Category"
+          $ref: '#/components/schemas/Category'
         prepTime:
           type: integer
           description: 準備時間（分）
@@ -160,11 +160,11 @@ components:
         ingredients:
           type: array
           items:
-            $ref: "#/components/schemas/Ingredient"
+            $ref: '#/components/schemas/Ingredient'
         instructions:
           type: array
           items:
-            $ref: "#/components/schemas/Instruction"
+            $ref: '#/components/schemas/Instruction'
         imageUrl:
           type: string
           format: uri
@@ -279,7 +279,7 @@ components:
         vibeInstructions:
           type: array
           items:
-            $ref: "#/components/schemas/VibeInstruction"
+            $ref: '#/components/schemas/VibeInstruction'
           description: Vibe手順の配列
       required:
         - id
