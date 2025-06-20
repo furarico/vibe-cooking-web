@@ -1,6 +1,7 @@
 'use client';
 
 import { useCookingPresenter } from '@/client/presenters/use-cooking-presenter';
+import { useVibeRecipePresenter } from '@/client/presenters/use-vibe-recipe-presenter';
 import { CookingInstructionCard } from '@/components/cooking-instruction-card';
 import { ProgressBar } from '@/components/instruction-progress';
 import { RecipeCard } from '@/components/recipe-card';
@@ -20,6 +21,11 @@ import { useEffect } from 'react';
 
 export default function Page() {
   const { state, actions } = useCookingPresenter();
+  const {
+    createVibeRecipe,
+    vibeRecipe,
+    loading: vibeLoading,
+  } = useVibeRecipePresenter();
   const searchParams = useSearchParams();
 
   usePageButtons([
@@ -31,23 +37,39 @@ export default function Page() {
   ]);
 
   useEffect(() => {
-    const recipeIds = searchParams.get('recipeIds');
-    if (recipeIds) {
-      // カンマ区切りのレシピIDを配列に格納
-      const recipeIdArray = recipeIds.split(',').filter(id => id.trim() !== '');
-      console.log('レシピID配列:', recipeIdArray);
+    const handleCreateVibeRecipe = async () => {
+      const recipeIds = searchParams.get('recipeIds');
+      if (recipeIds) {
+        // カンマ区切りのレシピIDを配列に格納
+        const recipeIdArray = recipeIds
+          .split(',')
+          .filter(id => id.trim() !== '');
+        console.log('レシピID配列:', recipeIdArray);
 
-      // 複数のレシピIDがある場合は、最初のレシピIDを使用
-      // 将来的には複数レシピの同時調理に対応する予定
-      const firstRecipeId = recipeIdArray[0];
-      if (firstRecipeId) {
-        console.log('使用するレシピID:', firstRecipeId);
-        actions.setRecipeId(firstRecipeId);
+        // 複数のレシピIDがある場合はバイブレシピを作成
+        if (recipeIdArray.length > 1 && vibeRecipe == null) {
+          try {
+            await createVibeRecipe(recipeIdArray);
+          } catch (error) {
+            console.error('バイブレシピ作成エラー:', error);
+          }
+        } else {
+          console.log('バイブレシピ作成完了:', vibeRecipe);
+        }
+
+        // 最初のレシピIDで調理開始（バイブレシピ作成の成否に関わらず）
+        const firstRecipeId = recipeIdArray[0];
+        if (firstRecipeId) {
+          console.log('使用するレシピID:', firstRecipeId);
+          actions.setRecipeId(firstRecipeId);
+        }
       }
-    }
-  }, [searchParams, actions.setRecipeId]);
+    };
 
-  if (state.loading) {
+    handleCreateVibeRecipe();
+  }, [searchParams, actions.setRecipeId, createVibeRecipe, vibeRecipe]);
+
+  if (state.loading || vibeLoading) {
     return <Loading text="レシピを構築しています..." />;
   }
 
