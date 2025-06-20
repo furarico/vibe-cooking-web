@@ -53,7 +53,7 @@ export default function RootLayout({
             <FirebaseInit />
             <div className="h-full flex flex-col">
               <Header className="container mx-auto p-2" />
-              <main className="w-full h-full container mx-auto p-2 overflow-y-scroll scrollbar-hide">
+              <main className="w-full flex-1 container mx-auto p-2 overflow-y-scroll scrollbar-hide">
                 {children}
               </main>
               <Footer className="container p-6" />
