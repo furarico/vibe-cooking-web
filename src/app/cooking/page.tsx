@@ -16,9 +16,9 @@ import { CookingStatusCard } from '@/components/ui/cooking-status-card';
 import { usePageButtons } from '@/hooks/use-buttom-buttons';
 import { MicIcon, MicOffIcon } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 
-export default function Page() {
+const PageContent = () => {
   const { state, actions } = useVibeCookingPresenter();
   const searchParams = useSearchParams();
 
@@ -86,5 +86,13 @@ export default function Page() {
         <MicOffIcon className="h-10 w-10 text-red-500" />
       )}
     </div>
+  );
+};
+
+export default function Page() {
+  return (
+    <Suspense fallback={<Loading text="レシピを構築しています..." />}>
+      <PageContent />
+    </Suspense>
   );
 }

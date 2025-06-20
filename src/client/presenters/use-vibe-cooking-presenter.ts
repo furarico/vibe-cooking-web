@@ -181,7 +181,7 @@ export const useVibeCookingPresenter = (): VibeCookingPresenter => {
     }
 
     // ステップ順でソート
-    return cards.sort((a, b) => a.step - b.step);
+    return cards.sort((a, b) => (a.step ?? 0) - (b.step ?? 0));
   };
 
   // 現在のステップからアクティブなレシピIDを取得
