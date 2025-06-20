@@ -124,7 +124,7 @@ export default function Page({ params }: PageProps) {
 
         <div className="lg:w-[50%] flex flex-col gap-8 lg:py-4">
           {/* 材料リスト */}
-          <Ingredients ingredients={ingredientsData} />
+          <Ingredients ingredients={ingredientsData} title="材料" />
 
           {/* 作成手順 */}
           <Instructions steps={instructionsData} />

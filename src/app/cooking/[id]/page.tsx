@@ -3,7 +3,6 @@
 import { useCookingPresenter } from '@/client/presenters/use-cooking-presenter';
 import { CookingInstructionCard } from '@/components/cooking-instruction-card';
 import { ProgressBar } from '@/components/instruction-progress';
-import { RecipeCard } from '@/components/recipe-card';
 import { Loading } from '@/components/tools/loading';
 import { NoContent } from '@/components/tools/no-content';
 import {
@@ -13,6 +12,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import { CookingStatusCard } from '@/components/ui/cooking-status-card';
 import { usePageButton } from '@/hooks/use-buttom-buttons';
 import { MicIcon, MicOffIcon } from 'lucide-react';
 import { useEffect } from 'react';
@@ -52,8 +52,9 @@ export default function Page({ params }: PageProps) {
   }
 
   return (
-    <div className="flex flex-col gap-8 lg:flex-row">
-      <div className="lg:w-[50%] flex flex-col items-center gap-8">
+    <div className="flex flex-col items-center gap-8">
+      {/*<div className="lg:w-[50%] flex flex-col items-center gap-8">
+
         <RecipeCard
           variant="row"
           title={state.recipe.title || ''}
@@ -67,15 +68,26 @@ export default function Page({ params }: PageProps) {
           }
           imageAlt={state.recipe.title || ''}
         />
+      </div>*/}
+
+      <div className="w-full max-w-[600px] px-4 space-y-4">
+        <CookingStatusCard
+          recipes={
+            state.recipe
+              ? [{ id: state.recipe.id, name: state.recipe.title }]
+              : []
+          }
+          activeRecipeId={state.recipe?.id}
+        />
       </div>
 
-      <div className="lg:w-[50%] flex flex-col items-center gap-8">
+      <div className="w-full max-w-[680px] flex flex-col items-center gap-8">
         <Carousel
           className="w-[calc(100%-96px)]"
           setApi={actions.setCarouselApi}
         >
           <CarouselContent>
-            {state.cards.map(card => (
+            {state.cards?.map(card => (
               <CarouselItem key={card.step}>
                 <CookingInstructionCard
                   step={card.step}
@@ -84,7 +96,7 @@ export default function Page({ params }: PageProps) {
                   imageUrl={card.imageUrl}
                 />
               </CarouselItem>
-            ))}
+            )) || []}
           </CarouselContent>
           <CarouselPrevious />
           <CarouselNext />
