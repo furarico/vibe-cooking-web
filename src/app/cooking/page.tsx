@@ -54,7 +54,7 @@ export default function Page() {
             id: recipe.id,
             name: recipe.title || '',
           }))}
-          activeRecipeId={state.activeRecipeId}
+          activeRecipeId={state.activeRecipeId ?? undefined}
         />
       </div>
 
