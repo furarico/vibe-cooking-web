@@ -12,33 +12,26 @@ export default function Page() {
   const { state, actions } = useCandidatesPresenter();
   const router = useRouter();
 
-  const hasRecipes = state.recipes.length > 0;
-
   usePageButtons(
     [
       {
         id: 'start-cooking',
-        onClick: hasRecipes
-          ? () => {
-              const recipeIds = state.recipes
-                .map(recipe => recipe.id)
-                .join(',');
-              router.push(`/cooking?recipeIds=${recipeIds}`);
-            }
-          : undefined,
+        onClick: () => {
+          const recipeIds = state.recipes.map(recipe => recipe.id).join(',');
+          router.push(`/cooking?recipeIds=${recipeIds}`);
+        },
         children: 'Vibe Cookingを始める',
         variant: 'default',
-        disabled: !hasRecipes,
       },
     ],
-    [state.recipes, hasRecipes]
+    [state.recipes]
   );
 
   if (state.loading) {
     return <Loading />;
   }
 
-  if (!hasRecipes) {
+  if (state.recipes.length === 0) {
     return <NoContent text="調理するレシピがありません" />;
   }
 
