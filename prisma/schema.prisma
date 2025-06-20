@@ -79,7 +79,8 @@ model VibeRecipe {
 }
 
 model VibeInstruction {
-  instructionId String   @id   // 元のInstructionのID
+  id            String     @id @default(cuid())
+  instructionId String     // 元のInstructionのID
   step          Int        // 並び替え後の手順番号
   recipeId      String     // 元のInstructionが属するレシピのID
   vibeRecipe    VibeRecipe @relation(fields: [vibeRecipeId], references: [id], onDelete: Cascade)
