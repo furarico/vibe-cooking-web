@@ -33,7 +33,12 @@ async function handlePost(request: NextRequest) {
       id: result.vibeRecipe.id,
       recipeIds: result.vibeRecipe.recipeIds,
       vibeInstructions: result.vibeRecipe.vibeInstructions.map(
-        (vi: { id: string; instructionId: string; step: number; recipeId: string }) => ({
+        (vi: {
+          id: string;
+          instructionId: string;
+          step: number;
+          recipeId: string;
+        }) => ({
           id: vi.id,
           instructionId: vi.instructionId,
           step: vi.step,
