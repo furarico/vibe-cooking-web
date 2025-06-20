@@ -59,7 +59,7 @@ ${instructions
 上記の制約に従い、調理の効率性と論理的な順序を考慮して、有効なIDリストのIDのみを使用した最適な手順順序の配列を作成してください。`;
 
     const response = await this.genAI.models.generateContent({
-      model: 'gemini-2.0-flash-lite',
+      model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
