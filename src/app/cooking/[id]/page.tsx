@@ -1,6 +1,7 @@
 'use client';
 
 import { useCookingPresenter } from '@/client/presenters/use-cooking-presenter';
+import { CookingCompletedCard } from '@/components/cooking-completed-card';
 import { CookingInstructionCard } from '@/components/cooking-instruction-card';
 import { ProgressBar } from '@/components/instruction-progress';
 import { Loading } from '@/components/tools/loading';
@@ -15,6 +16,7 @@ import {
 import { CookingStatusCard } from '@/components/ui/cooking-status-card';
 import { usePageButton } from '@/hooks/use-buttom-buttons';
 import { MicIcon, MicOffIcon } from 'lucide-react';
+import Link from 'next/link';
 import { useEffect } from 'react';
 
 interface PageProps {
@@ -119,11 +121,9 @@ export default function Page({ params }: PageProps) {
       <div>
         {/* 最後のステップの場合に完了メッセージを表示 */}
         {isLastStep && (
-          <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
-            <p className="text-green-800 font-semibold">
-              🎉 料理完成まであと少しです！
-            </p>
-          </div>
+          <Link href="/">
+            <CookingCompletedCard />
+          </Link>
         )}
       </div>
     </div>
