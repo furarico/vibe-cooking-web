@@ -14,9 +14,7 @@ export const CookingStatusCard = ({
   const displayNames = recipeNames.slice(0, 3);
 
   return (
-    <Card
-      className={`w-full max-w-240 flex items-center px-8 py-4 gap-8 ${className || ''}`}
-    >
+    <Card className={`flex items-center px-8 py-4 gap-8 ${className || ''}`}>
       {/* 左側: アイコンと調理中テキスト */}
       <div className="flex flex-col items-center space-y-2 min-w-0 flex-shrink-0">
         <div className="w-12 h-12 relative">

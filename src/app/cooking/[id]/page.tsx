@@ -52,7 +52,7 @@ export default function Page({ params }: PageProps) {
   }
 
   return (
-    <div className="flex flex-col gap-8 lg:flex-row sm:flex-col">
+    <div className="flex flex-col items-center gap-8">
       {/*<div className="lg:w-[50%] flex flex-col items-center gap-8">
 
         <RecipeCard
@@ -70,14 +70,13 @@ export default function Page({ params }: PageProps) {
         />
       </div>*/}
 
-      <div className="px-4 space-y-4 flex flex-col items-center">
-        {/* 2つの料理 */}
+      <div className="w-full max-w-[600px] px-4 space-y-4">
         <CookingStatusCard
           recipeNames={state.recipe?.title ? [state.recipe.title] : []}
         />
       </div>
 
-      <div className="lg:w-[50%] flex flex-col items-center gap-8">
+      <div className="w-full max-w-[680px] flex flex-col items-center gap-8">
         <Carousel
           className="w-[calc(100%-96px)]"
           setApi={actions.setCarouselApi}
