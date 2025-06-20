@@ -23,11 +23,11 @@ const PageContent = () => {
   const searchParams = useSearchParams();
 
   usePageButtons([
-    // {
-    //   id: 'end-cooking',
-    //   href: `/recipes/${state.recipe?.id}`,
-    //   children: 'Vibe Cooking をおわる',
-    // },
+    {
+      id: 'end-cooking',
+      href: `/`,
+      children: 'Vibe Cooking をおわる',
+    },
   ]);
 
   useEffect(() => {
