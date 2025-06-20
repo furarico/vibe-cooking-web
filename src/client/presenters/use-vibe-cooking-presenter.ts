@@ -172,9 +172,6 @@ export const useVibeCookingPresenter = (): VibeCookingPresenter => {
       );
       if (!instruction) continue;
 
-      // stepがnullの場合はスキップ
-      if (vibeInstruction.step === null) continue;
-
       cards.push({
         step: vibeInstruction.step,
         title: instruction.title,
@@ -184,12 +181,7 @@ export const useVibeCookingPresenter = (): VibeCookingPresenter => {
     }
 
     // ステップ順でソート
-    return cards.sort((a, b) => {
-      if (a.step === null && b.step === null) return 0;
-      if (a.step === null) return 1;
-      if (b.step === null) return -1;
-      return a.step - b.step;
-    });
+    return cards.sort((a, b) => a.step - b.step);
   };
 
   // 現在のステップからアクティブなレシピIDを取得
