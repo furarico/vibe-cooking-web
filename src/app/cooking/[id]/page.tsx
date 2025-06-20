@@ -3,7 +3,6 @@
 import { useCookingPresenter } from '@/client/presenters/use-cooking-presenter';
 import { CookingInstructionCard } from '@/components/cooking-instruction-card';
 import { ProgressBar } from '@/components/instruction-progress';
-import { RecipeCard } from '@/components/recipe-card';
 import { Loading } from '@/components/tools/loading';
 import { NoContent } from '@/components/tools/no-content';
 import {
@@ -13,6 +12,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import { CookingStatusCard } from '@/components/ui/cooking-status-card';
 import { usePageButton } from '@/hooks/use-buttom-buttons';
 import { MicIcon, MicOffIcon } from 'lucide-react';
 import { useEffect } from 'react';
@@ -52,8 +52,9 @@ export default function Page({ params }: PageProps) {
   }
 
   return (
-    <div className="flex flex-col gap-8 lg:flex-row">
-      <div className="lg:w-[50%] flex flex-col items-center gap-8">
+    <div className="flex flex-col gap-8 lg:flex-row sm:flex-col">
+      {/*<div className="lg:w-[50%] flex flex-col items-center gap-8">
+
         <RecipeCard
           variant="row"
           title={state.recipe.title || ''}
@@ -66,6 +67,13 @@ export default function Page({ params }: PageProps) {
               : (process.env.NEXT_PUBLIC_DEFAULT_IMAGE_URL ?? '')
           }
           imageAlt={state.recipe.title || ''}
+        />
+      </div>*/}
+
+      <div className="px-4 space-y-4 flex flex-col items-center">
+        {/* 2つの料理 */}
+        <CookingStatusCard
+          recipeNames={state.recipe?.title ? [state.recipe.title] : []}
         />
       </div>
 
