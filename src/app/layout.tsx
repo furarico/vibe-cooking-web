@@ -55,8 +55,8 @@ export default function RootLayout({
               <Header className="container mx-auto p-2" />
               <main className="w-full h-full container mx-auto p-2 overflow-y-scroll scrollbar-hide">
                 {children}
-                <Footer className="container mx-auto p-4" />
               </main>
+              <Footer className="container p-6" />
               <ButtomButtons />
             </div>
             <Toaster />
