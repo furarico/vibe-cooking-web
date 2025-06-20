@@ -16,11 +16,28 @@ import { CookingStatusCard } from '@/components/ui/cooking-status-card';
 import { usePageButtons } from '@/hooks/use-buttom-buttons';
 import { MicIcon, MicOffIcon } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 
-export default function Page() {
-  const { state, actions } = useVibeCookingPresenter();
+interface SearchParamsHandlerProps {
+  onRecipeIds: (recipeIds: string[]) => void;
+}
+
+function SearchParamsHandler({ onRecipeIds }: SearchParamsHandlerProps) {
   const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const recipeIds = searchParams.get('recipeIds');
+    if (!recipeIds) {
+      return;
+    }
+    onRecipeIds(recipeIds.split(','));
+  }, [searchParams, onRecipeIds]);
+
+  return null;
+}
+
+function CookingPageContent() {
+  const { state, actions } = useVibeCookingPresenter();
 
   usePageButtons([
     // {
@@ -29,14 +46,6 @@ export default function Page() {
     //   children: 'Vibe Cooking をおわる',
     // },
   ]);
-
-  useEffect(() => {
-    const recipeIds = searchParams.get('recipeIds');
-    if (!recipeIds) {
-      return;
-    }
-    actions.setRecipeIds(recipeIds.split(','));
-  }, [searchParams, actions]);
 
   if (state.loading) {
     return <Loading text="レシピを構築しています..." />;
@@ -47,44 +56,60 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-8">
-      <div className="w-full max-w-[600px] px-4 space-y-4">
-        <CookingStatusCard
-          recipes={state.recipes.map(recipe => ({
-            id: recipe.id,
-            name: recipe.title || '',
-          }))}
-          activeRecipeId={state.activeRecipeId ?? undefined}
+    <>
+      <Suspense fallback={<div>Loading search params...</div>}>
+        <SearchParamsHandler onRecipeIds={actions.setRecipeIds} />
+      </Suspense>
+      <div className="flex flex-col items-center gap-8">
+        <div className="w-full max-w-[600px] px-4 space-y-4">
+          <CookingStatusCard
+            recipes={state.recipes.map(recipe => ({
+              id: recipe.id,
+              name: recipe.title || '',
+            }))}
+            activeRecipeId={state.activeRecipeId ?? undefined}
+          />
+        </div>
+
+        <Carousel
+          className="w-[calc(100%-96px)]"
+          setApi={actions.setCarouselApi}
+        >
+          <CarouselContent>
+            {state.cards.map(card => (
+              <CarouselItem key={card.step}>
+                <CookingInstructionCard
+                  step={card.step}
+                  title={card.title}
+                  description={card.description}
+                  imageUrl={card.imageUrl}
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+
+        <ProgressBar
+          totalSteps={state.totalSteps}
+          currentStep={state.currentStep + 1}
         />
+
+        {state.audioRecognitionStatus === 'listening' ? (
+          <MicIcon className="h-10 w-10 text-green-500" />
+        ) : (
+          <MicOffIcon className="h-10 w-10 text-red-500" />
+        )}
       </div>
+    </>
+  );
+}
 
-      <Carousel className="w-[calc(100%-96px)]" setApi={actions.setCarouselApi}>
-        <CarouselContent>
-          {state.cards.map(card => (
-            <CarouselItem key={card.step}>
-              <CookingInstructionCard
-                step={card.step}
-                title={card.title}
-                description={card.description}
-                imageUrl={card.imageUrl}
-              />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
-      </Carousel>
-
-      <ProgressBar
-        totalSteps={state.totalSteps}
-        currentStep={state.currentStep + 1}
-      />
-
-      {state.audioRecognitionStatus === 'listening' ? (
-        <MicIcon className="h-10 w-10 text-green-500" />
-      ) : (
-        <MicOffIcon className="h-10 w-10 text-red-500" />
-      )}
-    </div>
+export default function Page() {
+  return (
+    <Suspense fallback={<Loading text="ページを読み込み中..." />}>
+      <CookingPageContent />
+    </Suspense>
   );
 }
