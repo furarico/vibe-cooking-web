@@ -15,14 +15,12 @@ import {
 } from '@/components/ui/carousel';
 import { usePageButtons } from '@/hooks/use-buttom-buttons';
 import { MicIcon, MicOffIcon } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 
-interface PageProps {
-  params: Promise<{ id: string }>;
-}
-
-export default function Page({ params }: PageProps) {
+export default function Page() {
   const { state, actions } = useCookingPresenter();
+  const searchParams = useSearchParams();
 
   usePageButtons([
     {
@@ -33,13 +31,21 @@ export default function Page({ params }: PageProps) {
   ]);
 
   useEffect(() => {
-    const setRecipeId = async () => {
-      const resolvedParams = await params;
-      actions.setRecipeId(resolvedParams.id);
-    };
-    setRecipeId();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params, actions.setRecipeId]);
+    const recipeIds = searchParams.get('recipeIds');
+    if (recipeIds) {
+      // カンマ区切りのレシピIDを配列に格納
+      const recipeIdArray = recipeIds.split(',').filter(id => id.trim() !== '');
+      console.log('レシピID配列:', recipeIdArray);
+
+      // 複数のレシピIDがある場合は、最初のレシピIDを使用
+      // 将来的には複数レシピの同時調理に対応する予定
+      const firstRecipeId = recipeIdArray[0];
+      if (firstRecipeId) {
+        console.log('使用するレシピID:', firstRecipeId);
+        actions.setRecipeId(firstRecipeId);
+      }
+    }
+  }, [searchParams, actions.setRecipeId]);
 
   if (state.loading) {
     return <Loading text="レシピを構築しています..." />;

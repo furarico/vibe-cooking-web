@@ -5,18 +5,26 @@ import { Loading } from '@/components/tools/loading';
 import { NoContent } from '@/components/tools/no-content';
 import { usePageButtons } from '@/hooks/use-buttom-buttons';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Page() {
   const { state, actions } = useCandidatesPresenter();
+  const router = useRouter();
 
-  usePageButtons([
-    {
-      id: 'start-cooking',
-      href: `/recipes/cooking?recipeIds=${state.recipes.map(recipe => recipe.id).join(',')}`,
-      children: 'Vibe Cookingを始める',
-      variant: 'default',
-    },
-  ]);
+  usePageButtons(
+    [
+      {
+        id: 'start-cooking',
+        onClick: () => {
+          const recipeIds = state.recipes.map(recipe => recipe.id).join(',');
+          router.push(`/cooking?recipeIds=${recipeIds}`);
+        },
+        children: 'Vibe Cookingを始める',
+        variant: 'default',
+      },
+    ],
+    [state.recipes]
+  );
 
   if (state.loading) {
     return <Loading />;
