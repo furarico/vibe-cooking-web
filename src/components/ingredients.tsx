@@ -5,11 +5,13 @@ import { Card } from './ui/card';
 
 interface IngredientsProps {
   ingredients: IngredientsItemProps[];
+  title?: string;
   className?: string;
 }
 
 const Ingredients: React.FC<IngredientsProps> = ({
   ingredients,
+  title = '材料',
   className,
 }) => {
   // 一意のidを生成してingredientsWithIdに格納
@@ -20,7 +22,7 @@ const Ingredients: React.FC<IngredientsProps> = ({
 
   return (
     <div className={cn('w-full flex flex-col gap-4', className)}>
-      <h2 className="text-lg font-bold">材料</h2>
+      <h2 className="text-lg font-bold">{title}</h2>
       <Card className="p-4 flex flex-col gap-2">
         {ingredientsWithId.map(ingredient => (
           <IngredientsItem
