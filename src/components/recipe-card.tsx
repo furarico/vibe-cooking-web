@@ -112,7 +112,18 @@ const RecipeCard = React.forwardRef<HTMLDivElement, RecipeCardProps>(
 
         {/* Delete Button */}
         {onDelete && (
-          <Button variant="ghost" size="icon" onClick={onDelete}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              onDelete();
+            }}
+            onMouseDown={e => {
+              e.stopPropagation();
+            }}
+          >
             <Trash2 className="w-4 h-4 text-red-600 items-center" />
           </Button>
         )}

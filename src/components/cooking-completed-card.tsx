@@ -1,5 +1,5 @@
-import { Card } from '@/components/ui/card';
 import Image from 'next/image';
+import { Card } from './ui/card';
 
 type CookingCompletedCardProps = {
   className?: string;

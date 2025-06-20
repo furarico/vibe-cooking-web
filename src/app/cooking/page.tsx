@@ -1,6 +1,7 @@
 'use client';
 
 import { useVibeCookingPresenter } from '@/client/presenters/use-vibe-cooking-presenter';
+import { CookingCompletedCard } from '@/components/cooking-completed-card';
 import { CookingInstructionCard } from '@/components/cooking-instruction-card';
 import { ProgressBar } from '@/components/instruction-progress';
 import { Loading } from '@/components/tools/loading';
@@ -15,12 +16,16 @@ import {
 import { CookingStatusCard } from '@/components/ui/cooking-status-card';
 import { usePageButtons } from '@/hooks/use-buttom-buttons';
 import { MicIcon, MicOffIcon } from 'lucide-react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
 
 const PageContent = () => {
   const { state, actions } = useVibeCookingPresenter();
   const searchParams = useSearchParams();
+
+  // 最後のステップかどうかを判別
+  const isLastStep = state.currentStep === state.totalSteps - 1;
 
   usePageButtons([
     {
@@ -84,6 +89,12 @@ const PageContent = () => {
         <MicIcon className="h-10 w-10 text-green-500" />
       ) : (
         <MicOffIcon className="h-10 w-10 text-red-500" />
+      )}
+      {/* 最後のステップの場合に完了メッセージを表示 */}
+      {isLastStep && (
+        <Link href="/">
+          <CookingCompletedCard />
+        </Link>
       )}
     </div>
   );

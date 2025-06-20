@@ -1,6 +1,7 @@
 'use client';
 
 import { useCookingPresenter } from '@/client/presenters/use-cooking-presenter';
+import { CookingCompletedCard } from '@/components/cooking-completed-card';
 import { CookingInstructionCard } from '@/components/cooking-instruction-card';
 import { ProgressBar } from '@/components/instruction-progress';
 import { Loading } from '@/components/tools/loading';
@@ -15,6 +16,7 @@ import {
 import { CookingStatusCard } from '@/components/ui/cooking-status-card';
 import { usePageButton } from '@/hooks/use-buttom-buttons';
 import { MicIcon, MicOffIcon } from 'lucide-react';
+import Link from 'next/link';
 import { useEffect } from 'react';
 
 interface PageProps {
@@ -23,6 +25,9 @@ interface PageProps {
 
 export default function Page({ params }: PageProps) {
   const { state, actions } = useCookingPresenter();
+
+  // 最後のステップかどうかを判別
+  const isLastStep = state.currentStep === state.totalSteps - 1;
 
   useEffect(() => {
     const setRecipeId = async () => {
@@ -111,6 +116,14 @@ export default function Page({ params }: PageProps) {
           <MicIcon className="h-10 w-10 text-green-500" />
         ) : (
           <MicOffIcon className="h-10 w-10 text-red-500" />
+        )}
+      </div>
+      <div>
+        {/* 最後のステップの場合に完了メッセージを表示 */}
+        {isLastStep && (
+          <Link href="/">
+            <CookingCompletedCard />
+          </Link>
         )}
       </div>
     </div>
