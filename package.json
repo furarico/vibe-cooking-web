@@ -13,6 +13,8 @@
     "test:coverage": "jest --coverage",
     "api:generate": "openapi-typescript ./openapi/openapi.yaml -o ./src/types/api.d.ts",
     "api:preview": "redocly preview-docs openapi/openapi.yaml",
+    "db:dev": "dotenv -e .env.development -- prisma",
+    "db:prod": "dotenv -e .env.production -- prisma",
     "db:generate": "prisma generate",
     "db:migrate:dev": "dotenv -e .env.development -- prisma migrate dev",
     "db:migrate:prod": "dotenv -e .env.production -- prisma migrate deploy",

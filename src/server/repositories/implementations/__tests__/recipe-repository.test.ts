@@ -51,6 +51,7 @@ describe('RecipeRepository', () => {
           instructions: {
             orderBy: { step: 'asc' },
           },
+          category: true,
         },
         orderBy: { createdAt: 'desc' },
       });
@@ -90,6 +91,7 @@ describe('RecipeRepository', () => {
           instructions: {
             orderBy: { step: 'asc' },
           },
+          category: true,
         },
       });
     });

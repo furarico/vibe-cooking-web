@@ -111,3 +111,4 @@ pnpm-lock.yaml
 # Documentation
 docs/
 *.md
+openapi/

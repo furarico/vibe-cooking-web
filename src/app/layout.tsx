@@ -26,6 +26,10 @@ export const metadata: Metadata = {
   title: 'Vibe Cooking',
   description: 'Vibe Cooking',
   appleWebApp: true,
+  itunes: {
+    appId: '6747516551',
+    appArgument: 'https://vibe-cooking.app/',
+  },
 };
 
 export const viewport: Viewport = {

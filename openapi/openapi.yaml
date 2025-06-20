@@ -1,15 +1,19 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Vibe Cooking API
   description: Vibe CookingのためのAPI
   version: 1.0.0
   contact:
     name: Vibe Cooking
-    email: contact@vibe-cooking.com
+    email: contact@vibe-cooking.app
 
 servers:
+  - url: https://vibe-cooking.app/api
+    description: Production
+  - url: https://dev.vibe-cooking.app/api
+    description: Development
   - url: http://localhost:3000/api
-    description: Next.js
+    description: Local
 
 paths:
   /recipes:
@@ -19,28 +23,24 @@ paths:
       parameters:
         - name: q
           in: query
-          required: false
           description: テキスト検索（レシピタイトル、説明、材料名、手順で検索）
           schema:
             type: string
           example: パスタ
         - name: tag
           in: query
-          required: false
           description: タグフィルター（カンマ区切りで複数指定可能、全て含むレシピを取得）
           schema:
             type: string
           example: 和食,簡単
         - name: category
           in: query
-          required: false
           description: カテゴリ名でフィルター
           schema:
             type: string
           example: ご飯
         - name: categoryId
           in: query
-          required: false
           description: カテゴリIDでフィルター
           schema:
             type: string
@@ -57,6 +57,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Recipe'
+                required:
+                  - recipes
 
   /recipes/{id}:
     get:
@@ -95,6 +97,9 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Category'
+                required:
+                  - categories
+
   /vibe-recipe:
     post:
       summary: バイブレシピ作成
@@ -173,10 +178,26 @@ components:
         updatedAt:
           type: string
           format: date-time
+      required:
+        - id
+        - title
+        - description
+        - category
+        - prepTime
+        - cookTime
+        - servings
+        - ingredients
+        - instructions
+        - tags
+        - createdAt
+        - updatedAt
 
     Ingredient:
       type: object
       properties:
+        id:
+          type: string
+          description: 材料ID
         name:
           type: string
           description: 材料名
@@ -190,6 +211,7 @@ components:
           type: string
           description: 備考
       required:
+        - id
         - name
         - amount
         - unit
@@ -224,6 +246,8 @@ components:
           type: integer
           description: この手順の推定時間（分）
       required:
+        - id
+        - recipeId
         - step
         - title
         - description
@@ -265,6 +289,9 @@ components:
     VibeInstruction:
       type: object
       properties:
+        id:
+          type: string
+          description: バイブレシピ手順ID
         instructionId:
           type: string
           description: 手順ID
@@ -275,6 +302,7 @@ components:
           type: string
           description: レシピID
       required:
+        - id
         - instructionId
         - step
         - recipeId

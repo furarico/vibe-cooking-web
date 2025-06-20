@@ -15,17 +15,17 @@ model Recipe {
   id          String   @id @default(cuid())
   title       String   @default("")
   description String   @default("")
-  prepTime    Int? // 準備時間（分）
-  cookTime    Int? // 調理時間（分）
-  servings    Int? // 人数分
+  prepTime    Int      @default(0) // 準備時間（分）
+  cookTime    Int      @default(0) // 調理時間（分）
+  servings    Int      @default(0) // 人数分
   imageUrl    String?
   tags        String[] // PostgreSQLの配列型を使用
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // リレーション
-  category     Category?     @relation(fields: [categoryId], references: [id])
-  categoryId   String?
+  category     Category      @relation(fields: [categoryId], references: [id])
+  categoryId   String        @default("cmc4l085q0000o8tu30674wr8")
   ingredients  Ingredient[]
   instructions Instruction[]
 
@@ -71,17 +71,18 @@ model Category {
 }
 
 model VibeRecipe {
-  id              String            @id @default(cuid())
-  recipeIds       String[]          // バイブレシピに含まれるレシピIDの配列
+  id               String            @id @default(cuid())
+  recipeIds        String[] // バイブレシピに含まれるレシピIDの配列
   vibeInstructions VibeInstruction[]
 
   @@map("vibe_recipes")
 }
 
 model VibeInstruction {
-  instructionId String   @id   // 元のInstructionのID
-  step          Int        // 並び替え後の手順番号
-  recipeId      String     // 元のInstructionが属するレシピのID
+  id            String     @id @default(cuid())
+  instructionId String // 元のInstructionのID
+  step          Int // 並び替え後の手順番号
+  recipeId      String // 元のInstructionが属するレシピのID
   vibeRecipe    VibeRecipe @relation(fields: [vibeRecipeId], references: [id], onDelete: Cascade)
   vibeRecipeId  String
 

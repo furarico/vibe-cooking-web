@@ -17,6 +17,7 @@ export class RecipeRepository implements IRecipeRepository {
         instructions: {
           orderBy: { step: 'asc' },
         },
+        category: true,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -24,6 +25,9 @@ export class RecipeRepository implements IRecipeRepository {
 
   async findAllSummary(): Promise<RecipeWithDetails[]> {
     const recipes = await this.prisma.recipe.findMany({
+      include: {
+        category: true,
+      },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -135,6 +139,7 @@ export class RecipeRepository implements IRecipeRepository {
         instructions: {
           orderBy: { step: 'asc' },
         },
+        category: true,
       },
     });
   }

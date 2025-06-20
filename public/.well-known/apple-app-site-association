@@ -1,0 +1,19 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "4YP7SQBLYV.co.furari.VibeCooking"
+        ],
+        "paths": [
+          "*"
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "4YP7SQBLYV.co.furari.VibeCooking"
+    ]
+  }
+}
