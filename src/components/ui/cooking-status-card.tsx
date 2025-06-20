@@ -2,16 +2,21 @@ import Image from 'next/image';
 import { Card } from './card';
 
 export interface CookingStatusCardProps {
-  recipeNames: string[];
+  recipes: Array<{
+    id: string;
+    name: string;
+  }>;
+  activeRecipeId?: string;
   className?: string;
 }
 
 export const CookingStatusCard = ({
-  recipeNames,
+  recipes,
+  activeRecipeId,
   className,
 }: CookingStatusCardProps) => {
   // 最大3つまでに制限
-  const displayNames = recipeNames.slice(0, 3);
+  const displayRecipes = recipes.slice(0, 3);
 
   return (
     <Card className={`flex items-center px-8 py-4 gap-8 ${className || ''}`}>
@@ -32,14 +37,19 @@ export const CookingStatusCard = ({
       {/* 右側: 料理名リスト */}
       <div className="flex-1 min-w-0">
         <div className="gap-2">
-          {displayNames.map((name, index) => (
-            <div
-              key={index}
-              className="text-base font-bold text-gray-900 truncate"
-            >
-              {name}
-            </div>
-          ))}
+          {displayRecipes.map(recipe => {
+            const isActive = activeRecipeId === recipe.id;
+            return (
+              <div
+                key={recipe.id}
+                className={`text-base font-bold truncate ${
+                  isActive ? 'text-gray-900' : 'text-gray-400'
+                }`}
+              >
+                {recipe.name}
+              </div>
+            );
+          })}
         </div>
       </div>
     </Card>
