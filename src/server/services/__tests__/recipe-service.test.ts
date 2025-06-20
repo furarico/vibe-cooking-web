@@ -29,9 +29,13 @@ describe('RecipeService', () => {
     servings: 4,
     imageUrl: null,
     tags: ['和食'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: new Date('2023-01-01T00:00:00.000Z'),
+    updatedAt: new Date('2023-01-01T00:00:00.000Z'),
     categoryId: 'category1',
+    category: {
+      id: 'category1',
+      name: 'ご飯',
+    },
     ingredients: [
       {
         id: '1',
@@ -51,6 +55,7 @@ describe('RecipeService', () => {
         imageUrl: null,
         estimatedTime: 5,
         recipeId: '1',
+        audioUrl: null,
       },
     ],
   };
@@ -64,9 +69,13 @@ describe('RecipeService', () => {
     servings: 2,
     imageUrl: null,
     tags: ['洋食', '簡単'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: new Date('2023-01-02T00:00:00.000Z'),
+    updatedAt: new Date('2023-01-02T00:00:00.000Z'),
     categoryId: 'category2',
+    category: {
+      id: 'category2',
+      name: 'パスタ',
+    },
     ingredients: [
       {
         id: '2',
@@ -86,6 +95,7 @@ describe('RecipeService', () => {
         imageUrl: null,
         estimatedTime: 10,
         recipeId: '2',
+        audioUrl: null,
       },
     ],
   };
@@ -103,9 +113,26 @@ describe('RecipeService', () => {
 
       const result = await recipeService.getAllRecipes();
 
-      expect(result).toEqual(mockSummaryRecipes);
-      expect(result[0].ingredients).toEqual([]);
-      expect(result[0].instructions).toEqual([]);
+      expect(result).toEqual([
+        {
+          id: '1',
+          title: 'テストレシピ',
+          description: 'テスト説明',
+          category: {
+            id: 'category1',
+            name: 'ご飯',
+          },
+          prepTime: 10,
+          cookTime: 20,
+          servings: 4,
+          ingredients: [],
+          instructions: [],
+          imageUrl: undefined,
+          tags: ['和食'],
+          createdAt: '2023-01-01T00:00:00.000Z',
+          updatedAt: '2023-01-01T00:00:00.000Z',
+        },
+      ]);
       expect(mockRecipeRepository.findAllSummary).toHaveBeenCalledTimes(1);
     });
   });
@@ -116,7 +143,43 @@ describe('RecipeService', () => {
 
       const result = await recipeService.getRecipeById('1');
 
-      expect(result).toEqual(mockRecipe);
+      expect(result).toEqual({
+        id: '1',
+        title: 'テストレシピ',
+        description: 'テスト説明',
+        category: {
+          id: 'category1',
+          name: 'ご飯',
+        },
+        prepTime: 10,
+        cookTime: 20,
+        servings: 4,
+        ingredients: [
+          {
+            id: '1',
+            name: '米',
+            amount: 2,
+            unit: '合',
+            notes: undefined,
+          },
+        ],
+        instructions: [
+          {
+            id: '1',
+            recipeId: '1',
+            step: 1,
+            title: '米を研ぐ',
+            description: '米を研ぐ',
+            imageUrl: undefined,
+            audioUrl: undefined,
+            estimatedTime: 5,
+          },
+        ],
+        imageUrl: undefined,
+        tags: ['和食'],
+        createdAt: '2023-01-01T00:00:00.000Z',
+        updatedAt: '2023-01-01T00:00:00.000Z',
+      });
       expect(mockRecipeRepository.findById).toHaveBeenCalledWith('1');
     });
 
@@ -141,7 +204,9 @@ describe('RecipeService', () => {
 
       const result = await recipeService.getAllRecipesWithFilters({});
 
-      expect(result).toEqual(mockSummaryRecipes);
+      expect(result).toHaveLength(2);
+      expect(result[0].category).toEqual({ id: 'category1', name: 'ご飯' });
+      expect(result[1].category).toEqual({ id: 'category2', name: 'パスタ' });
       expect(
         mockRecipeRepository.findAllSummaryWithFilters
       ).toHaveBeenCalledWith({});
@@ -159,7 +224,8 @@ describe('RecipeService', () => {
         q: 'パスタ',
       });
 
-      expect(result).toEqual(mockFilteredRecipes);
+      expect(result).toHaveLength(1);
+      expect(result[0].title).toBe('パスタレシピ');
       expect(
         mockRecipeRepository.findAllSummaryWithFilters
       ).toHaveBeenCalledWith({ q: 'パスタ' });
@@ -177,7 +243,8 @@ describe('RecipeService', () => {
         tag: '和食',
       });
 
-      expect(result).toEqual(mockFilteredRecipes);
+      expect(result).toHaveLength(1);
+      expect(result[0].tags).toContain('和食');
       expect(
         mockRecipeRepository.findAllSummaryWithFilters
       ).toHaveBeenCalledWith({ tag: '和食' });
@@ -195,7 +262,8 @@ describe('RecipeService', () => {
         tag: '洋食,簡単',
       });
 
-      expect(result).toEqual(mockFilteredRecipes);
+      expect(result).toHaveLength(1);
+      expect(result[0].tags).toEqual(['洋食', '簡単']);
       expect(
         mockRecipeRepository.findAllSummaryWithFilters
       ).toHaveBeenCalledWith({ tag: '洋食,簡単' });
@@ -213,7 +281,8 @@ describe('RecipeService', () => {
         categoryId: 'category1',
       });
 
-      expect(result).toEqual(mockFilteredRecipes);
+      expect(result).toHaveLength(1);
+      expect(result[0].category.id).toBe('category1');
       expect(
         mockRecipeRepository.findAllSummaryWithFilters
       ).toHaveBeenCalledWith({ categoryId: 'category1' });
@@ -231,7 +300,8 @@ describe('RecipeService', () => {
         category: 'ご飯',
       });
 
-      expect(result).toEqual(mockFilteredRecipes);
+      expect(result).toHaveLength(1);
+      expect(result[0].category.name).toBe('ご飯');
       expect(
         mockRecipeRepository.findAllSummaryWithFilters
       ).toHaveBeenCalledWith({ category: 'ご飯' });
@@ -251,7 +321,8 @@ describe('RecipeService', () => {
         categoryId: 'category2',
       });
 
-      expect(result).toEqual(mockFilteredRecipes);
+      expect(result).toHaveLength(1);
+      expect(result[0].title).toBe('パスタレシピ');
       expect(
         mockRecipeRepository.findAllSummaryWithFilters
       ).toHaveBeenCalledWith({
