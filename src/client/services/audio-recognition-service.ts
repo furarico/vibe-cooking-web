@@ -133,6 +133,10 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
       '進んで',
       'うぃシェフ',
       'ウィシェフ',
+      'うぃーシェフ',
+      'ウィーシェフ',
+      'ウィ，シェフ',
+      'ウィ，シェフ',
     ];
     const prevKeywords = [
       '前',
