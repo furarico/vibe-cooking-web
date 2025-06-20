@@ -1,7 +1,6 @@
 'use client';
 
 import { useDI } from '@/client/di/providers';
-<<<<<<< HEAD
 import { Recipe, VibeRecipe } from '@/lib/api-client';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -10,53 +9,34 @@ export interface VibeRecipePresenterState {
   recipeIds: string[];
   recipes: Recipe[];
   recipeTitles: string[];
-=======
-import { VibeRecipe } from '@/lib/api-client';
-import { useCallback, useState } from 'react';
-import { toast } from 'sonner';
-
-export interface VibeRecipePresenterState {
->>>>>>> origin/main
   vibeRecipe: VibeRecipe | null;
   loading: boolean;
   error: string | null;
 }
 
 export interface VibeRecipePresenterActions {
-<<<<<<< HEAD
   setRecipeIds: (recipeIds: string[]) => void;
-=======
->>>>>>> origin/main
   createVibeRecipe: (recipeIds: string[]) => Promise<void>;
   reset: () => void;
 }
 
 export const useVibeRecipePresenter = (): VibeRecipePresenterState &
   VibeRecipePresenterActions => {
-<<<<<<< HEAD
   const { vibeRecipeService, recipeService } = useDI();
 
   const [state, setState] = useState<VibeRecipePresenterState>({
     recipeIds: [],
     recipes: [],
     recipeTitles: [],
-=======
-  const { vibeRecipeService } = useDI();
-
-  const [state, setState] = useState<VibeRecipePresenterState>({
->>>>>>> origin/main
     vibeRecipe: null,
     loading: false,
     error: null,
   });
 
-<<<<<<< HEAD
   const setRecipeIds = useCallback((recipeIds: string[]) => {
     setState(prev => ({ ...prev, recipeIds }));
   }, []);
 
-=======
->>>>>>> origin/main
   const createVibeRecipe = useCallback(
     async (recipeIds: string[]) => {
       if (recipeIds.length === 0) {
@@ -90,19 +70,15 @@ export const useVibeRecipePresenter = (): VibeRecipePresenterState &
 
   const reset = useCallback(() => {
     setState({
-<<<<<<< HEAD
       recipeIds: [],
       recipes: [],
       recipeTitles: [],
-=======
->>>>>>> origin/main
       vibeRecipe: null,
       loading: false,
       error: null,
     });
   }, []);
 
-<<<<<<< HEAD
   // レシピIDからレシピ詳細を取得
   useEffect(() => {
     if (state.recipeIds.length === 0) {
@@ -141,10 +117,6 @@ export const useVibeRecipePresenter = (): VibeRecipePresenterState &
   return {
     ...state,
     setRecipeIds,
-=======
-  return {
-    ...state,
->>>>>>> origin/main
     createVibeRecipe,
     reset,
   };
