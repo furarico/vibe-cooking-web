@@ -72,7 +72,12 @@ export default function Page({ params }: PageProps) {
 
       <div className="w-full max-w-[600px] px-4 space-y-4">
         <CookingStatusCard
-          recipeNames={state.recipe?.title ? [state.recipe.title] : []}
+          recipes={
+            state.recipe
+              ? [{ id: state.recipe.id, name: state.recipe.title }]
+              : []
+          }
+          activeRecipeId={state.recipe?.id}
         />
       </div>
 
@@ -82,7 +87,7 @@ export default function Page({ params }: PageProps) {
           setApi={actions.setCarouselApi}
         >
           <CarouselContent>
-            {state.cards.map(card => (
+            {state.cards?.map(card => (
               <CarouselItem key={card.step}>
                 <CookingInstructionCard
                   step={card.step}
@@ -91,7 +96,7 @@ export default function Page({ params }: PageProps) {
                   imageUrl={card.imageUrl}
                 />
               </CarouselItem>
-            ))}
+            )) || []}
           </CarouselContent>
           <CarouselPrevious />
           <CarouselNext />

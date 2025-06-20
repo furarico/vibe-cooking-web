@@ -16,7 +16,6 @@ export const CookingStatusCard = ({
   className,
 }: CookingStatusCardProps) => {
   // 最大3つまでに制限
-  const displayRecipes = recipes.slice(0, 3);
 
   return (
     <Card className={`flex items-center px-8 py-4 gap-8 ${className || ''}`}>
@@ -37,7 +36,7 @@ export const CookingStatusCard = ({
       {/* 右側: 料理名リスト */}
       <div className="flex-1 min-w-0">
         <div className="gap-2">
-          {displayRecipes.map(recipe => {
+          {recipes.map(recipe => {
             const isActive = activeRecipeId === recipe.id;
             return (
               <div
