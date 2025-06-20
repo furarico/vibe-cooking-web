@@ -1,8 +1,9 @@
-import { Ingredient, Instruction, Recipe } from '@prisma/client';
+import { Category, Ingredient, Instruction, Recipe } from '@prisma/client';
 
 export type RecipeWithDetails = Recipe & {
   ingredients: Ingredient[];
   instructions: Instruction[];
+  category: Category;
 };
 
 export interface RecipeFilters {
