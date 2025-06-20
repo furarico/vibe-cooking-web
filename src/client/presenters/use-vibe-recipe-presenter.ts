@@ -11,18 +11,17 @@ export interface VibeRecipePresenterState {
   recipeTitles: string[];
   vibeRecipe: VibeRecipe | null;
   loading: boolean;
+  error: string | null;
 }
 
 export interface VibeRecipePresenterActions {
   setRecipeIds: (recipeIds: string[]) => void;
+  createVibeRecipe: (recipeIds: string[]) => Promise<void>;
+  reset: () => void;
 }
 
-export interface VibeRecipePresenter {
-  state: VibeRecipePresenterState;
-  actions: VibeRecipePresenterActions;
-}
-
-export const useVibeRecipePresenter = (): VibeRecipePresenter => {
+export const useVibeRecipePresenter = (): VibeRecipePresenterState &
+  VibeRecipePresenterActions => {
   const { vibeRecipeService, recipeService } = useDI();
 
   const [state, setState] = useState<VibeRecipePresenterState>({
@@ -31,10 +30,53 @@ export const useVibeRecipePresenter = (): VibeRecipePresenter => {
     recipeTitles: [],
     vibeRecipe: null,
     loading: false,
+    error: null,
   });
 
   const setRecipeIds = useCallback((recipeIds: string[]) => {
     setState(prev => ({ ...prev, recipeIds }));
+  }, []);
+
+  const createVibeRecipe = useCallback(
+    async (recipeIds: string[]) => {
+      if (recipeIds.length === 0) {
+        toast.error('レシピを選択してください');
+        return;
+      }
+
+      setState(prev => ({ ...prev, loading: true, error: null }));
+
+      try {
+        const vibeRecipe = await vibeRecipeService.createVibeRecipe(recipeIds);
+        setState(prev => ({
+          ...prev,
+          vibeRecipe,
+          loading: false,
+        }));
+        toast.success('バイブレシピを作成しました');
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : '不明なエラーが発生しました';
+        setState(prev => ({
+          ...prev,
+          error: errorMessage,
+          loading: false,
+        }));
+        toast.error('バイブレシピの作成に失敗しました');
+      }
+    },
+    [vibeRecipeService]
+  );
+
+  const reset = useCallback(() => {
+    setState({
+      recipeIds: [],
+      recipes: [],
+      recipeTitles: [],
+      vibeRecipe: null,
+      loading: false,
+      error: null,
+    });
   }, []);
 
   // レシピIDからレシピ詳細を取得
@@ -72,43 +114,10 @@ export const useVibeRecipePresenter = (): VibeRecipePresenter => {
     fetchRecipes();
   }, [state.recipeIds, recipeService]);
 
-  useEffect(() => {
-    if (state.recipeIds.length === 0) {
-      toast.error('レシピを選択してください');
-      return;
-    }
-
-    setState(prev => ({ ...prev, loading: true, error: null }));
-
-    const createVibeRecipe = async (recipeIds: string[]) => {
-      try {
-        const vibeRecipe = await vibeRecipeService.createVibeRecipe(recipeIds);
-        setState(prev => ({
-          ...prev,
-          vibeRecipe,
-          loading: false,
-        }));
-        toast.success('バイブレシピを作成しました');
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : '不明なエラーが発生しました';
-        setState(prev => ({
-          ...prev,
-          error: errorMessage,
-          loading: false,
-        }));
-        toast.error('バイブレシピの作成に失敗しました');
-      }
-    };
-    createVibeRecipe(state.recipeIds);
-  }, [state.recipeIds, vibeRecipeService]);
-
-  const actions: VibeRecipePresenterActions = {
-    setRecipeIds,
-  };
-
   return {
-    state,
-    actions,
+    ...state,
+    setRecipeIds,
+    createVibeRecipe,
+    reset,
   };
 };

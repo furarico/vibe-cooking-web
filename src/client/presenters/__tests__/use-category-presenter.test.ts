@@ -1,6 +1,6 @@
 import { useCategoryPresenter } from '@/client/presenters/use-category-presenter';
 import { CategoryService } from '@/client/services/category-service';
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 
 // React actエラーを抑制（useEffect内の非同期処理のため）
 const originalError = console.error;
@@ -39,7 +39,7 @@ jest.mock('sonner', () => ({
 }));
 
 const mockCategoryService = {
-  getAllCategories: jest.fn(),
+  getAllCategories: jest.fn().mockResolvedValue([]),
 } as jest.Mocked<CategoryService>;
 
 const mockVibeCookingService = {
@@ -54,16 +54,23 @@ describe('useCategoryPresenter', () => {
     mockVibeCookingService.getVibeCookingRecipeIds.mockReturnValue([]);
   });
 
-  it('presenterが初期化される', () => {
+  it('presenterが初期化される', async () => {
     const { result } = renderHook(() => useCategoryPresenter());
+
+    await act(async () => {
+      // 非同期処理を待機
+      await Promise.resolve();
+    });
 
     expect(result.current).toBeDefined();
     expect(result.current.state).toBeDefined();
     expect(result.current.actions).toBeDefined();
   });
 
-  it('categoryServiceが呼び出される', () => {
-    renderHook(() => useCategoryPresenter());
+  it('categoryServiceが呼び出される', async () => {
+    await act(async () => {
+      renderHook(() => useCategoryPresenter());
+    });
 
     // categoryServiceのgetAllCategoriesが呼び出されることを確認
     expect(mockCategoryService.getAllCategories).toHaveBeenCalled();
