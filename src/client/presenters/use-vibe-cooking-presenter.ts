@@ -49,6 +49,7 @@ export const useVibeCookingPresenter = (): VibeCookingPresenter => {
     recipeService,
     audioPlayerService,
     audioRecognitionService,
+    vibeCookingService,
   } = useDI();
 
   const [state, setState] = useState<VibeCookingPresenterState>({
@@ -71,9 +72,16 @@ export const useVibeCookingPresenter = (): VibeCookingPresenter => {
     triggerType: audioRecognitionService.getTriggerType(),
   });
 
-  const setRecipeIds = useCallback((recipeIds: string[]) => {
-    setState(prev => ({ ...prev, recipeIds }));
-  }, []);
+  const setRecipeIds = useCallback(
+    (recipeIds: string[]) => {
+      // 複数レシピでクッキング開始時、全ての追加リストを削除
+      if (recipeIds.length > 0) {
+        vibeCookingService.clearAllVibeCookingRecipeIds();
+      }
+      setState(prev => ({ ...prev, recipeIds }));
+    },
+    [vibeCookingService]
+  );
 
   // レシピIDからレシピ詳細を取得
   useEffect(() => {
