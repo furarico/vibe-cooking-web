@@ -42,8 +42,12 @@ export interface CookingPresenter {
 }
 
 export const useCookingPresenter = (): CookingPresenter => {
-  const { audioPlayerService, audioRecognitionService, recipeService } =
-    useDI();
+  const {
+    audioPlayerService,
+    audioRecognitionService,
+    recipeService,
+    vibeCookingService,
+  } = useDI();
 
   // 状態の初期化
   const [state, setState] = useState<CookingPresenterState>(() => {
@@ -150,8 +154,10 @@ export const useCookingPresenter = (): CookingPresenter => {
     if (!id) {
       return;
     }
+    // 単一レシピでクッキング開始時、追加リストから該当レシピを削除
+    vibeCookingService.removeVibeCookingRecipeId(id);
     fetchRecipe(id);
-  }, [state.recipeId, fetchRecipe]);
+  }, [state.recipeId, fetchRecipe, vibeCookingService]);
 
   useEffect(() => {
     if (!state.carouselApi) return;

@@ -34,4 +34,8 @@ export class VibeCookingService {
       );
     }
   }
+
+  clearAllVibeCookingRecipeIds(): void {
+    this.localStorageRepository.setItem(VIBE_COOKING_RECIPES_KEY, []);
+  }
 }
