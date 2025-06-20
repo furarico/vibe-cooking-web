@@ -17,6 +17,10 @@ export type CategoriesGet200Response = {
   categories?: Category[];
 };
 
+export type VibeRecipePostRequest = {
+  recipeIds: string[];
+};
+
 const appCheckInterceptor: Middleware = {
   async onRequest({ request }) {
     try {
@@ -79,6 +83,19 @@ export class DefaultApi {
 
   async categoriesGet(): Promise<CategoriesGet200Response> {
     const { data, error } = await this.client.GET('/categories');
+    if (error) {
+      throw new Error(`API error: ${error}`);
+    }
+    if (!data) {
+      throw new Error('No data received from API');
+    }
+    return data;
+  }
+
+  async vibeRecipePost(request: VibeRecipePostRequest): Promise<VibeRecipe> {
+    const { data, error } = await this.client.POST('/vibe-recipe', {
+      body: request,
+    });
     if (error) {
       throw new Error(`API error: ${error}`);
     }
