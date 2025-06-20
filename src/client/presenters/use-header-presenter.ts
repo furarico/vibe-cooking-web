@@ -4,34 +4,55 @@ import { useDI } from '@/client/di/providers';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
-export interface HeaderPresenterState {
+interface HeaderPresenterState {
   searchQuery: string;
   candidatesCount: number;
 }
 
-export interface HeaderPresenterActions {
+interface HeaderPresenterActions {
   setSearchQuery: (query: string) => void;
   handleSearch: () => void;
   updateCandidatesCount: () => void;
 }
 
-export const useHeaderPresenter = (): HeaderPresenterState &
-  HeaderPresenterActions => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [candidatesCount, setCandidatesCount] = useState(0);
+interface HeaderPresenter {
+  state: HeaderPresenterState;
+  actions: HeaderPresenterActions;
+}
+
+export const useHeaderPresenter = (): HeaderPresenter => {
+  const [state, setState] = useState<HeaderPresenterState>({
+    searchQuery: '',
+    candidatesCount: 0,
+  });
+
   const router = useRouter();
   const { vibeCookingService } = useDI();
 
   // candidatesのレシピ数を更新
   const updateCandidatesCount = useCallback(() => {
     const vibeCookingRecipeIds = vibeCookingService.getVibeCookingRecipeIds();
-    setCandidatesCount(vibeCookingRecipeIds.length);
+    setState(prev => ({
+      ...prev,
+      candidatesCount: vibeCookingRecipeIds.length,
+    }));
   }, [vibeCookingService]);
 
   // 検索処理
   const handleSearch = useCallback(() => {
-    router.push(`/recipes?q=${searchQuery}`);
-  }, [router, searchQuery]);
+    router.push(`/recipes?q=${state.searchQuery}`);
+  }, [router, state.searchQuery]);
+
+  // 検索クエリの設定
+  const setSearchQuery = useCallback((query: string) => {
+    setState(prev => ({ ...prev, searchQuery: query }));
+  }, []);
+
+  const actions: HeaderPresenterActions = {
+    setSearchQuery,
+    handleSearch,
+    updateCandidatesCount,
+  };
 
   useEffect(() => {
     // 初回データ取得
@@ -39,7 +60,7 @@ export const useHeaderPresenter = (): HeaderPresenterState &
 
     // リアルタイム更新のためのカスタムイベントリスナーを追加
     const removeListener = vibeCookingService.addUpdateListener(recipeIds => {
-      setCandidatesCount(recipeIds.length);
+      setState(prev => ({ ...prev, candidatesCount: recipeIds.length }));
     });
 
     // ウィンドウフォーカス時にもレシピ数を更新（フォールバック）
@@ -53,10 +74,7 @@ export const useHeaderPresenter = (): HeaderPresenterState &
   }, [updateCandidatesCount, vibeCookingService]);
 
   return {
-    searchQuery,
-    candidatesCount,
-    setSearchQuery,
-    handleSearch,
-    updateCandidatesCount,
+    state,
+    actions,
   };
 };

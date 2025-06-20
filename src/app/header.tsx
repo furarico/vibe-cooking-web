@@ -12,8 +12,7 @@ import Link from 'next/link';
 import React from 'react';
 
 const Header: React.FC<{ className?: string }> = ({ className }) => {
-  const { searchQuery, candidatesCount, setSearchQuery, handleSearch } =
-    useHeaderPresenter();
+  const { state, actions } = useHeaderPresenter();
 
   return (
     <header
@@ -29,13 +28,13 @@ const Header: React.FC<{ className?: string }> = ({ className }) => {
       </Button>
       <form
         className="w-full flex flex-row items-center gap-2"
-        action={handleSearch}
+        action={actions.handleSearch}
       >
         <Input
           className="placeholder:text-gray-400"
           placeholder="バイブスを言葉に"
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
+          value={state.searchQuery}
+          onChange={e => actions.setSearchQuery(e.target.value)}
         />
         <Button size="icon" type="submit">
           <SearchIcon className="w-4 h-4" />
@@ -47,9 +46,9 @@ const Header: React.FC<{ className?: string }> = ({ className }) => {
             <ListIcon className="w-4 h-4" />
           </Link>
         </Button>
-        {candidatesCount > 0 && (
+        {state.candidatesCount > 0 && (
           <div className="absolute -top-2 -right-2">
-            <SelectCount count={candidatesCount} />
+            <SelectCount count={state.candidatesCount} />
           </div>
         )}
       </div>
