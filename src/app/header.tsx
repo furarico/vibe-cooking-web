@@ -1,6 +1,8 @@
 'use client';
 
 import Icon from '@/app/favicon.ico';
+import { useDI } from '@/client/di/providers';
+import { SelectCount } from '@/components/select-count';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -8,11 +10,38 @@ import { ListIcon, SearchIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const Header: React.FC<{ className?: string }> = ({ className }) => {
   const [searchQuery, setSearchQuery] = React.useState('');
+  const [candidatesCount, setCandidatesCount] = useState(0);
   const router = useRouter();
+  const { vibeCookingService } = useDI();
+
+  // candidatesのレシピ数を取得
+  const updateCandidatesCount = React.useCallback(() => {
+    const vibeCookingRecipeIds = vibeCookingService.getVibeCookingRecipeIds();
+    setCandidatesCount(vibeCookingRecipeIds.length);
+  }, [vibeCookingService]);
+
+  useEffect(() => {
+    // 初回データ取得
+    updateCandidatesCount();
+
+    // リアルタイム更新のためのカスタムイベントリスナーを追加
+    const removeListener = vibeCookingService.addUpdateListener(recipeIds => {
+      setCandidatesCount(recipeIds.length);
+    });
+
+    // ウィンドウフォーカス時にもレシピ数を更新（フォールバック）
+    window.addEventListener('focus', updateCandidatesCount);
+
+    return () => {
+      // クリーンアップ
+      removeListener();
+      window.removeEventListener('focus', updateCandidatesCount);
+    };
+  }, [updateCandidatesCount, vibeCookingService]);
 
   return (
     <header
@@ -42,11 +71,18 @@ const Header: React.FC<{ className?: string }> = ({ className }) => {
           <SearchIcon className="w-4 h-4" />
         </Button>
       </form>
-      <Button variant="outline" size="icon" asChild>
-        <Link href="/candidates">
-          <ListIcon className="w-4 h-4" />
-        </Link>
-      </Button>
+      <div className="relative">
+        <Button variant="outline" size="icon" asChild>
+          <Link href="/candidates">
+            <ListIcon className="w-4 h-4" />
+          </Link>
+        </Button>
+        {candidatesCount > 0 && (
+          <div className="absolute -top-2 -right-2">
+            <SelectCount count={candidatesCount} />
+          </div>
+        )}
+      </div>
     </header>
   );
 };
