@@ -5,7 +5,14 @@ const VIBE_COOKING_RECIPES_KEY = 'vibeCookingRecipeIds';
 export class VibeCookingService {
   constructor(
     private readonly localStorageRepository: ILocalStorageRepository
-  ) {}
+  ) {
+    // メソッドをバインドして確実に存在するようにする
+    this.getVibeCookingRecipeIds = this.getVibeCookingRecipeIds.bind(this);
+    this.addVibeCookingRecipeId = this.addVibeCookingRecipeId.bind(this);
+    this.removeVibeCookingRecipeId = this.removeVibeCookingRecipeId.bind(this);
+    this.clearAllVibeCookingRecipeIds =
+      this.clearAllVibeCookingRecipeIds.bind(this);
+  }
 
   getVibeCookingRecipeIds(): string[] {
     return (

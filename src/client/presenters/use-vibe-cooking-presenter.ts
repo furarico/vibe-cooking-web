@@ -76,7 +76,21 @@ export const useVibeCookingPresenter = (): VibeCookingPresenter => {
     (recipeIds: string[]) => {
       // 複数レシピでクッキング開始時、全ての追加リストを削除
       if (recipeIds.length > 0) {
-        vibeCookingService.clearAllVibeCookingRecipeIds();
+        try {
+          if (
+            vibeCookingService &&
+            typeof vibeCookingService.clearAllVibeCookingRecipeIds ===
+              'function'
+          ) {
+            vibeCookingService.clearAllVibeCookingRecipeIds();
+          } else {
+            console.warn(
+              'clearAllVibeCookingRecipeIds method not available, skipping clear operation'
+            );
+          }
+        } catch (error) {
+          console.error('Error calling clearAllVibeCookingRecipeIds:', error);
+        }
       }
       setState(prev => ({ ...prev, recipeIds }));
     },
