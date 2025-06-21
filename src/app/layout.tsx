@@ -45,7 +45,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full min-w-xs h-screen bg-slate-50 overflow-hidden relative`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full min-w-xs h-screen pb-[env(safe-area-inset-bottom)] bg-slate-50 overflow-hidden`}
       >
         <DIProvider>
           <ButtomButtonsProvider>
@@ -57,8 +57,8 @@ export default function RootLayout({
                 {children}
                 <Footer className="container p-6 pb-[env(safe-area-inset-bottom)]" />
               </main>
+              <ButtomButtons className="pb-[env(safe-area-inset-bottom)]" />
             </div>
-            <ButtomButtons className="fixed bottom-0 left-0 right-0 pb-[env(safe-area-inset-bottom)]" />
             <Toaster />
           </ButtomButtonsProvider>
         </DIProvider>
