@@ -7,6 +7,7 @@ import {
   ButtomButtons,
   ButtomButtonsProvider,
 } from '@/contexts/buttom-buttons-context';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { FirebaseInit } from './firebase-init';
@@ -42,6 +43,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   return (
     <html lang="ja">
       <body
@@ -55,6 +57,7 @@ export default function RootLayout({
               <Header className="container mx-auto p-4" />
               <main className="w-full h-full container mx-auto p-4 overflow-y-scroll scrollbar-hide">
                 {children}
+                {gaId && <GoogleAnalytics gaId={gaId} />}
                 <Footer className="container p-6 pb-[env(safe-area-inset-bottom)]" />
               </main>
               <ButtomButtons className="pb-[env(safe-area-inset-bottom)]" />
