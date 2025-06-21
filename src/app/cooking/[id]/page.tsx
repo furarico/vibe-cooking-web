@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/carousel';
 import { CookingStatusCard } from '@/components/ui/cooking-status-card';
 import { usePageButton } from '@/hooks/use-buttom-buttons';
+import { trackRecipeEvent } from '@/lib/google-analytics';
 import { MicIcon, MicOffIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect } from 'react';
@@ -44,6 +45,15 @@ export default function Page({ params }: PageProps) {
       id: 'end-cooking',
       href: `/recipes/${state.recipe?.id}`,
       children: 'Vibe Cooking をおわる',
+      onClick: () => {
+        if (state.recipe) {
+          // 調理完了イベントを追跡
+          trackRecipeEvent.completeCooking(
+            state.recipe.id?.toString() || 'unknown',
+            state.recipe.title || 'Unknown Recipe'
+          );
+        }
+      },
     },
     [state.recipe?.id]
   );

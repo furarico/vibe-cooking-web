@@ -8,6 +8,7 @@ import { TimeCard } from '@/components/time-card';
 import { Loading } from '@/components/tools/loading';
 import { NoContent } from '@/components/tools/no-content';
 import { usePageButtons } from '@/hooks/use-buttom-buttons';
+import { trackRecipeEvent } from '@/lib/google-analytics';
 import Image from 'next/image';
 import { Suspense, useEffect } from 'react';
 
@@ -27,6 +28,16 @@ export default function Page({ params }: PageProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params, actions.setRecipeId]);
 
+  // レシピ表示イベントの追跡
+  useEffect(() => {
+    if (state.recipe) {
+      trackRecipeEvent.view(
+        state.recipe.id?.toString() || 'unknown',
+        state.recipe.title || 'Unknown Recipe'
+      );
+    }
+  }, [state.recipe]);
+
   // ボタンの設定
   usePageButtons(
     [
@@ -34,6 +45,14 @@ export default function Page({ params }: PageProps) {
         id: 'start-cooking',
         href: `/cooking/${state.recipeId}`,
         children: 'このレシピのみで Vibe Cooking をはじめる',
+        onClick: () => {
+          if (state.recipe) {
+            trackRecipeEvent.startCooking(
+              state.recipe.id?.toString() || 'unknown',
+              state.recipe.title || 'Unknown Recipe'
+            );
+          }
+        },
       },
       {
         id: 'toggle-vibe-list',
