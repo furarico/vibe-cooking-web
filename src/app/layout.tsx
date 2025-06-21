@@ -52,8 +52,8 @@ export default function RootLayout({
             <ServiceWorkerRegistration />
             <FirebaseInit />
             <div className="h-full flex flex-col">
-              <Header className="container mx-auto p-2" />
-              <main className="w-full h-full container mx-auto p-2 overflow-y-scroll scrollbar-hide">
+              <Header className="container mx-auto p-4" />
+              <main className="w-full h-full container mx-auto p-4 overflow-y-scroll scrollbar-hide">
                 {children}
                 <Footer className="container p-6 pb-[env(safe-area-inset-bottom)]" />
               </main>
