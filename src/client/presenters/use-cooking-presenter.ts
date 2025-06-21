@@ -200,24 +200,35 @@ export const useCookingPresenter = (): CookingPresenter => {
     const handleTrigger = async (triggerType: TriggerType | null) => {
       if (!triggerType) return;
 
+      let actionTaken = false;
+
       switch (triggerType) {
         case 'next':
           const nextStep = state.currentStep + 1;
           if (nextStep < state.totalSteps) {
             actions.setCurrentStep(nextStep);
+            actionTaken = true;
           }
           break;
         case 'previous':
           const prevStep = state.currentStep - 1;
           if (prevStep >= 0) {
             actions.setCurrentStep(prevStep);
+            actionTaken = true;
           }
           break;
         case 'again':
           await playCurrentStepAudio();
+          actionTaken = true; // againは常に実行される
           break;
       }
+
       audioRecognitionService.clearTriggerType();
+
+      // アクションが取られなかった場合は、listening状態に戻す
+      if (!actionTaken) {
+        audioRecognitionService.resetToListening();
+      }
     };
 
     handleTrigger(state.triggerType);

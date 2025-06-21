@@ -10,6 +10,7 @@ export interface AudioRecognitionService {
   getAudioRecognitionStatus(): AudioRecognitionStatus;
   getTriggerType(): TriggerType | null;
   clearTriggerType(): void;
+  resetToListening(): void;
 
   // イベントリスナー管理
   addListener(listener: () => void): void;
@@ -85,16 +86,22 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
 
       if (hasNext) {
         this.triggerType = 'next';
+        this.status = 'success';
         this.notifyListeners();
       } else if (hasPrev) {
         this.triggerType = 'previous';
+        this.status = 'success';
         this.notifyListeners();
       } else if (hasAgain) {
         this.triggerType = 'again';
+        this.status = 'success';
         this.notifyListeners();
+      } else {
+        // トリガーワードが検出されなかった場合はlistening状態を維持
+        this.status = 'listening';
+        this.notifyListeners();
+        return;
       }
-
-      this.status = 'success';
 
       setTimeout(() => {
         if (this.status === 'listening') {
@@ -196,6 +203,11 @@ export class AudioRecognitionServiceImpl implements AudioRecognitionService {
 
   clearTriggerType(): void {
     this.triggerType = null;
+    this.notifyListeners();
+  }
+
+  resetToListening(): void {
+    this.status = 'listening';
     this.notifyListeners();
   }
 }
