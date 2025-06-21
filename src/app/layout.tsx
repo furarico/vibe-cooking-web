@@ -55,9 +55,9 @@ export default function RootLayout({
               <Header className="container mx-auto p-2" />
               <main className="w-full h-full container mx-auto p-2 overflow-y-scroll scrollbar-hide">
                 {children}
-                <Footer className="container p-6" />
+                <Footer className="container p-6 pb-[env(safe-area-inset-bottom)]" />
               </main>
-              <ButtomButtons />
+              <ButtomButtons className="pb-[env(safe-area-inset-bottom)]" />
             </div>
             <Toaster />
           </ButtomButtonsProvider>

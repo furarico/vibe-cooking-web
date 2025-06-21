@@ -79,7 +79,7 @@ export function useButtomButtons() {
   return context;
 }
 
-export function ButtomButtons() {
+export function ButtomButtons({ className }: { className?: string }) {
   const { buttons } = useButtomButtons();
   const router = useRouter();
 
@@ -88,7 +88,9 @@ export function ButtomButtons() {
   }
 
   return (
-    <div className="w-full bg-white border-t border-slate-200">
+    <div
+      className={`w-full bg-white border-t border-slate-200 ${className || ''}`}
+    >
       <div className="max-w-md mx-auto p-4 flex flex-col gap-2">
         {buttons.map(button => {
           // onClickとhrefの両方が設定されている場合
