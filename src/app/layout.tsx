@@ -45,7 +45,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full min-w-xs h-screen bg-slate-50 overflow-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full min-w-xs h-screen pb-[env(safe-area-inset-bottom)] bg-slate-50 overflow-hidden`}
       >
         <DIProvider>
           <ButtomButtonsProvider>
