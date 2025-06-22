@@ -8,7 +8,9 @@ import {
 } from '@/client/services/audio-recognition-service';
 import { CookingInstructionCardProps } from '@/components/cooking-instruction-card';
 import { CarouselApi } from '@/components/ui/carousel';
+import { usePageButton } from '@/hooks/use-buttom-buttons';
 import { Recipe } from '@/lib/api-client';
+import { trackRecipeEvent } from '@/lib/google-analytics';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -240,6 +242,25 @@ export const useCookingPresenter = (): CookingPresenter => {
     playCurrentStepAudio,
     audioRecognitionService,
   ]);
+
+  // ボタンの設定
+  usePageButton(
+    {
+      id: 'end-cooking',
+      href: `/recipes/${state.recipe?.id}`,
+      children: 'Vibe Cooking をおわる',
+      onClick: () => {
+        if (state.recipe) {
+          // 調理完了イベントを追跡
+          trackRecipeEvent.completeCooking(
+            state.recipe.id?.toString() || 'unknown',
+            state.recipe.title || 'Unknown Recipe'
+          );
+        }
+      },
+    },
+    [state.recipe?.id]
+  );
 
   return {
     state,
