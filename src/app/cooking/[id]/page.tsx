@@ -37,7 +37,6 @@ export default function Page({ params }: PageProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params, actions.setRecipeId]);
 
-
   if (state.loading) {
     return <Loading />;
   }
