@@ -6,16 +6,13 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 export interface RecipeDetailPresenterState {
-  recipe: Recipe | null;
   loading: boolean;
   currentStep: number;
   isCompleted: boolean;
-  recipeId: string | null;
   vibeCookingRecipeIds: string[];
 }
 
 export interface RecipeDetailPresenterActions {
-  setRecipeId: (id: string) => void;
   onAddToVibeCookingListButtonTapped: () => void;
 }
 
@@ -24,15 +21,15 @@ export interface RecipeDetailPresenter {
   actions: RecipeDetailPresenterActions;
 }
 
-export const useRecipeDetailPresenter = (): RecipeDetailPresenter => {
-  const { recipeService, vibeCookingService } = useDI();
+export const useRecipeDetailPresenter = (
+  recipe: Recipe
+): RecipeDetailPresenter => {
+  const { vibeCookingService } = useDI();
 
   const [state, setState] = useState<RecipeDetailPresenterState>({
-    recipe: null,
     loading: false,
     currentStep: 0,
     isCompleted: false,
-    recipeId: null,
     vibeCookingRecipeIds: [],
   });
 
@@ -42,15 +39,12 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenter => {
   }, [vibeCookingService]);
 
   const actions: RecipeDetailPresenterActions = {
-    setRecipeId: useCallback((id: string) => {
-      setState(prev => ({ ...prev, recipeId: id }));
-    }, []),
     onAddToVibeCookingListButtonTapped: useCallback(() => {
       if (state.vibeCookingRecipeIds.length >= 3) {
         toast.error('Vibe Cooking リストの上限に達しています');
         return;
       }
-      const recipeId = state.recipeId;
+      const recipeId = recipe.id;
       if (!recipeId) {
         toast.error('レシピが見つかりません');
         return;
@@ -65,7 +59,7 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenter => {
         toast.success('Vibe Cooking リストに追加しました');
       }
     }, [
-      state.recipeId,
+      recipe.id,
       state.vibeCookingRecipeIds,
       vibeCookingService,
       getVibeCookingRecipeIds,
@@ -83,45 +77,14 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenter => {
   }, [getVibeCookingRecipeIds]);
 
   useEffect(() => {
-    const fetchRecipe = async (id: string) => {
-      setState(prev => ({ ...prev, loading: true }));
-
-      try {
-        const recipe = await recipeService.getRecipeById(id);
-
-        if (!recipe) {
-          setState(prev => ({ ...prev, loading: false }));
-          toast.error('レシピが見つかりませんでした');
-          return;
-        }
-
-        setState(prev => ({
-          ...prev,
-          recipe,
-          loading: false,
-          currentStep: 0,
-          isCompleted: false,
-        }));
-      } catch {
-        setState(prev => ({ ...prev, loading: false }));
-        toast.error('レシピの取得に失敗しました');
-      }
-    };
-
-    if (state.recipeId) {
-      fetchRecipe(state.recipeId);
-    }
-  }, [state.recipeId, recipeService]);
-
-  useEffect(() => {
-    const recipeId = state.recipeId;
+    const recipeId = recipe.id;
     if (recipeId && state.vibeCookingRecipeIds.length > 0) {
       setState(prev => ({
         ...prev,
         isInVibeCookingList: state.vibeCookingRecipeIds.includes(recipeId),
       }));
     }
-  }, [state.recipeId, state.vibeCookingRecipeIds]);
+  }, [recipe.id, state.vibeCookingRecipeIds]);
 
   return {
     state,

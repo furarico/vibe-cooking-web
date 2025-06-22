@@ -1,6 +1,5 @@
-import { getAppCheck } from 'firebase-admin/app-check';
 import { NextRequest, NextResponse } from 'next/server';
-import { app } from '../firebase-admin';
+import { admin } from '../firebase-admin';
 
 async function verifyAppCheck(
   request: NextRequest
@@ -33,7 +32,7 @@ async function verifyAppCheck(
     }
 
     // AppCheck トークンを検証
-    const appCheckToken = await getAppCheck(app).verifyToken(token);
+    const appCheckToken = await admin.appCheck().verifyToken(token);
 
     if (!appCheckToken) {
       return {
