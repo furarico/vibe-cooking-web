@@ -2,6 +2,7 @@
 
 import { useDI } from '@/client/di/providers';
 import { Recipe } from '@/lib/api-client';
+import { trackRecipeEvent } from '@/lib/google-analytics';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -17,6 +18,7 @@ export interface RecipeDetailPresenterState {
 export interface RecipeDetailPresenterActions {
   setRecipeId: (id: string) => void;
   onAddToVibeCookingListButtonTapped: () => void;
+  onStartCookingTapped: () => void;
 }
 
 export interface RecipeDetailPresenter {
@@ -70,6 +72,14 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenter => {
       vibeCookingService,
       getVibeCookingRecipeIds,
     ]),
+    onStartCookingTapped: useCallback(() => {
+      if (state.recipe) {
+        trackRecipeEvent.startCooking(
+          state.recipe.id?.toString() || 'unknown',
+          state.recipe.title || 'Unknown Recipe'
+        );
+      }
+    }, [state.recipe]),
   };
 
   useEffect(() => {
@@ -102,6 +112,12 @@ export const useRecipeDetailPresenter = (): RecipeDetailPresenter => {
           currentStep: 0,
           isCompleted: false,
         }));
+
+        // レシピ表示イベントの追跡
+        trackRecipeEvent.view(
+          recipe.id?.toString() || 'unknown',
+          recipe.title || 'Unknown Recipe'
+        );
       } catch {
         setState(prev => ({ ...prev, loading: false }));
         toast.error('レシピの取得に失敗しました');

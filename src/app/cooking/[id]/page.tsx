@@ -44,8 +44,9 @@ export default function Page({ params }: PageProps) {
       id: 'end-cooking',
       href: `/recipes/${state.recipe?.id}`,
       children: 'Vibe Cooking をおわる',
+      onClick: actions.onEndCookingTapped,
     },
-    [state.recipe?.id]
+    [state.recipe?.id, actions.onEndCookingTapped]
   );
 
   if (state.loading) {

@@ -34,6 +34,7 @@ export default function Page({ params }: PageProps) {
         id: 'start-cooking',
         href: `/cooking/${state.recipeId}`,
         children: 'このレシピのみで Vibe Cooking をはじめる',
+        onClick: actions.onStartCookingTapped,
       },
       {
         id: 'toggle-vibe-list',

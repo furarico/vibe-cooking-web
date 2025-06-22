@@ -9,6 +9,7 @@ import {
 import { CookingInstructionCardProps } from '@/components/cooking-instruction-card';
 import { CarouselApi } from '@/components/ui/carousel';
 import { Recipe } from '@/lib/api-client';
+import { trackRecipeEvent } from '@/lib/google-analytics';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -34,6 +35,7 @@ export interface CookingPresenterActions {
   fetchRecipe: (id: string) => Promise<void>;
   setCurrentStep: (step: number) => void;
   setCarouselApi: (api: CarouselApi) => void;
+  onEndCookingTapped: () => void;
 }
 
 export interface CookingPresenter {
@@ -124,8 +126,16 @@ export const useCookingPresenter = (): CookingPresenter => {
       setCarouselApi: (api: CarouselApi) => {
         setState(prev => ({ ...prev, carouselApi: api }));
       },
+      onEndCookingTapped: () => {
+        if (state.recipe) {
+          trackRecipeEvent.completeCooking(
+            state.recipe.id?.toString() || 'unknown',
+            state.recipe.title || 'Unknown Recipe'
+          );
+        }
+      },
     }),
-    [fetchRecipe]
+    [fetchRecipe, state.recipe]
   );
 
   // サービスの状態変更を監視
