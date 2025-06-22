@@ -251,7 +251,6 @@ export const useCookingPresenter = (): CookingPresenter => {
     audioRecognitionService,
   ]);
 
-
   return {
     state,
     actions,

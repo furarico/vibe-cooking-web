@@ -49,7 +49,6 @@ export default function Page({ params }: PageProps) {
     [state.recipe?.id, actions.onEndCookingTapped]
   );
 
-
   if (state.loading) {
     return <Loading />;
   }
