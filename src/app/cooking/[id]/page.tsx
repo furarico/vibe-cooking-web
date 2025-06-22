@@ -14,6 +14,7 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { CookingStatusCard } from '@/components/ui/cooking-status-card';
+import { usePageButton } from '@/hooks/use-buttom-buttons';
 import { MicIcon, MicOffIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect } from 'react';
@@ -36,6 +37,17 @@ export default function Page({ params }: PageProps) {
     setRecipeId();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params, actions.setRecipeId]);
+
+  // ボタンの設定
+  usePageButton(
+    {
+      id: 'end-cooking',
+      href: `/recipes/${state.recipe?.id}`,
+      children: 'Vibe Cooking をおわる',
+      onClick: actions.onEndCookingTapped,
+    },
+    [state.recipe?.id, actions.onEndCookingTapped]
+  );
 
 
   if (state.loading) {
