@@ -2,7 +2,6 @@ import type { components, paths } from '@/types/api';
 import { getToken } from 'firebase/app-check';
 import createClient, { Middleware } from 'openapi-fetch';
 import { appCheck } from './firebase';
-import { admin } from './firebase-admin';
 
 export type Recipe = components['schemas']['Recipe'];
 export type Ingredient = components['schemas']['Ingredient'];
@@ -47,6 +46,8 @@ const getServerAppCheckToken = async (): Promise<string | null> => {
       console.error('NEXT_PUBLIC_FIREBASE_APP_ID is not set');
       return null;
     }
+    // Dynamic import to avoid bundling firebase-admin in client
+    const { admin } = await import('./firebase-admin');
     const appCheckToken = await admin.appCheck().createToken(appId);
     return appCheckToken.token;
   } catch (error) {
