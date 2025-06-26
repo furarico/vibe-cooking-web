@@ -1,7 +1,10 @@
 import admin, { credential } from 'firebase-admin';
+import { applicationDefault } from 'firebase-admin/app';
 
 if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-  admin.initializeApp();
+  admin.initializeApp({
+    credential: applicationDefault(),
+  });
 }
 
 if (process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY) {
